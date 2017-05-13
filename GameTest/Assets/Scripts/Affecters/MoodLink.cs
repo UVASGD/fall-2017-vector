@@ -13,8 +13,8 @@ public class MoodLink : PTrait {
         threshold = t;
     }
 
-    public override bool Check(float q) {
-        if (base.Check(q)) {
+    public override bool Check(Personality.Mood source, float q) {
+        if (base.Check(source, q)) {
             person.ChangeQuant(target, q * mod, sharedMod);
         }
         return true;

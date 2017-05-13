@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// TODO: rethink how target is defined; Must ensure a sensitization both can be unconditioned,
+//  and will take effect when the mood the modifier of which it edits is called
+
 public class Sensitize : PTrait {
 
     float increment;
@@ -12,21 +15,21 @@ public class Sensitize : PTrait {
 
     float actualDelt;
 
-    bool leftOver;
+    // bool leftOver;
 
     public Sensitize(Personality.Mood trg, float inc, float t, float dLow = 0, float dHig = 2) {
-        target = trg;
+        target = trg;  // target, here, is the mood the sensitization is conditioned by. Can be None
         increment = inc;
         actualDelt = inc;
         threshold = t;
         activated = false;
-        leftOver = false;
+        // leftOver = false;
         defLow = dLow;
         defHig = dHig;
     }
 
-    public override bool Check(float quant) {
-        bool over = base.Check(quant);
+    public override bool Check(Personality.Mood source, float quant) {
+        bool over = base.Check(source, quant);  // Check if the threshold is surpassed
         if (!activated && over) {
             activated = Enact();
         }
