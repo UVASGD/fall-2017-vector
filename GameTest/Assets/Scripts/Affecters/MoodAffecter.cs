@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MoodAffecter : MonoBehaviour {
+public class MoodAffecter {
 
     /*enum Mood
 {

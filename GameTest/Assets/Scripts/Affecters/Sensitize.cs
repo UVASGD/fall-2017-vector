@@ -46,7 +46,7 @@ public class Sensitize : PTrait {
         }
     }
 
-    public bool Enact() {
+    new public bool Enact() {
         float personMod = person.GetMod(target);
         if (personMod > defHig || personMod < defLow) {
             return false;
