@@ -61,7 +61,7 @@ public class Personality : MonoBehaviour {
         // quants[(int)m % 4] += delt * sMod;  <- OLD CODE; REPLACED BY ABOVE
     }
 
-    public void ActivateMood(Mood m, float quant) {  // 
+    public void ActivateMood(Mood m, float quant=0f) {  // 
         int redirectSpot = -1;
         // If the mood has new traits that haven't been checked for redirects yet, perform check
         if (newTraits[(int)m])
