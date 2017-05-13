@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Building
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - BlockingLayer
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Stationary
+    uniqueID: 1958897581
+    locked: 0
+  - name: Size6
+    uniqueID: 2815144095
+    locked: 0
+  - name: Size5
+    uniqueID: 3233544181
+    locked: 0
+  - name: Size4
+    uniqueID: 3054359027
+    locked: 0
+  - name: Size3
+    uniqueID: 1469281299
+    locked: 0
+  - name: Size2
+    uniqueID: 4214162655
+    locked: 0
+  - name: Size1
+    uniqueID: 1683429691
+    locked: 0
+  - name: Size0
+    uniqueID: 918881021
+    locked: 0
