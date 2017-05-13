@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerScript : Person {
+public class InnkeeperScript : Person {
 
 	// Use this for initialization
 	void Start () {
