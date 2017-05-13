@@ -42,30 +42,30 @@ Disgust, Anger, Intimidate, Sad
     public PTrait sensitizeDisLow = new Sensitize(Personality.Mood.Sad, .5f, 1.5f);
     public PTrait sensitizeDisMed = new Sensitize(Personality.Mood.Sad, 1f, 1.5f);
     public PTrait sensitizeDisHig = new Sensitize(Personality.Mood.Sad, 1.5f, 1.5f);
-    public PTrait desensitizeDisLow = new Sensitize(Personality.Mood.Sad, .5f, 1.5f);
-    public PTrait desensitizeDisMed = new Sensitize(Personality.Mood.Sad, 1f, 1.5f);
-    public PTrait desensitizeDisHig = new Sensitize(Personality.Mood.Sad, 1.5f, 1.5f);
+    public PTrait desensitizeDisLow = new Sensitize(Personality.Mood.Sad, -.5f, 1.5f);
+    public PTrait desensitizeDisMed = new Sensitize(Personality.Mood.Sad, -1f, 1.5f);
+    public PTrait desensitizeDisHig = new Sensitize(Personality.Mood.Sad, -1.5f, 1.5f);
 
     public PTrait sensitizeAngLow = new Sensitize(Personality.Mood.Sad, .5f, 1.5f);
     public PTrait sensitizeAngMed = new Sensitize(Personality.Mood.Sad, 1f, 1.5f);
     public PTrait sensitizeAngHig = new Sensitize(Personality.Mood.Sad, 1.5f, 1.5f);
-    public PTrait desensitizeAngLow = new Sensitize(Personality.Mood.Sad, .5f, 1.5f);
-    public PTrait desensitizeAngMed = new Sensitize(Personality.Mood.Sad, 1f, 1.5f);
-    public PTrait desensitizeAngHig = new Sensitize(Personality.Mood.Sad, 1.5f, 1.5f);
+    public PTrait desensitizeAngLow = new Sensitize(Personality.Mood.Sad, -.5f, 1.5f);
+    public PTrait desensitizeAngMed = new Sensitize(Personality.Mood.Sad, -1f, 1.5f);
+    public PTrait desensitizeAngHig = new Sensitize(Personality.Mood.Sad, -1.5f, 1.5f);
 
     public PTrait sensitizeIntLow = new Sensitize(Personality.Mood.Sad, .5f, 1.5f);
     public PTrait sensitizeIntMed = new Sensitize(Personality.Mood.Sad, 1f, 1.5f);
     public PTrait sensitizeIntHig = new Sensitize(Personality.Mood.Sad, 1.5f, 1.5f);
-    public PTrait desensitizeIntLow = new Sensitize(Personality.Mood.Sad, .5f, 1.5f);
-    public PTrait desensitizeIntMed = new Sensitize(Personality.Mood.Sad, 1f, 1.5f);
-    public PTrait desensitizeIntHig = new Sensitize(Personality.Mood.Sad, 1.5f, 1.5f);
+    public PTrait desensitizeIntLow = new Sensitize(Personality.Mood.Sad, -.5f, 1.5f);
+    public PTrait desensitizeIntMed = new Sensitize(Personality.Mood.Sad, -1f, 1.5f);
+    public PTrait desensitizeIntHig = new Sensitize(Personality.Mood.Sad, -1.5f, 1.5f);
 
     public PTrait sensitizeSadLow = new Sensitize(Personality.Mood.Sad, .5f, 1.5f);
     public PTrait sensitizeSadMed = new Sensitize(Personality.Mood.Sad, 1f, 1.5f);
     public PTrait sensitizeSadHig = new Sensitize(Personality.Mood.Sad, 1.5f, 1.5f);
-    public PTrait desensitizeSadLow = new Sensitize(Personality.Mood.Sad, .5f, 1.5f);
-    public PTrait desensitizeSadMed = new Sensitize(Personality.Mood.Sad, 1f, 1.5f);
-    public PTrait desensitizeSadHig = new Sensitize(Personality.Mood.Sad, 1.5f, 1.5f);
+    public PTrait desensitizeSadLow = new Sensitize(Personality.Mood.Sad, -.5f, 1.5f);
+    public PTrait desensitizeSadMed = new Sensitize(Personality.Mood.Sad, -1f, 1.5f);
+    public PTrait desensitizeSadHig = new Sensitize(Personality.Mood.Sad, -1.5f, 1.5f);
 
     //Redirect MoodAffecters
     public PTrait redirectChaLow = new Redirect(Personality.Mood.Sad, .5f, 1.5f);
