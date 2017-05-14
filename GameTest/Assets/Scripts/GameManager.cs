@@ -96,6 +96,13 @@ Disgust, Anger, Intimidate, Sad
 
 
 
+    //List of Characters
+    /*
+        renderName = b;
+        name = n;
+        type = t;
+        loc = l;
+        size = s;      */
 
     public static GameManager instance = null;
 	// Use this for initialization
@@ -109,8 +116,9 @@ Disgust, Anger, Intimidate, Sad
 
         DontDestroyOnLoad(gameObject);
 
+        Person player = new PlayerScript("RPlayer", "Player", "Player", 0.5f, 1);
 
-	}
+    }
 
 	// Update is called once per frame
 	void Update () {

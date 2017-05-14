@@ -71,10 +71,10 @@ public class Personality : MonoBehaviour {
             traits[(int)m][redirectSpot].Check(m, quant);
         // If a new redirect was not found, then activate all traits
         else
-            foreach (PTrait trait in traits[(int)m])
+            foreach (PTrait trait in traits[(int)m]) {
                 trait.Check(m, quant);  // TODO: Consider passing in the mood being activated to the trait to ensure traits can act on the right mood
-
-        ChangeQuant(m, quant, mods[(int)m]);  // Make Change
+                ChangeQuant(m, quant, mods[(int)m]);  // Make Change
+            }
         /*  SIMON: I noticed that we never actually changed the quant, so I added the below. Then, I thought it may be useful in ChangeQuant as well, and therefore just called that.
         if ((int)m < 4)
             quants[(int)m] += quant;

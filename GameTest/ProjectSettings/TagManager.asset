@@ -45,24 +45,24 @@ TagManager:
   - name: Stationary
     uniqueID: 1958897581
     locked: 0
-  - name: Size6
+  - name: 6
     uniqueID: 2815144095
     locked: 0
-  - name: Size5
+  - name: 5
     uniqueID: 3233544181
     locked: 0
-  - name: Size4
+  - name: 4
     uniqueID: 3054359027
     locked: 0
-  - name: Size3
+  - name: 3
     uniqueID: 1469281299
     locked: 0
-  - name: Size2
+  - name: 2
     uniqueID: 4214162655
     locked: 0
-  - name: Size1
+  - name: 1
     uniqueID: 1683429691
     locked: 0
-  - name: Size0
+  - name: 0
     uniqueID: 918881021
     locked: 0

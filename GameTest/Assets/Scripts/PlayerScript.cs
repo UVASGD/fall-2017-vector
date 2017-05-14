@@ -9,9 +9,13 @@ public class PlayerScript : Person {
 
     int clocks = 0;
 
-	// Use this for initialization
-	void Start () {
-        setHealthBar();
+
+    public PlayerScript(string b, string n, string t, float l, int s) : base(b, n, t, l, s) {
+    }
+
+    // Use this for initialization
+    void Start () {
+        //setHealthBar();
 	}
 	
 	// Update is called once per frame
