@@ -16,7 +16,8 @@ public class PlayerScript : MonoBehaviour {
     // Use this for initialization
     void Start () {
         //setHealthBar();
-        time = (TimeManager)FindObjectOfType(typeof(TimeManager));
+        time = (TimeManager)FindObjectOfType(typeof(TimeManager)); //This is so the time variable is actually referencing the time manager object
+        tag = "Player";
     }
 
 	// Update is called once per frame
