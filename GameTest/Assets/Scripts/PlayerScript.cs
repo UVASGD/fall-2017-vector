@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerScript : Person {
+public class PlayerScript : MonoBehaviour {
 
     public TimeManager time;
     Personality mind;
@@ -10,14 +10,15 @@ public class PlayerScript : Person {
     int clocks = 0;
 
 
-    public PlayerScript(string b, string n, string t, float l, int s) : base(b, n, t, l, s) {
+    public PlayerScript() {
     }
 
     // Use this for initialization
     void Start () {
         //setHealthBar();
-	}
-	
+        time = (TimeManager)FindObjectOfType(typeof(TimeManager));
+    }
+
 	// Update is called once per frame
 	void Update () {
         if (time.clock)

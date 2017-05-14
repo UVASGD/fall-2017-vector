@@ -7,21 +7,25 @@ public class Person {
     GameObject person;
     GameObject healthBar;
     GameObject body;
+    string script;
     string sortingLayerNum;
 
     string renderName;
+    string objectName;
     string type;
     float loc;
     int size;
 
-    public Person(string b, string n, string t, float l, int s) {
-        person = (GameObject)MonoBehaviour.Instantiate(Resources.Load(t), new Vector3(l, 0, 0), Quaternion.identity);
+    public Person(string b, string n, string t, float l, int s, string sc) {
         renderName = b;
-        person.name = n;
+        objectName = n;
         type = t;
         loc = l;
         size = s;
         sortingLayerNum = size.ToString();
+        script = sc;
+
+        setObject();
 
         setHealthBar();
 
@@ -38,6 +42,12 @@ public class Person {
 	void Update () {
 		
 	}
+
+    public void setObject() {
+        person = (GameObject)MonoBehaviour.Instantiate(Resources.Load(type), new Vector3(loc, 0, 0), Quaternion.identity);
+        person.AddComponent(System.Type.GetType(script));
+        person.name = objectName;
+    }
 
     public void setBody() {
         body = (GameObject)MonoBehaviour.Instantiate(Resources.Load(renderName), person.transform);

@@ -9,6 +9,8 @@ Charm, Amuse, Inspire, Happy,
 Disgust, Anger, Intimidate, Sad
 };*/
 
+    public GameObject timeManager;
+
 
     //Sensitize MoodAffecters
     public PTrait sensitizeChaLow = new Sensitize(Personality.Mood.Sad, .5f, 1.5f);
@@ -114,10 +116,9 @@ Disgust, Anger, Intimidate, Sad
             Destroy(gameObject);
         }
 
+        Person player = new Person("RPlayer", "Player", "Player", 0.5f, 1, "PlayerScript");
+
         DontDestroyOnLoad(gameObject);
-
-        Person player = new PlayerScript("RPlayer", "Player", "Player", 0.5f, 1);
-
     }
 
 	// Update is called once per frame

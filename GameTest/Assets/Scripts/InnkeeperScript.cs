@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InnkeeperScript : Person {
+public class InnkeeperScript : MonoBehaviour {
 
-    public InnkeeperScript(string b, string n, string t, float l, int s) : base(b, n, t, l, s) {   
+    public InnkeeperScript() {   
     }
 
 	// Use this for initialization
