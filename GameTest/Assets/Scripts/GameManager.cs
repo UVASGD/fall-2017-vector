@@ -117,6 +117,7 @@ Disgust, Anger, Intimidate, Sad
         }
 
         Person player = new Person("RPlayer", "Player", "Player", 0.5f, 1, "PlayerScript");
+        Person innkeeper = new Person("RInnkeeper", "Innkeeper", "Innkeeper", -6.5f, 1, "InnkeeperScript");
 
         DontDestroyOnLoad(gameObject);
     }

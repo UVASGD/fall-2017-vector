@@ -45,6 +45,8 @@ public class Person {
 
     public void setObject() {
         person = (GameObject)MonoBehaviour.Instantiate(Resources.Load(type), new Vector3(loc, 0, 0), Quaternion.identity);
+        BoxCollider2D coll = person.GetComponent<BoxCollider2D>();
+        coll.size = new Vector3(size*2, 1f, 0f);
         person.AddComponent(System.Type.GetType(script));
         person.name = objectName;
     }
