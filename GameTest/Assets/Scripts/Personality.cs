@@ -42,7 +42,7 @@ public class Personality : MonoBehaviour {
     }
 
     public float GetQuant(Mood m) {
-        return mods[(int)m % 4];
+        return quants[(int)m % 4];
     }
 
     public void ChangeQuant(Mood m, float delt) {  // Changes the quantity of the given mood, interpreting the delta as a magnitudue of change for the negative-defined moods.

@@ -36,6 +36,8 @@ public class ApplyQuantScript : MonoBehaviour {
         qInput = (moodCanvas.transform.Find("QuantInput").gameObject).GetComponent<InputField>();
         input = System.Convert.ToSingle(qInput.text);
         Personality.Mood mood = (Personality.Mood)getToggleNum();
+        Debug.Log("Mood quant before application: " + personality.GetQuant(mood));
         personality.ChangeQuant(mood, input);
+        Debug.Log("Mood quant after application: " + personality.GetQuant(mood));
     }
 }
