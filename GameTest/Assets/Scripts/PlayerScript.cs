@@ -22,7 +22,8 @@ public class PlayerScript : MonoBehaviour {
     // Use this for initialization
     void Start () {
         //setHealthBar();
-        time = (TimeManager)FindObjectOfType(typeof(TimeManager)); //This is so the time variable is actually referencing the time manager object
+        //This is so the time variable is actually referencing the time manager object
+        time = (TimeManager)FindObjectOfType(typeof(TimeManager));
         tag = "Player";
     }
 
@@ -59,8 +60,9 @@ public class PlayerScript : MonoBehaviour {
         if (dashTime > 0)
             dashTime -= Time.deltaTime;
 
-        if (time.clock)
+        if (time.clock) {
             Perform();
+        }
 	}
 
     void Perform() {

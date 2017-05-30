@@ -14,8 +14,8 @@ public class Personality : MonoBehaviour {
 
     float[] quants = { 0, 0, 0, 0 };
 
-    float[] thresholds = { 1, 1, 1, 1,
-                           1, 1, 1, 1 };
+    float[] thresholds = {  1,  1,  1,  1,
+                           -1, -1, -1, -1 };
 
     float[] mods = { 1, 1, 1, 1,
                      1, 1, 1, 1 };
@@ -147,6 +147,15 @@ public class Personality : MonoBehaviour {
     public void AddTrait(Mood m, PTrait trait) {
         traits[(int)m].Add(trait);
         traits[(int)m][traits[(int)m].Count - 1].person = this;
+    }
+
+    public bool IsOverThreshold(Mood m) {
+        int moodInt = (int)m;
+        float quant = quants[moodInt % 4];
+        if (moodInt < 4)
+            return quant >= thresholds[moodInt];
+        else
+            return quant <= thresholds[moodInt];
     }
 }
 
