@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<QueenOccida>
+  <Name>Queen Occida</Name>
+  <Stats>
+    <Will>5</Will>
+    <Perception>3</Perception>
+    <Brawn>1</Brawn>
+    <Coordination>3</Coordination>
+  </Stats>
+  <Items>
+    <Item1>Bob of Bashing</Item1>
+    <Item2>Wand of Zapping</Item2>
+  </Items>
+  <Personality>
+    <Charm>
+      <Threshold>1</Threshold>
+      <Cooldown>0.1</Cooldown>
+      <Traits>None</Traits>
+    </Charm>
+  </Personality>
+</QueenOccida>
