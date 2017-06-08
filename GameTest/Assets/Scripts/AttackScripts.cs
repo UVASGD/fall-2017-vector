@@ -8,6 +8,8 @@ using UnityEngine;
 
 public enum DamageType { Crushing, Piercing, Slashing, Burning, Magic};
 
+// The Attack class operates by being placed on a GameObject by the Weapon object that
+// generates it.
 public class Attack : MonoBehaviour {
 
     int currFrame;
