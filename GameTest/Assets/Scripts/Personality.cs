@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿//RE-ENGINEER TO MAKE A NON-MONOBEHAVIOUR SCRIPT
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerScript : MonoBehaviour {
+public class PlayerScript : Thing {
 
     public TimeManager time;
     Personality mind;
@@ -34,22 +34,22 @@ public class PlayerScript : MonoBehaviour {
             int moveKey = (int)Input.GetAxisRaw("Horizontal");
             if (moveQ == 'w') {
                 dashTime = 0.5f;
-                if (moveKey == 1) {
+                if (moveKey == -1) {
                     moveQ = 'l';
                     moveTimer = 2;
                 }
-                else if (moveKey == -1) {
+                else if (moveKey == 1) {
                     moveQ = 'r';
                     moveTimer = 2;
                 }
             }
             else if (dashTime > 0){
-                if (moveQ == 'l' && moveKey == 1) {
+                if (moveQ == 'l' && moveKey == -1) {
                     moveQ = 'L';
                     moveTimer = 1;
                     dashTime = 0;
                 }
-                else if (moveQ == 'r' && moveKey == -1) {
+                else if (moveQ == 'r' && moveKey == 1) {
                     moveQ = 'R';
                     moveTimer = 1;
                     dashTime = 0;
@@ -61,11 +61,11 @@ public class PlayerScript : MonoBehaviour {
             dashTime -= Time.deltaTime;
 
         if (time.clock) {
-            Perform();
+            Tick();
         }
 	}
 
-    void Perform() {
+    void Tick() {
         if (moveTimer == 0) {
             moveTimer = Move();
             //mind.Cool();
@@ -81,20 +81,20 @@ public class PlayerScript : MonoBehaviour {
     int Move() {
         switch (moveQ) {
             case 'l':
-                gameObject.transform.Translate(1, 0, 0);
+                gameObject.transform.Translate(-1, 0, 0);
                 moveQ = 'w';
                 break;
             case 'L':
-                gameObject.transform.Translate(1, 0, 0);
+                gameObject.transform.Translate(-1, 0, 0);
                 moveQ = 'l';
                 moveTimer = 1;
                 break;
             case 'r':
-                gameObject.transform.Translate(-1, 0, 0);
+                gameObject.transform.Translate(1, 0, 0);
                 moveQ = 'w';
                 break;
             case 'R':
-                gameObject.transform.Translate(-1, 0, 0);
+                gameObject.transform.Translate(1, 0, 0);
                 moveQ = 'r';
                 moveTimer = 1;
                 break;

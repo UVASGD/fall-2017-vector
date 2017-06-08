@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InnkeeperScript : MonoBehaviour {
+public class InnkeeperScript : Thing {
 
     public InnkeeperScript() {   
     }
