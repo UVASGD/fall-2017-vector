@@ -6,7 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum DamageType { Crushing, Piercing, Slashing, Burning, Magic};
+public enum DamageType { Crushing, Piercing, Slashing, Burning, Hindering, Magic};
 
 // The Attack class operates by being placed on a GameObject by the Weapon object that
 // generates it.

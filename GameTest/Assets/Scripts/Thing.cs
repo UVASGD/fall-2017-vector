@@ -15,7 +15,7 @@ public class Thing : MonoBehaviour {
     float hinderQuant;
     float hinderThreshold;
 
-    float[] damMods = { 1f, 1f, 1f, 1f, 1f};
+    float[] damMods = { 1f, 1f, 1f, 1f, 1f, 1f};
 
     public void Moved(Direction dir) {
         switch (dir) {
