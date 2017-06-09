@@ -54,8 +54,14 @@ public class MoveAction : Action {
 public class AttackAction : Action {
 
     Direction dir;
+    GameObject attack;
 
-    public AttackAction(string _name, int _timeLeft, Thing _genitor, Direction _dir) : base(_name, _timeLeft, _genitor) {
+    public AttackAction(string _name, int _timeLeft, Thing _genitor, Direction _dir, GameObject _attack) : base(_name, _timeLeft, _genitor) {
         dir = _dir;
+        attack = _attack;
+    }
+
+    protected override void Dewit() {
+        base.Dewit();
     }
 }
