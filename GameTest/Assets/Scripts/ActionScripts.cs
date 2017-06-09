@@ -62,6 +62,12 @@ public class AttackAction : Action {
     }
 
     protected override void Dewit() {
+        Vector3 newPos = new Vector3();
+        newPos = genitor.transform.position;
+        GameObject newAttackObject = (GameObject) MonoBehaviour.Instantiate(attack, newPos, Quaternion.identity);
+        Attack newAttackScript = newAttackObject.GetComponent<Attack>();
+        newAttackScript.setTargetTags(genitor.GetTargetTags());
+
         base.Dewit();
     }
 }

@@ -9,6 +9,8 @@ public class Thing : MonoBehaviour {
     Action currAct;
     Action currMoveAct;
 
+    List<string> targetTags = new List<string>();
+
     float harmQuant;
     float harmThreshold;
 
@@ -46,5 +48,9 @@ public class Thing : MonoBehaviour {
 
     public void Damaged(Damage dam) {
         Harmed(dam.quant * damMods[(int)dam.type]);
+    }
+
+    public List<string> GetTargetTags() {
+        return targetTags;
     }
 }

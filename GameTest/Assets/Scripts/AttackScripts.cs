@@ -1,6 +1,5 @@
 ﻿//IMPLEMENT STATUS EFFECTS/DAMAGE REPERCUSSIONS
 //FIGURE OUT HOW HINDERING WORKS
-//MAKE ON COLLISION HAPPEN
 
 using System.Collections;
 using System.Collections.Generic;
@@ -9,13 +8,12 @@ using TagFrenzy;
 
 public enum DamageType { Crushing, Piercing, Slashing, Burning, Hindering, Magic};
 
-// The Attack class operates by being placed on a GameObject by the Weapon object that
-// generates it.
+// The Attack class attaches to a prefab gameobject to be instantiated by an AttackAction
 public class Attack : MonoBehaviour {
 
-    int currFrame;
-    int moveTime;
+    public int moveTime;
     int moveTimer;
+    int currFrame;
     char[] moveScheme;
     Damage[] damages;
     TimeManager time;
@@ -37,6 +35,7 @@ public class Attack : MonoBehaviour {
             Tick();
         }
 
+        // Deletes parent GameObject when finished
         if (done) {
             Destroy(gameObject);
         }
