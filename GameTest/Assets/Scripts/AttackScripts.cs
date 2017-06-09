@@ -1,5 +1,4 @@
 ﻿//IMPLEMENT STATUS EFFECTS/DAMAGE REPERCUSSIONS
-//FIGURE OUT HOW HINDERING WORKS
 
 using System.Collections;
 using System.Collections.Generic;
