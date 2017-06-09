@@ -19,7 +19,7 @@ public class TimeManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         if (!pause)
-            sinceClock += Time.deltaTime*20;
+            sinceClock += Time.deltaTime*100;
         if (sinceClock >= clockTime) {
             clock = true;
             sinceClock = 0;
