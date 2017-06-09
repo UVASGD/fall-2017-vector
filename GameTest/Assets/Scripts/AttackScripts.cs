@@ -5,6 +5,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TagFrenzy;
 
 public enum DamageType { Crushing, Piercing, Slashing, Burning, Hindering, Magic};
 
@@ -17,11 +18,33 @@ public class Attack : MonoBehaviour {
     int moveTimer;
     char[] moveScheme;
     Damage[] damages;
+    TimeManager time;
+    List<string> targetTags;
+    List<GameObject> alreadyHit = new List<GameObject>();
 
     Direction dir;
-    Thing enactor;
+    Thing genitor;
 
-    bool done;
+    bool done = true;
+
+    void Start() {
+        time = (TimeManager)FindObjectOfType(typeof(TimeManager));
+        done = false;
+    }
+
+    void Update() {
+        if (time.clock) {
+            Tick();
+        }
+
+        if (done) {
+            Destroy(gameObject);
+        }
+    }
+   
+    public void setTargetTags(List<string> _targetTags) {
+        targetTags = _targetTags;
+    }
 
     public void Tick() {
         if (moveTimer == 0 && !done) {
@@ -54,6 +77,29 @@ public class Attack : MonoBehaviour {
                 break;
         }
     }
+
+    private void OnCollisionEnter2D(Collider2D other) {
+        foreach (GameObject go in alreadyHit)
+            if (go == other.gameObject)
+                return;
+
+        bool isTarget = false;
+        foreach (string tag in other.gameObject.tags()) {
+            foreach (string target in targetTags) {
+                if (tag.Equals(target))
+                    isTarget = true;
+            }
+        }
+
+        if (isTarget) {
+            Thing body = other.gameObject.GetComponent<Thing>();
+            foreach (Damage dam in damages) {
+                body.Damaged(dam);
+            }
+            alreadyHit.Add(other.gameObject);
+        }
+    }
+
 }
 
 public class Damage {
