@@ -55,11 +55,11 @@ public class PlayerAI : AI {
             int moveKey = (int)Input.GetAxisRaw("Horizontal");
             if (body.GetCurrMoveAct().name == "Open") {
                 if (moveKey == -1) {
-                    body.SetCurrMoveAct(new MoveAction("MoveLeft", 4, body, Direction.Left, 1));
+                    body.SetCurrMoveAct(new MoveAction("MoveLeft", 4, body, Direction.Left, 0));
                     dashTime = 0.5f;
                 }
                 else if (moveKey == 1) {
-                    body.SetCurrMoveAct(new MoveAction("MoveRight", 4, body, Direction.Right, 1));
+                    body.SetCurrMoveAct(new MoveAction("MoveRight", 4, body, Direction.Right, 0));
                     dashTime = 0.5f;
                 }
             }
