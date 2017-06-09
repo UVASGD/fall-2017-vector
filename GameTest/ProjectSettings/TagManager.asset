@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Building
   - CanvasTest
+  - Renderer
   layers:
   - Default
   - TransparentFX

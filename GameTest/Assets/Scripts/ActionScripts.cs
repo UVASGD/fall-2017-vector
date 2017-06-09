@@ -4,26 +4,30 @@ using UnityEngine;
 
 public class Action {
 
-    protected string name;
+    public string name;
     protected Action nextAction;
     protected int timeLeft;
-    protected Thing genitor;
+    protected Body genitor;
 
-    public Action(string _name, int _timeLeft, Thing _genitor) {
+    public Action(string _name, int _timeLeft, Body _genitor) {
         name = _name;
         timeLeft = _timeLeft;
         genitor = _genitor;
     }
 
     protected virtual void Dewit() {
-        if (nextAction != null)
-            genitor.SetCurrAct(nextAction); 
+        if (nextAction != null) {
+            genitor.SetCurrAct(nextAction);
+            return;
+        }
+
+        nextAction = new Action("Open", 0, genitor);
     }
 
     public void Tick() {
         timeLeft--;
 
-        if (timeLeft == 0)
+        if (timeLeft <= 0)
             Dewit();
     }
 }
@@ -33,7 +37,7 @@ public class MoveAction : Action {
     int iterLeft;
     Direction dir;
 
-    public MoveAction(string _name, int _timeLeft, Thing _genitor, Direction _dir, int _iterLeft) : base(_name, _timeLeft, _genitor) {
+    public MoveAction(string _name, int _timeLeft, Body _genitor, Direction _dir, int _iterLeft) : base(_name, _timeLeft, _genitor) {
         iterLeft = _iterLeft;
         dir = _dir;
 
@@ -41,12 +45,12 @@ public class MoveAction : Action {
             nextAction = new MoveAction(_name, _timeLeft, _genitor, _dir, _iterLeft - 1);
 
         else {
-            nextAction = new Action("Open", 1, _genitor);
+            nextAction = new Action("Open", 0, _genitor);
         }
     }
 
     protected override void Dewit() {
-        genitor.Moved(dir);
+        genitor.Move(dir);
         genitor.SetCurrMoveAct(nextAction);
     }
 }
@@ -56,8 +60,8 @@ public class AttackAction : Action {
     Direction dir;
     GameObject attack;
 
-    public AttackAction(string _name, int _timeLeft, Thing _genitor, Direction _dir, GameObject _attack) : base(_name, _timeLeft, _genitor) {
-        dir = _dir;
+    public AttackAction(string _name, int _timeLeft, Body _genitor, GameObject _attack) : base(_name, _timeLeft, _genitor) {
+        dir = genitor.getDir();
         attack = _attack;
     }
 

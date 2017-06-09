@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 212035649676744358}
   m_Layer: 0
   m_Name: RChest
-  m_TagString: Untagged
+  m_TagString: Renderer
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

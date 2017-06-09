@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Personality : MonoBehaviour {
+public class Personality {
 
     // enum Moods { Charm, Disgust, Amuse, Anger, Inspire, Intimidate, Happy, Sad, Hinder, Harm, Heal, Expedite };
 

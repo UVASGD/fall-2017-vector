@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 212998589843204272}
   m_Layer: 0
   m_Name: RInnKeeper
-  m_TagString: Untagged
+  m_TagString: Renderer
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

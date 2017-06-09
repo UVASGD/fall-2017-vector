@@ -1122,7 +1122,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &715694306
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1365,7 +1365,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &791471377
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1379,7 +1379,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moodToggles: {fileID: 0}
   person: {fileID: 0}
-  personality: {fileID: 0}
   moodCanvas: {fileID: 0}
   qInput: {fileID: 0}
   time: {fileID: 1461711406}

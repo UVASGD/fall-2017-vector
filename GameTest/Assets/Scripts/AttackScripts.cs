@@ -20,7 +20,7 @@ public class Attack : MonoBehaviour {
     List<GameObject> alreadyHit = new List<GameObject>();
 
     Direction dir;
-    Thing genitor;
+    Body genitor;
 
     bool done = true;
 
@@ -90,7 +90,7 @@ public class Attack : MonoBehaviour {
         }
 
         if (isTarget) {
-            Thing body = other.gameObject.GetComponent<Thing>();
+            Body body = other.gameObject.GetComponent<Body>();
             foreach (Damage dam in damages) {
                 body.Damaged(dam);
             }

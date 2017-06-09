@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum Direction { Left = -1, Right = 1 };
+
 public class GameManager : MonoBehaviour {
     /*enum Mood
 {
@@ -96,16 +98,6 @@ Disgust, Anger, Intimidate, Sad
 
     //MoodLink MoodAffecters
 
-
-
-    //List of Characters
-    /*
-        renderName = b;
-        name = n;
-        type = t;
-        loc = l;
-        size = s;      */
-
     public static GameManager instance = null;
 	// Use this for initialization
 	void Awake () {
@@ -116,8 +108,8 @@ Disgust, Anger, Intimidate, Sad
             Destroy(gameObject);
         }
 
-        Person player = new Person("RPlayer", "Player", "Player", 0.5f, 1, "PlayerScript");
-        Person innkeeper = new Person("RInnkeeper", "Innkeeper", "Innkeeper", -6.5f, 1, "InnkeeperScript");
+        PersonCreator player = new PersonCreator("RPlayer", "Player", "Player", 0.5f, 1);
+        //Person innkeeper = new Person("RInnkeeper", "Innkeeper", "Innkeeper", -6.5f, 1, "InnkeeperScript");
 
         DontDestroyOnLoad(gameObject);
     }
