@@ -43,14 +43,27 @@ public class MoveAction : Action {
 
         if (iterLeft > 0)
             nextAction = new MoveAction(_name, _timeLeft, _genitor, _dir, _iterLeft - 1);
-
         else {
-            nextAction = new Action("Open", 0, _genitor);
+            nextAction = new HaltAction("Halt", 0, _genitor);
         }
     }
 
     protected override void Dewit() {
         genitor.Move(dir);
+        //Debug.Log("genitor dir after move: " + genitor.dir);
+        genitor.SetCurrMoveAct(nextAction);
+    }
+}
+
+public class HaltAction : Action {
+    public HaltAction(string _name, int _timeLeft, Body _genitor) :
+        base(_name, _timeLeft, _genitor) {
+        timeLeft = 100;
+        nextAction = this;
+    }
+
+    protected override void Dewit() {
+        timeLeft = 100;
         genitor.SetCurrMoveAct(nextAction);
     }
 }
@@ -61,7 +74,7 @@ public class AttackAction : Action {
     GameObject attack;
 
     public AttackAction(string _name, int _timeLeft, Body _genitor, GameObject _attack) : base(_name, _timeLeft, _genitor) {
-        dir = genitor.getDir();
+        dir = genitor.GetFace();
         attack = _attack;
     }
 

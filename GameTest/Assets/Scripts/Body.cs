@@ -17,7 +17,7 @@ public class Body : MonoBehaviour {
     float[] damMods = { 1f, 1f, 1f, 1f, 1f, 1f }; //Mods for sensitivity to each type of damage
 
     int size; //Self-Explanatory *MUST BE SET
-    Direction dir; //Self-Explanatory *MUST BE SET
+    public Direction face; //Self-Explanatory *MUST BE SET
 
     Action currMoveAct; //Current movement action
     Action currAct; //Current non-movement action
@@ -36,7 +36,7 @@ public class Body : MonoBehaviour {
         hinderQuant = 0f;
         hinderThreshold = 1f;
 
-        currMoveAct = new Action("Open", 0, this);
+        currMoveAct = new HaltAction("Halt", 0, this);
         currAct = new Action("Open", 0, this);
     }
 
@@ -49,7 +49,7 @@ public class Body : MonoBehaviour {
 
     public void BodyConstructor(int _size, Direction _dir, List<string> _targetTags, AI _mind) {
         size = _size;
-        dir = _dir;
+        face = _dir;
         targetTags = _targetTags;
         mind = _mind;
         mind.Start();
@@ -57,6 +57,7 @@ public class Body : MonoBehaviour {
 
     //TICK FUNCTION
     void Tick() {
+        //Debug.Log("dir is: " + dir);
         mind.Tick();
         currMoveAct.Tick();
         currAct.Tick();
@@ -80,15 +81,15 @@ public class Body : MonoBehaviour {
     }
 
     //ABILITY TO MOVE
-    public void Move(Direction dir) {
-        switch (dir) {
+    public void Move(Direction _dir) {
+        switch (_dir) {
             case Direction.Left:
                 gameObject.transform.Translate(-1, 0, 0);
-                dir = Direction.Left;
+                face = Direction.Left;
                 break;
             case Direction.Right:
                 gameObject.transform.Translate(1, 0, 0);
-                dir = Direction.Right;
+                face = Direction.Right;
                 break;
         }
     }
@@ -101,11 +102,11 @@ public class Body : MonoBehaviour {
     }
 
     //GET/SET DIRECTION
-    public void setDir(Direction _dir) {
-        dir = _dir;
+    public void SetFace(Direction _dir) {
+        face = _dir;
     }
-    public Direction getDir() {
-        return dir;
+    public Direction GetFace() {
+        return face;
     }
 
     //SET ACTION

@@ -29,7 +29,7 @@ public class PlayerAI : AI {
     }
 
     public override void Start() {
-        dashTime = 0.5f;
+        dashTime = 0.1f;
     }
 
     public override void Update() {
@@ -40,11 +40,14 @@ public class PlayerAI : AI {
         if (Input.anyKeyDown) {
             int moveKey = (int)Input.GetAxisRaw("Horizontal");
             if (dashTime > 0) {
-                if (body.GetCurrMoveAct().name.Equals("MoveLeft") && moveKey == -1) {
+                //Debug.Log(body.GetDir());
+                //if (body.GetCurrMoveAct().name.Equals("MoveLeft") && moveKey == -1) {
+                if (moveKey == -1 && body.GetFace() == Direction.Left) {
                     body.SetCurrMoveAct(new MoveAction("DashLeft", 1, body, Direction.Left, 3));
                     dashTime = 0f;
                 }
-                else if (body.GetCurrMoveAct().name.Equals("MoveRight") && moveKey == 1) {
+                //else if (body.GetCurrMoveAct().name.Equals("MoveRight") && moveKey == 1) {
+                else if (moveKey == 1 && body.GetFace() == Direction.Right) {
                     body.SetCurrMoveAct(new MoveAction("DashRight", 1, body, Direction.Right, 3));
                     dashTime = 0f;
                 }
@@ -53,7 +56,7 @@ public class PlayerAI : AI {
 
         if (Input.anyKey) {
             int moveKey = (int)Input.GetAxisRaw("Horizontal");
-            if (body.GetCurrMoveAct().name == "Open") {
+            if (body.GetCurrMoveAct().name == "Halt") {
                 if (moveKey == -1) {
                     body.SetCurrMoveAct(new MoveAction("MoveLeft", 4, body, Direction.Left, 0));
                     dashTime = 0.5f;
