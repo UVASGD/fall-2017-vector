@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MoodAffecter {
+public class MoodAffecter : Affecter {
+
+    protected Personality.Mood targetMood;
 
     /*enum Mood
 {
@@ -10,4 +12,7 @@ public class MoodAffecter {
     Disgust, Anger, Intimidate, Sad
 };*/
 
+    protected override void Dewit() {
+    }
+    
 }

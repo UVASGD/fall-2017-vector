@@ -83,8 +83,7 @@ public class AttackAction : Action {
         newPos = genitor.transform.position;
         GameObject newAttackObject = (GameObject) MonoBehaviour.Instantiate(attack, newPos, Quaternion.identity);
         Attack newAttackScript = newAttackObject.GetComponent<Attack>();
-        newAttackScript.setTargetTags(genitor.GetTargetTags());
-
+        newAttackScript.AttackConstructor(genitor);
         base.Dewit();
     }
 }

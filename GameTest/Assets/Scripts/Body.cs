@@ -125,4 +125,8 @@ public class Body : MonoBehaviour {
         return mind;
     }
 
+    public Personality GetPersonality() {
+        return mind.GetPersonality();
+    }
+
 }

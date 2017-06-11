@@ -40,4 +40,8 @@ public class PTrait : MoodAffecter {
     }
 
     public virtual void Enact() { }
+
+    protected override void Dewit() {
+        targetBody.GetPersonality().AddTrait(targetMood, this);
+    }
 }
