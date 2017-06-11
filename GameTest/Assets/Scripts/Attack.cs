@@ -4,7 +4,7 @@ using UnityEngine;
 
 using TagFrenzy;
 
-public enum DamageType { Crushing, Piercing, Slashing, Burning, Hindering, Magic };
+public enum DamageType { Crushing, Piercing, Slashing, Burning, Freezing, Electric, Hindering, Magic };
 
 // The Attack class attaches to a prefab gameobject to be instantiated by an AttackAction
 public class Attack : MonoBehaviour {
@@ -13,7 +13,7 @@ public class Attack : MonoBehaviour {
     int moveTimer;
     int currFrame = 0;
     char[] moveScheme;
-    Damage[] damages;
+    Affecter[] damages;
     TimeManager time;
     List<string> targetTags;
     List<GameObject> alreadyHit = new List<GameObject>();
@@ -29,7 +29,7 @@ public class Attack : MonoBehaviour {
         moveScheme = new char[] {'f', 'f', 'f', 'b', 'f', 'f', 'w'};
         moveTimes = new int[] {   4,   3,   2,   1,   2,   3,   4 };
         moveTimer = moveTimes[0];
-        damages = new Damage[] { new Damage(DamageType.Slashing, 10) };
+        damages = new Affecter[] { new Damage(DamageType.Slashing, 10) };
     }
 
     void Update() {
@@ -104,8 +104,8 @@ public class Attack : MonoBehaviour {
 
         if (isTarget) {
             Body body = other.gameObject.GetComponent<Body>();
-            foreach (Damage dam in damages) {
-                body.Damaged(dam);
+            foreach (Affecter dam in damages) {
+                body.AddAffecter(dam);
             }
             alreadyHit.Add(other.gameObject);
         }

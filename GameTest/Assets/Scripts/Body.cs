@@ -14,7 +14,7 @@ public class Body : MonoBehaviour {
     float hinderQuant; //Hinder Variables
     float hinderThreshold;
 
-    float[] damMods = { 1f, 1f, 1f, 1f, 1f, 1f }; //Mods for sensitivity to each type of damage
+    float[] damMods = { 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f }; //Mods for sensitivity to each type of damage
 
     int size; //Self-Explanatory *MUST BE SET
     public Direction face; //Self-Explanatory *MUST BE SET
@@ -25,6 +25,9 @@ public class Body : MonoBehaviour {
     List<string> targetTags = new List<string>(); //List of tag-filters *MUST BE SET
 
     AI mind; //The AI object that will generate actions *MUST BE SET
+
+    List<Effect> effectList = new List<Effect>(); //List of Effects
+    List<Trait> traitList = new List<Trait>(); //List of Traits 
 
     void Start() {
         time = (TimeManager)FindObjectOfType(typeof(TimeManager)); //Set Time manager
@@ -64,16 +67,16 @@ public class Body : MonoBehaviour {
     }
 
     //ABILITY TO GET HURT AND TO BE TARGETED
-    public void Harmed(float delt) {
+    public void Harm(float delt) {
         harmQuant += delt;
     }
 
-    public void Hindered(float delt) {
+    public void Hinder(float delt) {
         hinderQuant += delt;
     }
 
-    public void Damaged(Damage dam) {
-        Harmed(dam.quant * damMods[(int)dam.type]);
+    public void Damage(DamageType _damType, float _damQuant) {
+        Harm(_damQuant * damMods[(int)_damType]);
     }
 
     public List<string> GetTargetTags() {
@@ -125,8 +128,34 @@ public class Body : MonoBehaviour {
         return mind;
     }
 
+    //GET PERSONALITY
     public Personality GetPersonality() {
         return mind.GetPersonality();
     }
 
+    //ADD/REMOVE TO/FROM APPROPRIATE AFFECTER LIST
+    public void AddAffecter(Affecter _affecter) {
+        if (_affecter.Check()) {
+            if (_affecter.GetType() == typeof(Effect))
+                effectList.Add((Effect)_affecter);
+            else if (_affecter.GetType() == typeof(Trait))
+                traitList.Add((Trait)_affecter);
+            _affecter.Enact();
+        }
+    }
+    public void RemoveAffecter(Affecter _affecter) {
+        if (_affecter.GetType() == typeof(Effect))
+            effectList.Remove((Effect)_affecter);
+        else if (_affecter.GetType() == typeof(Trait))
+            traitList.Remove((Trait)_affecter);
+        _affecter.Deact();
+    }
+
+    //GET/SET EFFECTLIST AND TRAITLIST
+    public List<Effect> GetEffectList() {
+        return effectList;
+    }
+    public List<Trait> GetTraitList() {
+        return traitList;
+    }
 }

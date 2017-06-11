@@ -12,7 +12,7 @@ public class MoodAffecter : Affecter {
     Disgust, Anger, Intimidate, Sad
 };*/
 
-    protected override void Dewit() {
+    protected virtual void Dewit() {
     }
     
 }
