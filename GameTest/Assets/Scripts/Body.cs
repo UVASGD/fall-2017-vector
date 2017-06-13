@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Body : MonoBehaviour {
 
+    public int brawn = 5;
+    public int coordination = 5;
+
     TimeManager time; //Reference to time manager
 
     Transform bodyRender; //Reference to the body-renderer's transform
@@ -157,5 +160,13 @@ public class Body : MonoBehaviour {
     }
     public List<Trait> GetTraitList() {
         return traitList;
+    }
+
+    public int GetMoveSpeed() {
+        return 15 - coordination;
+    }
+
+    public int GetDashSpeed() {
+        return 11 - coordination;
     }
 }

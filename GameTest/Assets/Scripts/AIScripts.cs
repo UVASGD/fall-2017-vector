@@ -50,12 +50,12 @@ public class PlayerAI : AI {
                 //Debug.Log(body.GetDir());
                 //if (body.GetCurrMoveAct().name.Equals("MoveLeft") && moveKey == -1) {
                 if (moveKey == -1 && body.GetFace() == Direction.Left) {
-                    body.SetCurrMoveAct(new MoveAction("DashLeft", 1, body, Direction.Left, 3));
+                    body.SetCurrMoveAct(new MoveAction("DashLeft", body.GetDashSpeed(), body, Direction.Left, 3));  // body.GetDashSpeed used to be 1
                     dashTimer = 0f;
                 }
                 //else if (body.GetCurrMoveAct().name.Equals("MoveRight") && moveKey == 1) {
                 else if (moveKey == 1 && body.GetFace() == Direction.Right) {
-                    body.SetCurrMoveAct(new MoveAction("DashRight", 1, body, Direction.Right, 3));
+                    body.SetCurrMoveAct(new MoveAction("DashRight", body.GetDashSpeed(), body, Direction.Right, 3));
                     dashTimer = 0f;
                 }
             }
@@ -64,11 +64,11 @@ public class PlayerAI : AI {
             int moveKey = (int)Input.GetAxisRaw("Horizontal");
             if (body.GetCurrMoveAct().name == "Halt") {
                 if (moveKey == -1) {
-                    body.SetCurrMoveAct(new MoveAction("MoveLeft", 4, body, Direction.Left, 0));
+                    body.SetCurrMoveAct(new MoveAction("MoveLeft", body.GetMoveSpeed(), body, Direction.Left, 0)); // body.GetMoveSpeed used to be 4
                     dashTimer = dashTime;
                 }
                 else if (moveKey == 1) {
-                    body.SetCurrMoveAct(new MoveAction("MoveRight", 4, body, Direction.Right, 0));
+                    body.SetCurrMoveAct(new MoveAction("MoveRight", body.GetMoveSpeed(), body, Direction.Right, 0));
                     dashTimer = dashTime;
                 }
             }
