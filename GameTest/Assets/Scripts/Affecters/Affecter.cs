@@ -57,25 +57,31 @@ public class Effect : Affecter {
     bool inEffectChanged; //Dirty bit to detect change
     protected float vitality; //The strength/time left/'life' of the effect
     protected float vRate; //The inherent rate at which this effect is altered
+    protected int timer;
+    protected int freq;
 
     public virtual void Tick() {
-
-        if (!Check()) {
-            if (inEffect) targetBody.RemoveAffecterFromEffects(this);
-            else targetBody.RemoveAffecterFromTraits(this);
-            return;
-        }
-
-        if (inEffectChanged) {
-            if (inEffect)
-                targetBody.AddToEffectList(this);
-            else {
-                targetBody.AddToTraitList(this);
+        if (timer <= 0) {
+            if (!Check()) {
+                if (inEffect) targetBody.RemoveAffecterFromEffects(this);
+                else targetBody.RemoveAffecterFromTraits(this);
                 return;
             }
+
+            if (inEffectChanged) {
+                if (inEffect)
+                    targetBody.AddToEffectList(this);
+                else {
+                    targetBody.AddToTraitList(this);
+                    return;
+                }
+            }
+
+            Enact();
+            timer = freq;
         }
 
-        Enact();
+        timer--;
     }
 
     public override void Enact() {
@@ -134,10 +140,14 @@ public class Reactor {
     protected Affecter parentAffecter; //Affecter to which this reactor has been attached
     //Reactors are paired with up methods that they call on the parentAffecter
     protected Reactor[] reactants;
+    public int vitality;
 
     public Reactor(Affecter _parentAffecter) {
         parentAffecter = _parentAffecter;
+        vitality = 1;
     }
+
+    public Reactor() { }
 
     public bool FindMatches(Affecter _targetAffecter) {
         bool result = false;
@@ -169,87 +179,124 @@ public class Reactor {
 
 public class Dampening : Reactor {
     public Dampening(Affecter _parentAffecter) : base(_parentAffecter) {
+        reactants = new Reactor[] { new Dirtying(), new Drying()};
     }
+
+    public Dampening() { }
 }
 
 public class Oiling : Dampening {
     public Oiling(Affecter _parentAffecter) : base(_parentAffecter) {
+        reactants = new Reactor[] { new Watering(), new Burning() };
     }
+
+    public Oiling() { }
 }
 
 public class Watering : Dampening {
     public Watering(Affecter _parentAffecter) : base(_parentAffecter) {
+        reactants = new Reactor[] { new Oiling()};
     }
+
+    public Watering() { }
 }
 
 public class Dirtying : Reactor {
     public Dirtying(Affecter _parentAffecter) : base(_parentAffecter) {
     }
+
+    public Dirtying() { }
 }
 
 public class Drying : Reactor {
     public Drying(Affecter _parentAffecter) : base(_parentAffecter) {
     }
+
+    public Drying() { }
 }
 
 public class Heating : Reactor {
     public Heating(Affecter _parentAffecter) : base(_parentAffecter) {
     }
+
+    public Heating() { }
 }
 
 public class Chilling : Reactor {
     public Chilling(Affecter _parentAffecter) : base(_parentAffecter) {
     }
+
+    public Chilling() { }
 }
 
 public class Freezing : Reactor {
     public Freezing(Affecter _parentAffecter) : base(_parentAffecter) {
     }
+
+    public Freezing() { }
 }
 
 public class Burning : Reactor {
     public Burning(Affecter _parentAffecter) : base(_parentAffecter) {
     }
+
+    public Burning() { }
 }
 
 public class Fueling : Reactor {
     public Fueling(Affecter _parentAffecter) : base(_parentAffecter) {
     }
+
+    public Fueling() { }
 }
 
 public class Hindering : Reactor {
     public Hindering(Affecter _parentAffecter) : base(_parentAffecter) {
     }
+
+    public Hindering() { }
 }
 
 public class Freeing : Reactor {
     public Freeing(Affecter _parentAffecter) : base(_parentAffecter) {
     }
+
+    public Freeing() { }
 }
 
 public class Harming : Reactor {
     public Harming(Affecter _parentAffecter) : base(_parentAffecter) {
     }
+
+    public Harming() { }
 }
 
 public class Healing : Reactor {
     public Healing(Affecter _parentAffecter) : base(_parentAffecter) {
     }
+
+    public Healing() { }
 }
 
 public class Crushing : Reactor {
     public Crushing(Affecter _parentAffecter) : base(_parentAffecter) {
     }
+
+    public Crushing() { }
 }
 
 public class Slashing : Reactor {
     public Slashing(Affecter _parentAffecter) : base(_parentAffecter) {
     }
+
+    public Slashing() { }
 }
 
 public class Piercing : Reactor {
     public Piercing(Affecter _parentAffecter) : base(_parentAffecter) {
     }
+
+    public Piercing() { }
 }
 
 
