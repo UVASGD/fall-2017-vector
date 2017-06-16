@@ -30,7 +30,7 @@ public class Body : MonoBehaviour {
     AI mind; //The AI object that will generate actions *MUST BE SET
 
     List<Effect> effectList = new List<Effect>(); //List of Effects
-    List<Trait> traitList = new List<Trait>(); //List of Traits 
+    List<Effect> traitList = new List<Effect>(); //List of Traits 
 
     void Start() {
         time = (TimeManager)FindObjectOfType(typeof(TimeManager)); //Set Time manager
@@ -138,19 +138,13 @@ public class Body : MonoBehaviour {
 
     //ADD/REMOVE TO/FROM APPROPRIATE AFFECTER LIST
     public void AddAffecter(Affecter _affecter) {
-        if (_affecter.Check()) {
             if (_affecter.GetType() == typeof(Effect))
                 effectList.Add((Effect)_affecter);
-            else if (_affecter.GetType() == typeof(Trait))
-                traitList.Add((Trait)_affecter);
             _affecter.Enact();
-        }
     }
     public void RemoveAffecter(Affecter _affecter) {
         if (_affecter.GetType() == typeof(Effect))
             effectList.Remove((Effect)_affecter);
-        else if (_affecter.GetType() == typeof(Trait))
-            traitList.Remove((Trait)_affecter);
         _affecter.Deact();
     }
 
@@ -158,7 +152,8 @@ public class Body : MonoBehaviour {
     public List<Effect> GetEffectList() {
         return effectList;
     }
-    public List<Trait> GetTraitList() {
+
+    public List<Effect> GetTraitList() {
         return traitList;
     }
 

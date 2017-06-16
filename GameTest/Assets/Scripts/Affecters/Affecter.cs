@@ -2,10 +2,28 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public delegate float ReactorDelegate(float val);
+
 public class Affecter {
 
     protected Body targetBody;
+    List<Affecter> interactorList = new List<Affecter>();
+    List<Reactor> reactorList = new List<Reactor>();
 
+    public virtual void Check() {
+    }
+
+    public virtual void Scan() { //THIS IS THE METHOD THAT SCANS TO SEE IF ANOTHER EFFECT HAS A MATCHING REACTOR
+        foreach (Effect effect in targetBody.GetEffectList()) {
+            foreach (Reactor reactor in reactorList) {
+                if (reactor.FindMatches(effect))
+                    interactorList.Add(effect);
+            }
+        }
+
+        foreach (Effect effect in targetBody.GetTraitList()) {
+        }
+    }
 
     public virtual void Enact() {
     }
@@ -13,157 +31,158 @@ public class Affecter {
     public virtual void Deact() {
     }
 
-    public virtual bool Check() {
-        return true;
+    public List<Reactor> GetReactorList() {
+        return reactorList;
+    }
+
+    public void AddToInteractorList(Affecter _affecter) {
+        interactorList.Add(_affecter);
     }
 }
 
-public interface IIgnitor { }
+public class Effect : Affecter {
+    bool present;
+    bool combinable;
+    bool continuous;
+    float vitality;
+    float vRate;
 
-public interface IIgnitable {
-    bool Ignited(float intensity);
-    float GetFlammability();
-    float GetFlameResistance();
-    void SetIgnitor(IIgnitor ignitor);
+    public virtual void Tick() { }
 }
 
-public interface Dampener {
-    void Dampen();
-}
-
-public interface IElectrifier {
-    void Electrify();
-}
-
-public interface IConductor {
-    bool Conduct(float intensity);
-}
-
-//INSTANT AFFECTERS
-public class Instant : Affecter {
-    public override void Enact() { }
-}
-
-//public enum DamageType { Crushing, Piercing, Slashing, Burning, Freezing, Electric, Hindering, Magic};
+public class Instant : Affecter { }
 
 public class Damage : Instant {
+    DamageType damType;
+    float damQuant;
 
-    DamageType type;
-    float quant;
-
-    public Damage(DamageType _type, float _quant) {
-        type = _type;
-        quant = _quant;
-    }
-
-    public override void Enact() {
-        targetBody.Damage(type, quant);
-    }
-
-    public void SetQuant(float _quant) {
-        quant = _quant;
-    }
-    public float GetQuant() {
-        return quant;
+    public Damage(DamageType _damType, float _damQuant) {
+        damType = _damType;
+        damQuant = _damQuant;
     }
 }
-//INSTANT AFFECTERS
 
 
-//LASTING AFFECTERS
-public class Effect : Affecter {
-    protected int timer;
+public class Reactor {
+    protected Affecter parentAffecter; //Affecter to which this reactor has been attached
+    //Reactors are paired with up methods that they call on the parentAffecter
+    Reactor[] reactants;
 
-    public virtual void Tick() {
-        timer--;
-        if (timer >= 0)
-            Dewit();
-        else
-            Deact();
+    public Reactor(Affecter _parentAffecter) {
+        parentAffecter = _parentAffecter;
     }
 
-    public override void Enact() { }
-
-    public override  void Deact() { }
-
-    public virtual void Dewit() { }
-}
-
-public class Burning : Effect, IIgnitor {
-    Damage dam;
-    int freq;
-    bool fuelChange = false;
-    List<IIgnitable> fuelList = new List<IIgnitable>();
-
-    public Burning() {
-        freq = 5;
-    }
-
-    public override void Tick() {
-        timer--;
-        if (timer == 0 && fuelList.Count > 0) {
-            Dewit();
-            timer = freq;
+    public bool FindMatches(Affecter _targetAffecter) {
+        bool result = false;
+        foreach (Reactor other in _targetAffecter.GetReactorList()) {
+            foreach (Reactor own in reactants) {
+                if (other.GetType() == own.GetType()) {
+                    React(other);
+                    result = true;
+                }
+            }
         }
-        else if (fuelList.Count == 0)
-            Deact();
+        return result;
     }
 
-    public override bool Check() {
-        foreach (Effect eff in targetBody.GetEffectList())
-            if (eff.GetType() == typeof(IIgnitable))
-                AddFuel((IIgnitable)eff);
-        foreach (Trait tra in targetBody.GetTraitList())
-            if (tra.GetType() == typeof(IIgnitable))
-                AddFuel((IIgnitable)tra);
-        return fuelList.Count > 0;
+    private void React(Reactor reactant) {
+        //THIS WILL FIND THE PROPER METHODS TO RUN ACCORDING TO THE REACTANT E.G. FOR BURNING: reactant=fueling, AffectVitality(parentAffecter, someValue)
+    } 
+
+    public void AffectVitality() {
+
     }
 
-    public override void Enact() {
-        DetIntensity();
-    }
+    public void AffectVRate() {
 
-    public override void Dewit() {
-        if (fuelChange) {
-            DetIntensity();
-            fuelChange = false;
-        }
-        foreach (IIgnitable fuel in fuelList) {
-            bool shouldKeep = fuel.Ignited(dam.GetQuant());
-            if (!shouldKeep)
-                RemoveFuel(fuel);
-        }
-        targetBody.AddAffecter(dam);
-    }
-
-    void DetIntensity() {
-        float newIntensity = 0f;
-        foreach (IIgnitable fuel in fuelList)
-            if (fuel.GetFlammability() > newIntensity)
-                newIntensity = fuel.GetFlammability();
-        dam.SetQuant(newIntensity);
-    }
-
-    public void AddFuel(IIgnitable fuel) {
-        fuelList.Add(fuel);
-        fuelChange = true;
-        fuel.SetIgnitor(this);
-    }
-    public void RemoveFuel(IIgnitable fuel) {
-        fuelList.Remove(fuel);
-        fuelChange = true;
-        fuel.SetIgnitor(null);
     }
 }
 
-public class Wet : Effect { }
-//LASTING AFFECTERS
+//public enum Reaction { Dampening, Oiling, Watering, Dirtying, Drying, Burning, Fueling, Hindering, Freeing, Harming, Healing, Crushing, Slashing, Piercing};
 
-
-//TRAIT AFFECTERS
-public class Trait : Affecter {
-    public override void Enact() { }
-
-    public override void Deact() { }
+public class Dampening : Reactor {
+    public Dampening(Affecter _parentAffecter) : base(_parentAffecter) {
+    }
 }
-//TRAIT AFFECTERS
+
+public class Oiling : Dampening {
+    public Oiling(Affecter _parentAffecter) : base(_parentAffecter) {
+    }
+}
+
+public class Watering : Dampening {
+    public Watering(Affecter _parentAffecter) : base(_parentAffecter) {
+    }
+}
+
+public class Dirtying : Reactor {
+    public Dirtying(Affecter _parentAffecter) : base(_parentAffecter) {
+    }
+}
+
+public class Drying : Reactor {
+    public Drying(Affecter _parentAffecter) : base(_parentAffecter) {
+    }
+}
+
+public class Heating : Reactor {
+    public Heating(Affecter _parentAffecter) : base(_parentAffecter) {
+    }
+}
+
+public class Chilling : Reactor {
+    public Chilling(Affecter _parentAffecter) : base(_parentAffecter) {
+    }
+}
+
+public class Freezing : Reactor {
+    public Freezing(Affecter _parentAffecter) : base(_parentAffecter) {
+    }
+}
+
+public class Burning : Reactor {
+    public Burning(Affecter _parentAffecter) : base(_parentAffecter) {
+    }
+}
+
+public class Fueling : Reactor {
+    public Fueling(Affecter _parentAffecter) : base(_parentAffecter) {
+    }
+}
+
+public class Hindering : Reactor {
+    public Hindering(Affecter _parentAffecter) : base(_parentAffecter) {
+    }
+}
+
+public class Freeing : Reactor {
+    public Freeing(Affecter _parentAffecter) : base(_parentAffecter) {
+    }
+}
+
+public class Harming : Reactor {
+    public Harming(Affecter _parentAffecter) : base(_parentAffecter) {
+    }
+}
+
+public class Healing : Reactor {
+    public Healing(Affecter _parentAffecter) : base(_parentAffecter) {
+    }
+}
+
+public class Crushing : Reactor {
+    public Crushing(Affecter _parentAffecter) : base(_parentAffecter) {
+    }
+}
+
+public class Slashing : Reactor {
+    public Slashing(Affecter _parentAffecter) : base(_parentAffecter) {
+    }
+}
+
+public class Piercing : Reactor {
+    public Piercing(Affecter _parentAffecter) : base(_parentAffecter) {
+    }
+}
+
+
