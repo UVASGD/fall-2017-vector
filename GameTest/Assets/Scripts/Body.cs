@@ -153,8 +153,16 @@ public class Body : MonoBehaviour {
         return effectList;
     }
 
+    public void AddToEffectList(Effect newEffect) {
+        effectList.Add(newEffect);
+    }
+
     public List<Effect> GetTraitList() {
         return traitList;
+    }
+
+    public void AddToTraitList(Effect newEffect) {
+        traitList.Add(newEffect);
     }
 
     public int GetMoveSpeed() {

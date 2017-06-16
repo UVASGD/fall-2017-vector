@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public delegate float ReactorDelegate(float val);
@@ -7,29 +8,35 @@ public delegate float ReactorDelegate(float val);
 public class Affecter {
 
     protected Body targetBody;
-    List<Affecter> interactorList = new List<Affecter>();
-    List<Reactor> reactorList = new List<Reactor>();
+    protected List<Affecter> interactorList = new List<Affecter>();
+    protected List<Reactor> reactorList = new List<Reactor>();
+    protected bool combinable;
 
-    public virtual void Check() {
+    public virtual bool Check() {
+        return true;
     }
 
     public virtual void Scan() { //THIS IS THE METHOD THAT SCANS TO SEE IF ANOTHER EFFECT HAS A MATCHING REACTOR
-        foreach (Effect effect in targetBody.GetEffectList()) {
-            foreach (Reactor reactor in reactorList) {
-                if (reactor.FindMatches(effect))
-                    interactorList.Add(effect);
-            }
-        }
-
-        foreach (Effect effect in targetBody.GetTraitList()) {
-        }
+        List<Effect> allLists = (List<Effect>)targetBody.GetEffectList().Concat(targetBody.GetTraitList());
+        foreach (Effect effect in allLists)
+            if (combinable && effect.GetType() == this.GetType())
+                effect.Combine((Effect)this);
+            else 
+                foreach (Reactor reactor in reactorList)
+                    if (reactor.FindMatches(effect))
+                        interactorList.Add(effect);
     }
 
     public virtual void Enact() {
+        foreach (Affecter interactor in interactorList)
+            foreach (Reactor reactor in reactorList)
+                reactor.FindMatches(interactor);
     }
 
     public virtual void Deact() {
     }
+
+    public virtual void Combine(Effect combiner) { }
 
     public List<Reactor> GetReactorList() {
         return reactorList;
@@ -38,16 +45,59 @@ public class Affecter {
     public void AddToInteractorList(Affecter _affecter) {
         interactorList.Add(_affecter);
     }
+
+    public List<Affecter> GetInteractorList() {
+        return interactorList;
+    }
 }
 
 public class Effect : Affecter {
-    bool present;
-    bool combinable;
-    bool continuous;
-    float vitality;
-    float vRate;
+    protected bool present; //Whether or not this effect is still 'alive'
+    protected bool inEffect; //Whether or not this effect should actively tick
+    bool inEffectChanged; //Dirty bit to detect change
+    protected float vitality; //The strength/time left/'life' of the effect
+    protected float vRate; //The inherent rate at which this effect is altered
 
-    public virtual void Tick() { }
+    public virtual void Tick() {
+
+        if (!Check()) {
+            Deact();
+            return;
+        }
+
+        if (inEffectChanged) {
+            if (inEffect)
+                targetBody.AddToEffectList(this);
+            else {
+                targetBody.AddToTraitList(this);
+                return;
+            }
+        }
+
+        Enact();
+    }
+
+    public override void Enact() {
+        base.Enact();
+        vitality += vRate;
+    }
+
+    public override bool Check() {
+        if (vRate != 0 || interactorList.Count > 0) {
+            if (!inEffect) { inEffectChanged = true; }
+            inEffect = true;
+        }
+        else {
+            if (inEffect) { inEffectChanged = true; }
+            inEffect = false;
+        }
+
+        if (vitality <= 0)
+            present = false;
+        else present = true;
+
+        return present;
+    }
 }
 
 public class Instant : Affecter { }
@@ -85,7 +135,7 @@ public class Reactor {
         return result;
     }
 
-    private void React(Reactor reactant) {
+    protected virtual void React(Reactor reactant) {
         //THIS WILL FIND THE PROPER METHODS TO RUN ACCORDING TO THE REACTANT E.G. FOR BURNING: reactant=fueling, AffectVitality(parentAffecter, someValue)
     } 
 
