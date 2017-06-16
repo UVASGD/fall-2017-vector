@@ -142,9 +142,15 @@ public class Body : MonoBehaviour {
                 effectList.Add((Effect)_affecter);
             _affecter.Enact();
     }
-    public void RemoveAffecter(Affecter _affecter) {
+    public void RemoveAffecterFromEffects(Affecter _affecter) {
         if (_affecter.GetType() == typeof(Effect))
             effectList.Remove((Effect)_affecter);
+        _affecter.Deact();
+    }
+
+    public void RemoveAffecterFromTraits(Affecter _affecter) {
+        if (_affecter.GetType() == typeof(Effect))
+            traitList.Remove((Effect)_affecter);
         _affecter.Deact();
     }
 

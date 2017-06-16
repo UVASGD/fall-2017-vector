@@ -61,7 +61,8 @@ public class Effect : Affecter {
     public virtual void Tick() {
 
         if (!Check()) {
-            Deact();
+            if (inEffect) targetBody.RemoveAffecterFromEffects(this);
+            else targetBody.RemoveAffecterFromTraits(this);
             return;
         }
 
@@ -98,6 +99,22 @@ public class Effect : Affecter {
 
         return present;
     }
+
+    public float GetVitality() {
+        return vitality;
+    }
+
+    public void SetVitality(float _vitality) {
+        vitality = _vitality;
+    }
+
+    public float GetVRate() {
+        return vRate;
+    }
+
+    public void SetVRate(float _vRate) {
+        vRate = _vRate;
+    }
 }
 
 public class Instant : Affecter { }
@@ -116,7 +133,7 @@ public class Damage : Instant {
 public class Reactor {
     protected Affecter parentAffecter; //Affecter to which this reactor has been attached
     //Reactors are paired with up methods that they call on the parentAffecter
-    Reactor[] reactants;
+    protected Reactor[] reactants;
 
     public Reactor(Affecter _parentAffecter) {
         parentAffecter = _parentAffecter;
@@ -139,11 +156,11 @@ public class Reactor {
         //THIS WILL FIND THE PROPER METHODS TO RUN ACCORDING TO THE REACTANT E.G. FOR BURNING: reactant=fueling, AffectVitality(parentAffecter, someValue)
     } 
 
-    public void AffectVitality() {
+    public virtual void AffectVitality() {
 
     }
 
-    public void AffectVRate() {
+    public virtual void AffectVRate() {
 
     }
 }
