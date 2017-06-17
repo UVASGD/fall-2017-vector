@@ -100,7 +100,7 @@ public class Effect : Affecter {
         if (timer <= 0) {
             turnVitality = vitality;
             foreach (Reactor reactor in reactorList)
-                reactor.FirstCheck();
+                reactor.Check();
             if (!Check()) {
                 if (inEffect) targetBody.RemoveAffecterFromEffects(this);
                 else targetBody.RemoveAffecterFromTraits(this);
@@ -187,6 +187,7 @@ public class Reactor {
     protected Reactor[] reactants;
     public float vitality;
     public float turnVitality;
+    float lastParentVitality;
     protected float linkMod;
     protected bool immortal;
     protected bool vital;
@@ -194,6 +195,8 @@ public class Reactor {
     public Reactor(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) {
         parentAffecter = _parentAffecter;
         vitality = _vitality;
+        turnVitality = _vitality;
+        lastParentVitality = parentAffecter.GetTurnVitality();
         linkMod = _linkMod;
         immortal = _immortal;
         vital = _vital;
@@ -201,18 +204,14 @@ public class Reactor {
 
     public Reactor() { }
 
-    public virtual void FirstCheck() {
-        turnVitality = vitality;
-    }
-
     public virtual void Check() {
         if (linkMod != Mathf.NegativeInfinity) {
             if (linkMod == Mathf.Infinity)
                 vitality = parentAffecter.GetTurnVitality();
-            else vitality = parentAffecter.GetTurnVitality() * linkMod;
+            else vitality += (parentAffecter.GetTurnVitality() - lastParentVitality)* linkMod;
         }
-
         turnVitality = vitality;
+        lastParentVitality = parentAffecter.GetTurnVitality();
     }
 
     public virtual void Deact() {
@@ -293,8 +292,8 @@ public class Oiling : Reactor {
 
     public Oiling() { }
 
-    public override void FirstCheck() {
-        base.FirstCheck();
+    public override void Check() {
+        base.Check();
         if (foundFire == false)
             onFire = false;
         foundFire = false;
@@ -448,8 +447,8 @@ public class Burning : Reactor {
 
     public Burning() { }
 
-    public override void FirstCheck() {
-        base.FirstCheck();
+    public override void Check() {
+        base.Check();
         if (foundOil == false) 
             oilFire = false;
         foundOil = false;
