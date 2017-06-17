@@ -11,6 +11,7 @@ public class Affecter {
     protected List<Affecter> interactorList = new List<Affecter>();
     protected List<Reactor> reactorList = new List<Reactor>();
     protected bool combinable;
+    protected float vitality; //The strength/time left/'life' of the effect
 
     public virtual bool Check() {
         return true;
@@ -27,10 +28,19 @@ public class Affecter {
                         interactorList.Add(effect);
     }
 
-    public virtual void Enact() {
-        foreach (Affecter interactor in interactorList)
-            foreach (Reactor reactor in reactorList)
-                reactor.FindMatches(interactor);
+    public virtual void Dewit() {
+        foreach (Affecter interactor in interactorList) {
+            if (interactor.GetType() == typeof(Effect) && !((Effect)interactor).IsPresent()) {
+                interactorList.Remove(interactor);
+                continue;
+            }
+            foreach (Reactor reactor in reactorList) {
+                if (!reactor.IsImmortal() && reactor.vitality <= 0)
+                    reactor.Deact();
+                else
+                    reactor.FindMatches(interactor);
+            }
+        }
     }
 
     public virtual void Deact() {
@@ -38,8 +48,24 @@ public class Affecter {
 
     public virtual void Combine(Effect combiner) { }
 
+    public float GetVitality() {
+        return vitality;
+    }
+
+    public void SetVitality(float _vitality) {
+        vitality = _vitality;
+    }
+
+    public void AffectVitality(float _mod) {
+        vitality += _mod;
+    }
+
     public List<Reactor> GetReactorList() {
         return reactorList;
+    }
+
+    public void RemoveFromReactorList(Reactor reactor) {
+        reactorList.Remove(reactor);
     }
 
     public void AddToInteractorList(Affecter _affecter) {
@@ -55,7 +81,6 @@ public class Effect : Affecter {
     protected bool present; //Whether or not this effect is still 'alive'
     protected bool inEffect; //Whether or not this effect should actively tick
     bool inEffectChanged; //Dirty bit to detect change
-    protected float vitality; //The strength/time left/'life' of the effect
     protected float vRate; //The inherent rate at which this effect is altered
     protected int timer;
     protected int freq;
@@ -77,15 +102,15 @@ public class Effect : Affecter {
                 }
             }
 
-            Enact();
+            Dewit();
             timer = freq;
         }
 
         timer--;
     }
 
-    public override void Enact() {
-        base.Enact();
+    public override void Dewit() {
+        base.Dewit();
         vitality += vRate;
     }
 
@@ -106,20 +131,16 @@ public class Effect : Affecter {
         return present;
     }
 
-    public float GetVitality() {
-        return vitality;
-    }
-
-    public void SetVitality(float _vitality) {
-        vitality = _vitality;
-    }
-
     public float GetVRate() {
         return vRate;
     }
 
     public void SetVRate(float _vRate) {
         vRate = _vRate;
+    }
+
+    public bool IsPresent() {
+        return present;
     }
 }
 
@@ -139,15 +160,35 @@ public class Damage : Instant {
 public class Reactor {
     protected Affecter parentAffecter; //Affecter to which this reactor has been attached
     //Reactors are paired with up methods that they call on the parentAffecter
+    /* 
+    Reactor goes to 0, nothing changes - Closed wound can reopen, therefore damage reactor remains : linkMod = null, immortal = true, vital = true/false
+    Reactor goes to 0, delete Reactor - Chilling reactor on water can be heated, will delete self without altering Parent : linkMod = null, immortal = false, vital = false
+    Reactor goes to 0, delete ParentAffecter - Ties of armor count as fueling. When they get destroyed, the armor falls apart : linkMod = null, immortal = false, vital = true
+    Reactor changed, Parent changed by some amt, Reactor can die before Parent - Dirt-caked stone armor, reduced dirt would affect effectiveness : linkMod = +, immortal = false, vital = false
+    Reactor changed, Reactor has same health as Parent - Heating of fire gets reduced by Chilling; affects fire's vitality : linkMod = Mathf.Infinity, immortal = false, vital = true 
+    float linkMod - Proportional modifier for linked damage
+    bool immortal - Can this reactor be destroyed
+    bool vital - Will this destroy the ParentAffecter
+    */
     protected Reactor[] reactants;
-    public int vitality;
+    public float vitality;
+    protected float linkMod;
+    protected bool immortal;
+    protected bool vital;
 
-    public Reactor(Affecter _parentAffecter) {
+    public Reactor(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) {
         parentAffecter = _parentAffecter;
-        vitality = 1;
+        vitality = _vitality;
+        linkMod = _linkMod;
+        immortal = _immortal;
+        vital = _vital;
     }
 
     public Reactor() { }
+
+    public virtual void Deact() {
+        parentAffecter.RemoveFromReactorList(this);
+    }
 
     public bool FindMatches(Affecter _targetAffecter) {
         bool result = false;
@@ -163,11 +204,16 @@ public class Reactor {
     }
 
     protected virtual void React(Reactor reactant) {
-        //THIS WILL FIND THE PROPER METHODS TO RUN ACCORDING TO THE REACTANT E.G. FOR BURNING: reactant=fueling, AffectVitality(parentAffecter, someValue)
-    } 
+        //THIS WILL FIND THE PROPER METHODS TO RUN ACCORDING TO THE REACTANT E.G. FOR BURNING: reactant=fueling, AffectVitality(parentAffecter, bool _lifeLinksomeValue)
+    }
 
-    public virtual void AffectVitality() {
+    public bool IsImmortal() {
+        return immortal;
+    }
 
+    public virtual void AffectVitality(float _delta) {
+        if (linkMod == Mathf.Infinity)
+            parentAffecter.AffectVitality(_delta);
     }
 
     public virtual void AffectVRate() {
@@ -178,15 +224,26 @@ public class Reactor {
 //public enum Reaction { Dampening, Oiling, Watering, Dirtying, Drying, Burning, Fueling, Hindering, Freeing, Harming, Healing, Crushing, Slashing, Piercing};
 
 public class Dampening : Reactor {
-    public Dampening(Affecter _parentAffecter) : base(_parentAffecter) {
+    public Dampening(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) : 
+        base(_parentAffecter, _vitality, _linkMod, _immortal, _vital) {
         reactants = new Reactor[] { new Dirtying(), new Drying()};
     }
 
     public Dampening() { }
+
+    protected override void React(Reactor reactant) {
+        if (reactant.GetType() == typeof(Drying))
+            AffectVitality(-reactant.vitality);
+    }
+
+    protected void DryingReact(float reactantVit) {
+
+    }
 }
 
 public class Oiling : Dampening {
-    public Oiling(Affecter _parentAffecter) : base(_parentAffecter) {
+    public Oiling(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) : 
+        base(_parentAffecter, _vitality, _linkMod, _immortal, _vital) {
         reactants = new Reactor[] { new Watering(), new Burning() };
     }
 
@@ -194,7 +251,8 @@ public class Oiling : Dampening {
 }
 
 public class Watering : Dampening {
-    public Watering(Affecter _parentAffecter) : base(_parentAffecter) {
+    public Watering(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) : 
+        base(_parentAffecter, _vitality, _linkMod, _immortal, _vital) {
         reactants = new Reactor[] { new Oiling()};
     }
 
@@ -202,98 +260,144 @@ public class Watering : Dampening {
 }
 
 public class Dirtying : Reactor {
-    public Dirtying(Affecter _parentAffecter) : base(_parentAffecter) {
+    public Dirtying(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) :
+        base(_parentAffecter, _vitality, _linkMod, _immortal, _vital) {
+        reactants = new Reactor[] { new Burning(), new Dampening(), new Winding()};
     }
 
     public Dirtying() { }
 }
 
+public class Winding : Reactor {
+    public Winding(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) :
+        base(_parentAffecter, _vitality, _linkMod, _immortal, _vital) {
+        reactants = new Reactor[] { new Burning(), new Dirtying(), new Puny()};
+    }
+
+    public Winding() { }
+}
+
+public class Puny : Reactor {
+    public Puny(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) :
+        base(_parentAffecter, _vitality, _linkMod, _immortal, _vital) {
+        reactants = new Reactor[] { new Winding()};
+    }
+
+    public Puny() { }
+}
+
 public class Drying : Reactor {
-    public Drying(Affecter _parentAffecter) : base(_parentAffecter) {
+    public Drying(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) :
+        base(_parentAffecter, _vitality, _linkMod, _immortal, _vital) {
+        reactants = new Reactor[] { new Dampening()};
     }
 
     public Drying() { }
 }
 
 public class Heating : Reactor {
-    public Heating(Affecter _parentAffecter) : base(_parentAffecter) {
+    public Heating(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) :
+        base(_parentAffecter, _vitality, _linkMod, _immortal, _vital) {
+        reactants = new Reactor[] { new Chilling(), new Freezing()};
     }
 
     public Heating() { }
 }
 
 public class Chilling : Reactor {
-    public Chilling(Affecter _parentAffecter) : base(_parentAffecter) {
+    public Chilling(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) :
+        base(_parentAffecter, _vitality, _linkMod, _immortal, _vital) {
+        reactants = new Reactor[] { new Heating(), new Watering()};
     }
 
     public Chilling() { }
 }
 
 public class Freezing : Reactor {
-    public Freezing(Affecter _parentAffecter) : base(_parentAffecter) {
+    public Freezing(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) :
+        base(_parentAffecter, _vitality, _linkMod, _immortal, _vital) {
+        reactants = new Reactor[] { new Heating()};
     }
 
     public Freezing() { }
 }
 
 public class Burning : Reactor {
-    public Burning(Affecter _parentAffecter) : base(_parentAffecter) {
+    public Burning(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) :
+        base(_parentAffecter, _vitality, _linkMod, _immortal, _vital) {
+        reactants = new Reactor[] { new Fueling(), new Oiling(), new Winding(), new Dirtying()};
     }
 
     public Burning() { }
 }
 
 public class Fueling : Reactor {
-    public Fueling(Affecter _parentAffecter) : base(_parentAffecter) {
+    public Fueling(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) :
+        base(_parentAffecter, _vitality, _linkMod, _immortal, _vital) {
+        reactants = new Reactor[] { new Burning()};
     }
 
     public Fueling() { }
 }
 
 public class Hindering : Reactor {
-    public Hindering(Affecter _parentAffecter) : base(_parentAffecter) {
+    public Hindering(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) :
+        base(_parentAffecter, _vitality, _linkMod, _immortal, _vital) {
+        reactants = new Reactor[] { new Freeing()};
     }
 
     public Hindering() { }
 }
 
 public class Freeing : Reactor {
-    public Freeing(Affecter _parentAffecter) : base(_parentAffecter) {
+    public Freeing(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) :
+        base(_parentAffecter, _vitality, _linkMod, _immortal, _vital) {
+        reactants = new Reactor[] { new Hindering()};
     }
 
     public Freeing() { }
 }
 
 public class Harming : Reactor {
-    public Harming(Affecter _parentAffecter) : base(_parentAffecter) {
+    public Harming(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) :
+        base(_parentAffecter, _vitality, _linkMod, _immortal, _vital) {
+        reactants = new Reactor[] { new Healing()};
     }
 
     public Harming() { }
 }
 
 public class Healing : Reactor {
-    public Healing(Affecter _parentAffecter) : base(_parentAffecter) {
+    public Healing(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) :
+        base(_parentAffecter, _vitality, _linkMod, _immortal, _vital) {
+        reactants = new Reactor[] { new Harming()};
     }
 
     public Healing() { }
 }
 
 public class Crushing : Reactor {
-    public Crushing(Affecter _parentAffecter) : base(_parentAffecter) {
+    public Crushing(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) :
+        base(_parentAffecter, _vitality, _linkMod, _immortal, _vital) {
+        reactants = new Reactor[] { };
     }
 
     public Crushing() { }
 }
 
 public class Slashing : Reactor {
-    public Slashing(Affecter _parentAffecter) : base(_parentAffecter) {
+    public Slashing(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) :
+        base(_parentAffecter, _vitality, _linkMod, _immortal, _vital) {
+        reactants = new Reactor[] { };
     }
 
     public Slashing() { }
 }
 
 public class Piercing : Reactor {
-    public Piercing(Affecter _parentAffecter) : base(_parentAffecter) {
+    public Piercing(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) :
+        base(_parentAffecter, _vitality, _linkMod, _immortal, _vital) {
+        reactants = new Reactor[] { };
     }
 
     public Piercing() { }
