@@ -314,7 +314,7 @@ public class Oiling : Reactor {
 public class Watering : Reactor {
     public Watering(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) : 
         base(_parentAffecter, _vitality, _linkMod, _immortal, _vital) {
-        reactants = new Reactor[] { new Oiling(), new Chilling};
+        reactants = new Reactor[] { new Oiling(), new Chilling()};
     }
 
     public Watering() { }
@@ -390,7 +390,6 @@ public class Drying : Reactor {
             else AffectVitality(reactant.turnVitality / 4);
         }
     }
-}
 }
 
 public class Heating : Reactor {
