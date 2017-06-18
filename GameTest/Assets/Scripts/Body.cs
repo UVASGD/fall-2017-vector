@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Body : MonoBehaviour {
@@ -29,8 +30,8 @@ public class Body : MonoBehaviour {
 
     AI mind; //The AI object that will generate actions *MUST BE SET
 
-    List<Effect> effectList = new List<Effect>(); //List of Effects
-    List<Effect> traitList = new List<Effect>(); //List of Traits 
+    List<Affecter> affecterList = new List<Affecter>(); //List of Affecters
+    List<Affecter> traitList = new List<Affecter>(); //List of Traits 
 
     void Start() {
         time = (TimeManager)FindObjectOfType(typeof(TimeManager)); //Set Time manager
@@ -63,7 +64,11 @@ public class Body : MonoBehaviour {
 
     //TICK FUNCTION
     void Tick() {
-        //Debug.Log("dir is: " + dir);
+        for (int i = 0; i < affecterList.Count; i++) {
+            Affecter affecter = affecterList.ElementAt(i);
+            //Debug.Log("EEEEE");
+            affecter.Tick();
+        }
         mind.Tick();
         currMoveAct.Tick();
         currAct.Tick();
@@ -138,37 +143,34 @@ public class Body : MonoBehaviour {
 
     //ADD/REMOVE TO/FROM APPROPRIATE AFFECTER LIST
     public void AddAffecter(Affecter _affecter) {
-            if (_affecter.GetType() == typeof(Effect))
-                effectList.Add((Effect)_affecter);
-            _affecter.Enact();
+        affecterList.Add(_affecter);
+        _affecter.Enact();
     }
-    public void RemoveAffecterFromEffects(Affecter _affecter) {
-        if (_affecter.GetType() == typeof(Effect))
-            effectList.Remove((Effect)_affecter);
+    public void RemoveAffecterFromAffecters(Affecter _affecter) {
+        affecterList.Remove(_affecter);
         _affecter.Deact();
     }
 
     public void RemoveAffecterFromTraits(Affecter _affecter) {
-        if (_affecter.GetType() == typeof(Effect))
-            traitList.Remove((Effect)_affecter);
+        traitList.Remove(_affecter);
         _affecter.Deact();
     }
 
     //GET/SET EFFECTLIST AND TRAITLIST
-    public List<Effect> GetEffectList() {
-        return effectList;
+    public List<Affecter> GetAffecterList() {
+        return affecterList;
     }
 
-    public void AddToEffectList(Effect newEffect) {
-        effectList.Add(newEffect);
+    public void AddToAffecterList(Affecter newAffecter) {
+        affecterList.Add(newAffecter);
     }
 
-    public List<Effect> GetTraitList() {
+    public List<Affecter> GetTraitList() {
         return traitList;
     }
 
-    public void AddToTraitList(Effect newEffect) {
-        traitList.Add(newEffect);
+    public void AddToTraitList(Affecter newAffecter) {
+        traitList.Add(newAffecter);
     }
 
     public int GetMoveSpeed() {

@@ -110,6 +110,10 @@ Disgust, Anger, Intimidate, Sad
         }
 
         PersonCreator player = new PersonCreator("RPlayer", "Player", "Player", 0.5f, 1);
+        Body playerBody = (Body)FindObjectOfType(typeof(Body));
+        playerBody.AddAffecter(new Fire(playerBody, 12f));
+        //playerBody.AddAffecter(new Affecter(playerBody, 10f, -1f));
+        //playerBody.AddAffecter(new Affecter(playerBody, 20f, -1f));
         //Person innkeeper = new Person("RInnkeeper", "Innkeeper", "Innkeeper", -6.5f, 1, "InnkeeperScript");
 
         DontDestroyOnLoad(gameObject);

@@ -7,58 +7,126 @@ public delegate float ReactorDelegate(float val);
 
 public class Affecter {
 
-    protected Body targetBody;
-    protected List<Affecter> interactorList = new List<Affecter>();
-    protected List<Reactor> reactorList = new List<Reactor>();
-    protected bool combinable;
-    protected float turnVitality;
-    protected float vitality; //The strength/time left/'life' of the effect
-    protected bool present; //Whether or not this effect is still 'alive'
+    protected Body targetBody; //Body to which this affecter is attached
+    protected List<Affecter> interactorList = new List<Affecter>(); //The list of affecters with which the affecter interacts
+    protected List<Reactor> reactorList = new List<Reactor>(); //
+    protected bool combinable; //Whether this affecter will combine with similar affecters
+    protected float turnVitality; //The vitality with which other affecters interact
+    protected float vitality; //The strength/time left/'life' of the affecter
+    protected bool present; //Whether or not this affecter is still 'alive'
+    protected bool inAffecter; //Whether or not this affecter should actively tick
+    bool inAffecterChanged; //Dirty bit to detect change
+    protected float vRate; //The inherent rate at which this affecter is altered
+    protected int timer; //The timer that designates when to activate
+    protected int freq; //The frequency at which the timer goes off
 
-    public virtual bool Check() {
-        return true;
+    public Affecter(Body _targetBody, float _vitality, float _vRate, int _freq = 5) {
+        targetBody = _targetBody;
+        vitality = _vitality;
+        turnVitality = _vitality;
+        combinable = false;
+        present = true;
+        inAffecter = true;
+        inAffecterChanged = false;
+        vRate = _vRate;
+        timer = _freq;
+        freq = _freq;
+    }
+
+    public virtual void Tick() {
+        if (timer <= 0) { //WHEN THE AFFECTER IS READY TO INTERACT WITH OTHER AFFECTERS
+            turnVitality = vitality; //THE VITALITY WITH WHICH OTHER AFFECTERS ARE AFFECTED
+            for (int i = 0; i < reactorList.Count; i++) {  //THIS WILL ADJUST THE VITALITY OF EACH REACTOR AT THE START OF EACH WAVE OF AFFECTER INTERACTIONS
+                Reactor reactor = reactorList.ElementAt(i);  //THIS WILL ADJUST THE VITALITY OF EACH REACTOR AT THE START OF EACH WAVE OF AFFECTER INTERACTIONS
+                reactor.Check();  //THIS WILL ADJUST THE VITALITY OF EACH REACTOR AT THE START OF EACH WAVE OF AFFECTER INTERACTIONS
+            }
+            if (!Check()) { //IF THE AFFECTER IS DEAD
+                if (inAffecter) targetBody.RemoveAffecterFromAffecters(this); //IF IT'S IN THE AFFECTERLIST, DELETE IT THENCE
+                else targetBody.RemoveAffecterFromTraits(this); //IF IT'S IN THE TRAITLIST, DELETE IT THENCE
+                Deact(); //DELETE THE AFFECTER
+                return; //STOP TICKING
+            }
+            if (inAffecterChanged) { //IF THE PLACE NEEDS TO BE SWAPPED
+                inAffecterChanged = false; //RESET THE DIRTY BIT
+                if (inAffecter) {//IF IT OUGHT TO BE IN THE AFFECTER LIST
+                    targetBody.AddToAffecterList(this); //ADD TO AFFECTER LIST
+                    targetBody.RemoveAffecterFromTraits(this);
+                }
+                else { //IF IT OUGHT TO BE IN THE TRAITLIST
+                    targetBody.AddToTraitList(this); //ADD TO TRAITLIST
+                    targetBody.RemoveAffecterFromAffecters(this);
+                    return; //THE GOYIM KNOW; SHUT IT DOWN; STOP TICKING
+                }
+            }
+            Dewit(); //PERFORM ITS FUNCTION AND INTERACT WITH OTHER AFFECTERS
+            timer = freq; //RESET TIMER
+        }
+        timer--; //DECREASE TIMER
+    }
+
+    public virtual bool Check() { //CHECKS TO SEE IF THE AFFECTER IS STILL ALIVE/PUTS IT IN THE PROPER LIST
+        if (vRate != 0 || interactorList.Count > 0) { //IF THE AFFECTER INHERENTLY CHANGES OR NEEDS TO INTERACT WITH AFFECTERS IN THE INTERACTOR LIST
+            if (!inAffecter) { inAffecterChanged = true; } //IF THE AFFECTER ISN'T ALREADY BEING ACTIVELY TICKED
+            inAffecter = true; //BETTER FIX THAT
+        }
+        else { //IF THE AFFECTER IS NOT INHERENTLY CHANGING AND THE INTERACTOR LIST IS EMPTY
+            if (inAffecter) { inAffecterChanged = true; } //IF THE AFFECTER IS ACTIVELY BEING TICKED
+            inAffecter = false; //OOFA FIX THAT
+        }
+        if (vitality <= 0 || !present) //IF THE AFFECTER IS DEAD
+            present = false; //SET IT TO INACTIVE
+        return present; //RETURN WHETHER OR NOT IT'S STILL ALIVE
     }
 
     public virtual void Scan() { //THIS IS THE METHOD THAT SCANS TO SEE IF ANOTHER EFFECT HAS A MATCHING REACTOR
-        List<Effect> allLists = (List<Effect>)targetBody.GetEffectList().Concat(targetBody.GetTraitList());
-        foreach (Effect effect in allLists)
-            if (combinable && effect.GetType() == this.GetType())
-                effect.Combine((Effect)this);
-            else
-                foreach (Reactor reactor in reactorList) {
-                    reactor.Check();
-                    if (reactor.FindMatches(effect))
-                        interactorList.Add(effect);
+        List<Affecter> allLists = (targetBody.GetAffecterList().Concat(targetBody.GetTraitList())).ToList(); //COMBINES EFFECTLIST AND TRAITLIST
+        for (int i = 0; i < allLists.Count; i++) { //FOR EACH AFFECTER IN THE COMBINED LIST
+            Affecter affecter = allLists.ElementAt(i); //FOR EACH AFFECTER IN THE COMBINED LIST
+            if (combinable && affecter.GetType() == GetType()) //CHECK WHETHER AFFECTERS SHOULD COMBINE
+                affecter.Combine(this); //COMBINE AFFECTERS
+            else //IF THEY SHOULDN'T COMBINE
+                for (int j = 0; j < reactorList.Count; j++) { //FOR EACH REACTOR IN THE REACTOR LIST
+                    Reactor reactor = reactorList.ElementAt(j); //FOR EACH REACTOR IN THE REACTOR LIST
+                    if (reactor.FindMatches(affecter) && (!interactorList.Contains(affecter))) //IF THE AFFECTER FROM THE COMBINED HAS A MATCHING REACTOR
+                        interactorList.Add(affecter); //ADD THAT AFFECTER TO THE INTERACTOR LIST
                 }
+        }
     }
 
-    public virtual void Enact() {
-        Dewit();
+    public virtual void Enact() { //THIS IS WHAT THE AFFECTER WILL PERFORM WHEN FIRST ADDED
+        Scan(); //SCAN TO UPDATE INTERACTOR LIST
     }
 
-    public virtual void Dewit() {
-        foreach (Affecter interactor in interactorList) {
-            if (interactor.GetType() == typeof(Effect) && !((Effect)interactor).IsPresent()) {
-                interactorList.Remove(interactor);
-                continue;
+    public virtual void Dewit() { //THIS IS WHAT THE AFFECTER WILL PERFORM EVERY TURN, IF ACTIVE
+        vitality += vRate; //UPDATE VITALITY
+        Debug.Log(vitality);
+        for (int i = 0; i < interactorList.Count; i++) { //FOR EACH INTERACTOR IN THE LIST
+            Affecter interactor = interactorList.ElementAt(i); //FOR EACH INTERACTOR IN THE LIST
+            if (!(interactor).IsPresent()) { //IF THE INTERACTOR ISN'T ALIVE
+                interactorList.Remove(interactor);  //DELET THIS
+                continue; //IGNORE THE REST OF THE POTENTIAL INTERACTION WITH THIS INTERACTOR
             }
-            foreach (Reactor reactor in reactorList) {
-                if (reactor.vitality <= 0)
-                    if (!reactor.IsImmortal()) {
-                        reactor.Deact();
-                        if (reactor.IsVital())
-                            present = false;
+            for (int j = 0; j < reactorList.Count; j++) { //FOR EACH REACTOR IN THE REACTOR LIST
+                Reactor reactor = reactorList.ElementAt(j); //FOR EACH REACTOR IN THE REACTOR LIST
+                if (reactor.vitality <= 0) //IF THE REACTOR IS DEAD
+                    if (!reactor.IsImmortal()) { //LIKE... DEAD
+                        reactor.Deact(); //DELETE REACTOR
+                        if (reactor.IsVital()) {//IF THE REACTOR IS VITAL
+                            present = false; //DESTROY THE AFFECTER TO WHICH THE REACTOR IS ATTACHED
+                            return;
+                        }
                     }
-                    else
-                        reactor.FindMatches(interactor);
+                    else //IF THE REACTOR IS STILL ALIVE
+                        reactor.FindMatches(interactor); //HANDLE ANY INTERACTIONS IT MIGHT HAVE WITH THE INTERACTOR
             }
         }
     }
 
     public virtual void Deact() {
+
     }
 
-    public virtual void Combine(Effect combiner) { }
+    public virtual void Combine(Affecter combiner) { }
 
     public float GetTurnVitality() {
         return turnVitality;
@@ -70,6 +138,18 @@ public class Affecter {
 
     public void AffectVitality(float _mod) {
         vitality += _mod;
+    }
+
+    public float GetVRate() {
+        return vRate;
+    }
+
+    public void SetVRate(float _vRate) {
+        vRate = _vRate;
+    }
+
+    public bool IsPresent() {
+        return present;
     }
 
     public List<Reactor> GetReactorList() {
@@ -89,100 +169,27 @@ public class Affecter {
     }
 }
 
-public class Effect : Affecter {
-    protected bool inEffect; //Whether or not this effect should actively tick
-    bool inEffectChanged; //Dirty bit to detect change
-    protected float vRate; //The inherent rate at which this effect is altered
-    protected int timer;
-    protected int freq;
+//Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false
 
-    public virtual void Tick() {
-        if (timer <= 0) {
-            turnVitality = vitality;
-            foreach (Reactor reactor in reactorList)
-                reactor.Check();
-            if (!Check()) {
-                if (inEffect) targetBody.RemoveAffecterFromEffects(this);
-                else targetBody.RemoveAffecterFromTraits(this);
-                return;
-            }
-
-            if (inEffectChanged) {
-                if (inEffect)
-                    targetBody.AddToEffectList(this);
-                else {
-                    targetBody.AddToTraitList(this);
-                    return;
-                }
-            }
-
-            Dewit();
-            timer = freq;
-        }
-
-        timer--;
-    }
-
-    public override void Dewit() {
-        base.Dewit();
-        vitality += vRate;
-    }
-
-    public override bool Check() {
-        if (vRate != 0 || interactorList.Count > 0) {
-            if (!inEffect) { inEffectChanged = true; }
-            inEffect = true;
-        }
-        else {
-            if (inEffect) { inEffectChanged = true; }
-            inEffect = false;
-        }
-
-        if (vitality <= 0)
-            present = false;
-        else present = true;
-
-        return present;
-    }
-
-    public float GetVRate() {
-        return vRate;
-    }
-
-    public void SetVRate(float _vRate) {
-        vRate = _vRate;
-    }
-
-    public bool IsPresent() {
-        return present;
+public class Fire : Affecter {
+    public Fire(Body _targetBody, float _vitality, float _vRate = -1f) : base(_targetBody, _vitality, _vRate) {
+        reactorList = new List<Reactor> { new Burning(this, _vitality, Mathf.Infinity, false, true),
+                                          new Drying(this, _vitality, Mathf.Infinity, false, true),
+                                          new Heating(this, _vitality, Mathf.Infinity, false, true)};
     }
 }
 
-public class Instant : Affecter { }
-
-public class Damage : Instant {
-    DamageType damType;
-    float damQuant;
-
-    public Damage(DamageType _damType, float _damQuant) {
-        damType = _damType;
-        damQuant = _damQuant;
-    }
-}
-
-
+/* 
+Reactor goes to 0, nothing changes - Closed wound can reopen, therefore damage reactor remains : linkMod = null, immortal = true, vital = true/false
+Reactor goes to 0, delete Reactor - Chilling reactor on water can be heated, will delete self without altering Parent : linkMod = null, immortal = false, vital = false
+Reactor goes to 0, delete ParentAffecter - Ties of armor count as fueling. When they get destroyed, the armor falls apart : linkMod = null, immortal = false, vital = true
+Reactor changed, Parent changed by some amt, Reactor can die before Parent - Dirt-caked stone armor, reduced dirt would affect affecteriveness : linkMod = +, immortal = false, vital = false
+Reactor changed, Reactor has same health as Parent - Heating of fire gets reduced by Chilling; affects fire's vitality : linkMod = Mathf.Infinity, immortal = false, vital = true 
+float linkMod - Proportional modifier for linked damage
+bool immortal - Can this reactor be destroyed
+bool vital - Will this destroy the ParentAffecter
+*/
 public class Reactor {
-    //Reactors are paired with up methods that they call on the parentAffecter
-    /* 
-    Reactor goes to 0, nothing changes - Closed wound can reopen, therefore damage reactor remains : linkMod = null, immortal = true, vital = true/false
-    Reactor goes to 0, delete Reactor - Chilling reactor on water can be heated, will delete self without altering Parent : linkMod = null, immortal = false, vital = false
-    Reactor goes to 0, delete ParentAffecter - Ties of armor count as fueling. When they get destroyed, the armor falls apart : linkMod = null, immortal = false, vital = true
-    Reactor changed, Parent changed by some amt, Reactor can die before Parent - Dirt-caked stone armor, reduced dirt would affect effectiveness : linkMod = +, immortal = false, vital = false
-    Reactor changed, Reactor has same health as Parent - Heating of fire gets reduced by Chilling; affects fire's vitality : linkMod = Mathf.Infinity, immortal = false, vital = true 
-    float linkMod - Proportional modifier for linked damage
-    bool immortal - Can this reactor be destroyed
-    bool vital - Will this destroy the ParentAffecter
-    */
     protected Affecter parentAffecter; //Affecter to which this reactor has been attached
     protected Reactor[] reactants;
     public float vitality;
@@ -204,11 +211,11 @@ public class Reactor {
 
     public Reactor() { }
 
-    public virtual void Check() {
+    public virtual void Check() { //THIS WILL ADJUST THE VITALITY OF EACH REACTOR AT THE START OF EACH WAVE OF AFFECTER INTERACTIONS
         if (linkMod != Mathf.NegativeInfinity) {
             if (linkMod == Mathf.Infinity)
                 vitality = parentAffecter.GetTurnVitality();
-            else vitality += (parentAffecter.GetTurnVitality() - lastParentVitality)* linkMod;
+            else vitality += ((parentAffecter.GetTurnVitality() - lastParentVitality)  / lastParentVitality) * linkMod * vitality;
         }
         turnVitality = vitality;
         lastParentVitality = parentAffecter.GetTurnVitality();
@@ -220,8 +227,11 @@ public class Reactor {
 
     public virtual bool FindMatches(Affecter _targetAffecter) {
         bool result = false;
-        foreach (Reactor other in _targetAffecter.GetReactorList()) {
-            foreach (Reactor own in reactants) {
+        List<Reactor> otherList = _targetAffecter.GetReactorList();
+        for (int i = 0; i < otherList.Count; i++) {
+            Reactor other = otherList.ElementAt(i);
+            for (int j = 0; j < reactants.Length; j++) {
+                Reactor own = reactants[j];
                 if (other.GetType() == own.GetType()) {
                     React(other);
                     result = true;
@@ -377,6 +387,11 @@ public class Drying : Reactor {
     }
 
     public Drying() { }
+
+    public override void Check() {
+        base.Check();
+        //Debug.Log("HOWDY DOODY, I'M THE DRIER");
+    }
 
     public void SetOilFire(bool _oilFire) {
         oilFire = _oilFire;

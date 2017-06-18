@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MoodAffecter : Affecter {
+public class MoodAffecter {
+
+    protected Body targetBody;
 
     protected Personality.Mood targetMood;
 

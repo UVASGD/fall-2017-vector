@@ -29,7 +29,7 @@ public class Attack : MonoBehaviour {
         moveScheme = new char[] {'f', 'f', 'f', 'b', 'f', 'f', 'w'};
         moveTimes = new int[] {   4,   3,   2,   1,   2,   3,   4 };
         moveTimer = moveTimes[0];
-        damages = new Affecter[] { new Damage(DamageType.Slashing, 10) };
+        damages = new Affecter[] { };
     }
 
     void Update() {
