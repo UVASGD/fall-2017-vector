@@ -11,8 +11,12 @@ public class Affecter {
     protected List<Affecter> interactorList = new List<Affecter>(); //The list of affecters with which the affecter interacts
     protected List<Reactor> reactorList = new List<Reactor>(); //
     protected bool combinable; //Whether this affecter will combine with similar affecters
+    protected bool spreadable; //Whether this affecter can be spread to other objects by contact
+    protected float spreadMod; //The ratio of how much vitality will be shared with an object to which the affecter has been spread
+    protected bool layered; //Whether this affecter can be layered over/under another layered affecter
     protected float turnVitality; //The vitality with which other affecters interact
     protected float vitality; //The strength/time left/'life' of the affecter
+    protected float fullVitality;
     protected bool present; //Whether or not this affecter is still 'alive'
     protected bool inAffecter; //Whether or not this affecter should actively tick
     bool inAffecterChanged; //Dirty bit to detect change
@@ -20,11 +24,14 @@ public class Affecter {
     protected int timer; //The timer that designates when to activate
     protected int freq; //The frequency at which the timer goes off
 
-    public Affecter(Body _targetBody, float _vitality, float _vRate, int _freq = 5) {
-        targetBody = _targetBody;
+    public Affecter(Body _targetBody, float _vitality, float _vRate, float spreadMod = 1f, int _freq = 5) {
+        //targetBody = _targetBody;
         vitality = _vitality;
+        fullVitality = _vitality;
         turnVitality = _vitality;
         combinable = false;
+        spreadable = false;
+        layered = false;
         present = true;
         inAffecter = true;
         inAffecterChanged = false;
@@ -41,8 +48,10 @@ public class Affecter {
                 reactor.Check();  //THIS WILL ADJUST THE VITALITY OF EACH REACTOR AT THE START OF EACH WAVE OF AFFECTER INTERACTIONS
             }
             if (!Check()) { //IF THE AFFECTER IS DEAD
-                if (inAffecter) targetBody.RemoveAffecterFromAffecters(this); //IF IT'S IN THE AFFECTERLIST, DELETE IT THENCE
-                else targetBody.RemoveAffecterFromTraits(this); //IF IT'S IN THE TRAITLIST, DELETE IT THENCE
+                if (inAffecter) targetBody.RemoveFromAffecterList(this); //IF IT'S IN THE AFFECTERLIST, DELETE IT THENCE
+                else targetBody.RemoveFromTraitList(this); //IF IT'S IN THE TRAITLIST, DELETE IT THENCE
+                if (spreadable) targetBody.RemoveFromSpreadList(this); //IF IT'S IN THE SPREAD LIST, DELETE IT THENCE
+                if (layered) targetBody.RemoveFromLayerList(this); //IF IT SERVES AS A LAYER, DELETE IT THENCE
                 Deact(); //DELETE THE AFFECTER
                 return; //STOP TICKING
             }
@@ -50,16 +59,17 @@ public class Affecter {
                 inAffecterChanged = false; //RESET THE DIRTY BIT
                 if (inAffecter) {//IF IT OUGHT TO BE IN THE AFFECTER LIST
                     targetBody.AddToAffecterList(this); //ADD TO AFFECTER LIST
-                    targetBody.RemoveAffecterFromTraits(this);
+                    targetBody.RemoveFromTraitList(this); //REMOVE FROM TRAIT LIST
                 }
                 else { //IF IT OUGHT TO BE IN THE TRAITLIST
                     targetBody.AddToTraitList(this); //ADD TO TRAITLIST
-                    targetBody.RemoveAffecterFromAffecters(this);
+                    targetBody.RemoveFromAffecterList(this); //ADD TO AFFECTER LIST 
                     return; //THE GOYIM KNOW; SHUT IT DOWN; STOP TICKING
                 }
             }
             Dewit(); //PERFORM ITS FUNCTION AND INTERACT WITH OTHER AFFECTERS
-            timer = freq; //RESET TIMER
+            
+            timer = freq; //RESET TIMER 
         }
         timer--; //DECREASE TIMER
     }
@@ -78,12 +88,14 @@ public class Affecter {
         return present; //RETURN WHETHER OR NOT IT'S STILL ALIVE
     }
 
-    public virtual void Scan() { //THIS IS THE METHOD THAT SCANS TO SEE IF ANOTHER EFFECT HAS A MATCHING REACTOR
+    public virtual bool Scan() { //THIS IS THE METHOD THAT SCANS TO SEE IF ANOTHER EFFECT HAS A MATCHING REACTOR
         List<Affecter> allLists = (targetBody.GetAffecterList().Concat(targetBody.GetTraitList())).ToList(); //COMBINES EFFECTLIST AND TRAITLIST
         for (int i = 0; i < allLists.Count; i++) { //FOR EACH AFFECTER IN THE COMBINED LIST
             Affecter affecter = allLists.ElementAt(i); //FOR EACH AFFECTER IN THE COMBINED LIST
-            if (combinable && affecter.GetType() == GetType()) //CHECK WHETHER AFFECTERS SHOULD COMBINE
-                affecter.Combine(this); //COMBINE AFFECTERS
+            if (combinable && affecter.GetType() == GetType()) {//CHECK WHETHER AFFECTERS SHOULD COMBINE
+                Combine(affecter); //COMBINE AFFECTERS
+                return false;
+            }
             else //IF THEY SHOULDN'T COMBINE
                 for (int j = 0; j < reactorList.Count; j++) { //FOR EACH REACTOR IN THE REACTOR LIST
                     Reactor reactor = reactorList.ElementAt(j); //FOR EACH REACTOR IN THE REACTOR LIST
@@ -91,10 +103,19 @@ public class Affecter {
                         interactorList.Add(affecter); //ADD THAT AFFECTER TO THE INTERACTOR LIST
                 }
         }
+        return true;
     }
 
-    public virtual void Enact() { //THIS IS WHAT THE AFFECTER WILL PERFORM WHEN FIRST ADDED
-        Scan(); //SCAN TO UPDATE INTERACTOR LIST
+    public virtual bool Enact(Body _targetBody) { //THIS IS WHAT THE AFFECTER WILL PERFORM WHEN FIRST ADDED
+        targetBody = _targetBody;
+        if (Scan()) { //SCAN TO UPDATE INTERACTOR LIST
+            if (spreadable) //IF THIS AFFECTER CAN BE SPREAD BY CONTACT
+                targetBody.AddToSpreadList(this); //ADD IT TO THE SPREAD LIST
+            if (layered) //IF THIS AFFECTER SERVES AS A LAYER
+                targetBody.AddToLayerList(this); //ADD IT TO THE LAYER LIST
+            return true;
+        }
+        return false;
     }
 
     public virtual void Dewit() { //THIS IS WHAT THE AFFECTER WILL PERFORM EVERY TURN, IF ACTIVE
@@ -106,6 +127,9 @@ public class Affecter {
                 interactorList.Remove(interactor);  //DELET THIS
                 continue; //IGNORE THE REST OF THE POTENTIAL INTERACTION WITH THIS INTERACTOR
             }
+            if (layered && interactor.IsLayered()) //IF BOTH AFFECTERS ACT AS LAYERS
+                if (Mathf.Abs(targetBody.GetLayerVal(interactor) - targetBody.GetLayerVal(this)) > 1) //IF THE INTERACTOR ISN'T ONE LAYER BENEATH OR ABOVE
+                    continue; //CEASE THE INTERACTION
             for (int j = 0; j < reactorList.Count; j++) { //FOR EACH REACTOR IN THE REACTOR LIST
                 Reactor reactor = reactorList.ElementAt(j); //FOR EACH REACTOR IN THE REACTOR LIST
                 if (reactor.vitality <= 0) //IF THE REACTOR IS DEAD
@@ -126,10 +150,38 @@ public class Affecter {
 
     }
 
-    public virtual void Combine(Affecter combiner) { }
+    public virtual void Combine(Affecter combiner) {
+        combiner.AffectVitality(vitality);
+        for (int i = 0; i < reactorList.Count; i++) {
+            Reactor ownReactor = reactorList.ElementAt(i);
+            for (int j = 0; j < combiner.reactorList.Count; j++) {
+                Reactor otherReactor = combiner.reactorList.ElementAt(j);
+                if (ownReactor.GetType() != otherReactor.GetType())
+                    combiner.reactorList.Add(ownReactor.CloneReactor(combiner));
+            }
+        }
+        Deact(); //DELETE THE AFFECTER
+    }
 
     public float GetTurnVitality() {
         return turnVitality;
+    }
+
+    public float GetSpreadVitality() {
+        return turnVitality * spreadMod;
+    }
+
+    public virtual Affecter GetSpreadAffecter() {
+        Affecter spreadAffecter = (Affecter)MemberwiseClone();
+        spreadAffecter.interactorList = new List<Affecter>();
+        spreadAffecter.reactorList = new List<Reactor>();
+        for (int i = 0; i < reactorList.Count; i++) {
+            Reactor reactor = reactorList.ElementAt(i);
+            spreadAffecter.reactorList.Add(reactor.CloneReactor(spreadAffecter));
+        }
+        spreadAffecter.vitality *= spreadMod;
+        spreadAffecter.turnVitality = vitality;
+        return spreadAffecter;
     }
 
     public void SetVitality(float _vitality) {
@@ -150,6 +202,12 @@ public class Affecter {
 
     public bool IsPresent() {
         return present;
+    }
+
+    public bool IsLayered() {
+        if (vitality < (fullVitality / 2))
+            return false;
+        return layered;
     }
 
     public List<Reactor> GetReactorList() {
@@ -176,6 +234,12 @@ public class Fire : Affecter {
         reactorList = new List<Reactor> { new Burning(this, _vitality, Mathf.Infinity, false, true),
                                           new Drying(this, _vitality, Mathf.Infinity, false, true),
                                           new Heating(this, _vitality, Mathf.Infinity, false, true)};
+        combinable = true;
+    }
+
+    public override Affecter GetSpreadAffecter() {
+        Fire spreadAffecter = (Fire)base.GetSpreadAffecter();
+        return spreadAffecter;
     }
 }
 
@@ -273,6 +337,11 @@ public class Reactor {
     public Affecter GetParentAffecter() {
         return parentAffecter;
     }
+
+    public virtual Reactor CloneReactor(Affecter _affecter) {
+        Reactor newReactor = new Reactor(_affecter, vitality, linkMod, immortal, vital);
+        return newReactor;
+    }
 }
 
 //public enum Reaction { Dampening, Oiling, Watering, Dirtying, Drying, Burning, Fueling, Hindering, Freeing, Harming, Healing, Crushing, Slashing, Piercing};
@@ -288,6 +357,30 @@ public class Dampening : Reactor {
     protected override void React(Reactor reactant) {
         if (reactant.GetType() == typeof(Drying))
             AffectVitality(-reactant.turnVitality / 2);
+    }
+
+    public override Reactor CloneReactor(Affecter _affecter) {
+        Dampening newReactor = new Dampening(_affecter, vitality, linkMod, immortal, vital);
+        return newReactor;
+    }
+}
+
+public class Acid : Reactor {
+    public Acid(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) :
+        base(_parentAffecter, _vitality, _linkMod, _immortal, _vital) {
+        reactants = new Reactor[] { new Watering()};
+    }
+
+    public Acid() { }
+
+    protected override void React(Reactor reactant) {
+        if (reactant.GetType() == typeof(Watering))
+            AffectVitality(-reactant.turnVitality / 2);
+    }
+
+    public override Reactor CloneReactor(Affecter _affecter) {
+        Acid newReactor = new Acid(_affecter, vitality, linkMod, immortal, vital);
+        return newReactor;
     }
 }
 
@@ -317,13 +410,20 @@ public class Oiling : Reactor {
             foundFire = true;
             onFire = true;
         }
-    }  
+    }
+
+    public override Reactor CloneReactor(Affecter _affecter) {
+        Oiling newReactor = new Oiling(_affecter, vitality, linkMod, immortal, vital);
+        newReactor.onFire = onFire;
+        newReactor.foundFire = foundFire;
+        return newReactor;
+    }
 }
 
 public class Watering : Reactor {
     public Watering(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) : 
         base(_parentAffecter, _vitality, _linkMod, _immortal, _vital) {
-        reactants = new Reactor[] { new Oiling(), new Chilling()};
+        reactants = new Reactor[] { new Oiling(), new Chilling(), new Acid()};
     }
 
     public Watering() { }
@@ -332,6 +432,11 @@ public class Watering : Reactor {
         if (reactant.GetType() == typeof(Chilling))
             if (reactant.turnVitality > (turnVitality * 1.25f)) { }
                 //(Water)parentAffecter.Freeze(); - The water parentAffecter should turn into an iceLayer affecter
+    }
+
+    public override Reactor CloneReactor(Affecter _affecter) {
+        Watering newReactor = new Watering(_affecter, vitality, linkMod, immortal, vital);
+        return newReactor;
     }
 }
 
@@ -350,6 +455,11 @@ public class Dirtying : Reactor {
             if (reactant.turnVitality > (turnVitality / 2))
                 AffectVitality(-reactant.turnVitality / 2);
     }
+
+    public override Reactor CloneReactor(Affecter _affecter) {
+        Dirtying newReactor = new Dirtying(_affecter, vitality, linkMod, immortal, vital);
+        return newReactor;
+    }
 }
 
 public class Winding : Reactor {
@@ -359,6 +469,11 @@ public class Winding : Reactor {
     }
 
     public Winding() { }
+
+    public override Reactor CloneReactor(Affecter _affecter) {
+        Winding newReactor = new Winding(_affecter, vitality, linkMod, immortal, vital);
+        return newReactor;
+    }
 }
 
 public class Puny : Reactor {
@@ -374,6 +489,11 @@ public class Puny : Reactor {
             if (reactant.turnVitality > turnVitality) { }
                 //(Item)parentAffecter.Drop(); - The small object affecter shouldn't just remove itself from the list, it should drop into the world
         }
+    }
+
+    public override Reactor CloneReactor(Affecter _affecter) {
+        Puny newReactor = new Puny(_affecter, vitality, linkMod, immortal, vital);
+        return newReactor;
     }
 }
 
@@ -404,6 +524,12 @@ public class Drying : Reactor {
             else AffectVitality(reactant.turnVitality / 4);
         }
     }
+
+    public override Reactor CloneReactor(Affecter _affecter) {
+        Drying newReactor = new Drying(_affecter, vitality, linkMod, immortal, vital);
+        newReactor.oilFire = oilFire;
+        return newReactor;
+    }
 }
 
 public class Heating : Reactor {
@@ -417,6 +543,11 @@ public class Heating : Reactor {
     protected override void React(Reactor reactant) {
         if (reactant.GetType() == typeof(Chilling))
             AffectVitality(-reactant.turnVitality / 2);
+    }
+
+    public override Reactor CloneReactor(Affecter _affecter) {
+        Heating newReactor = new Heating(_affecter, vitality, linkMod, immortal, vital);
+        return newReactor;
     }
 }
 
@@ -432,6 +563,11 @@ public class Chilling : Reactor {
         if (reactant.GetType() == typeof(Heating))
             AffectVitality(-reactant.turnVitality / 2);
     }
+
+    public override Reactor CloneReactor(Affecter _affecter) {
+        Chilling newReactor = new Chilling(_affecter, vitality, linkMod, immortal, vital);
+        return newReactor;
+    }
 }
 
 public class Freezing : Reactor {
@@ -446,6 +582,11 @@ public class Freezing : Reactor {
         if (reactant.GetType() == typeof(Heating))
             if (reactant.turnVitality > (turnVitality * 2))
                 AffectVitality(-reactant.turnVitality / 2);
+    }
+
+    public override Reactor CloneReactor(Affecter _affecter) {
+        Freezing newReactor = new Freezing(_affecter, vitality, linkMod, immortal, vital);
+        return newReactor;
     }
 }
 
@@ -489,6 +630,13 @@ public class Burning : Reactor {
         else if (reactant.GetType() == typeof(Dirtying))
             AffectVitality(reactant.turnVitality / 2);
     }
+
+    public override Reactor CloneReactor(Affecter _affecter) {
+        Burning newReactor = new Burning(_affecter, vitality, linkMod, immortal, vital);
+        newReactor.oilFire = oilFire;
+        newReactor.foundOil = foundOil;
+        return newReactor;
+    }
 }
 
 public class Fueling : Reactor {
@@ -504,6 +652,11 @@ public class Fueling : Reactor {
             if (reactant.turnVitality > (turnVitality / linkMod) / 2)
                 AffectVitality(-reactant.turnVitality / 2);
     }
+
+    public override Reactor CloneReactor(Affecter _affecter) {
+        Fueling newReactor = new Fueling(_affecter, vitality, linkMod, immortal, vital);
+        return newReactor;
+    }
 }
 
 public class Hindering : Reactor {
@@ -517,6 +670,11 @@ public class Hindering : Reactor {
     protected override void React(Reactor reactant) {
         if (reactant.GetType() == typeof(Freeing))
             AffectVitality(-reactant.turnVitality);
+    }
+
+    public override Reactor CloneReactor(Affecter _affecter) {
+        Hindering newReactor = new Hindering(_affecter, vitality, linkMod, immortal, vital);
+        return newReactor;
     }
 }
 
@@ -532,6 +690,11 @@ public class Freeing : Reactor {
         if (reactant.GetType() == typeof(Freeing))
             AffectVitality(-reactant.turnVitality);
     }
+
+    public override Reactor CloneReactor(Affecter _affecter) {
+        Freeing newReactor = new Freeing(_affecter, vitality, linkMod, immortal, vital);
+        return newReactor;
+    }
 }
 
 public class Harming : Reactor {
@@ -545,6 +708,11 @@ public class Harming : Reactor {
     protected override void React(Reactor reactant) {
         if (reactant.GetType() == typeof(Winding))
             AffectVitality(-reactant.turnVitality / 2);
+    }
+
+    public override Reactor CloneReactor(Affecter _affecter) {
+        Harming newReactor = new Harming(_affecter, vitality, linkMod, immortal, vital);
+        return newReactor;
     }
 }
 
@@ -560,6 +728,11 @@ public class Healing : Reactor {
         if (reactant.GetType() == typeof(Winding))
             AffectVitality(-reactant.turnVitality / 2);
     }
+
+    public override Reactor CloneReactor(Affecter _affecter) {
+        Healing newReactor = new Healing(_affecter, vitality, linkMod, immortal, vital);
+        return newReactor;
+    }
 }
 
 public class Crushing : Reactor {
@@ -573,6 +746,11 @@ public class Crushing : Reactor {
     protected override void React(Reactor reactant) {
         if (reactant.GetType() == typeof(CrushingBlock))
             AffectVitality(-reactant.turnVitality / 2);
+    }
+
+    public override Reactor CloneReactor(Affecter _affecter) {
+        Crushing newReactor = new Crushing(_affecter, vitality, linkMod, immortal, vital);
+        return newReactor;
     }
 }
 
@@ -588,6 +766,11 @@ public class CrushingBlock : Reactor {
         if (reactant.GetType() == typeof(Crushing))
             AffectVitality(-reactant.turnVitality / 2);
     }
+
+    public override Reactor CloneReactor(Affecter _affecter) {
+        CrushingBlock newReactor = new CrushingBlock(_affecter, vitality, linkMod, immortal, vital);
+        return newReactor;
+    }
 }
 
 public class Slashing : Reactor {
@@ -601,6 +784,11 @@ public class Slashing : Reactor {
     protected override void React(Reactor reactant) {
         if (reactant.GetType() == typeof(SlashingBlock))
             AffectVitality(-reactant.turnVitality / 2);
+    }
+
+    public override Reactor CloneReactor(Affecter _affecter) {
+        Slashing newReactor = new Slashing(_affecter, vitality, linkMod, immortal, vital);
+        return newReactor;
     }
 }
 
@@ -616,6 +804,11 @@ public class SlashingBlock : Reactor {
         if (reactant.GetType() == typeof(Slashing))
             AffectVitality(-reactant.turnVitality / 2);
     }
+
+    public override Reactor CloneReactor(Affecter _affecter) {
+        SlashingBlock newReactor = new SlashingBlock(_affecter, vitality, linkMod, immortal, vital);
+        return newReactor;
+    }
 }
 
 public class Piercing : Reactor {
@@ -630,6 +823,11 @@ public class Piercing : Reactor {
         if (reactant.GetType() == typeof(PiercingBlock))
             AffectVitality(-reactant.turnVitality / 2);
     }
+
+    public override Reactor CloneReactor(Affecter _affecter) {
+        Piercing newReactor = new Piercing(_affecter, vitality, linkMod, immortal, vital);
+        return newReactor;
+    }
 }
 
 public class PiercingBlock : Reactor {
@@ -643,6 +841,11 @@ public class PiercingBlock : Reactor {
     protected override void React(Reactor reactant) {
         if (reactant.GetType() == typeof(Piercing))
             AffectVitality(-reactant.turnVitality / 2);
+    }
+
+    public override Reactor CloneReactor(Affecter _affecter) {
+        PiercingBlock newReactor = new PiercingBlock(_affecter, vitality, linkMod, immortal, vital);
+        return newReactor;
     }
 }
 

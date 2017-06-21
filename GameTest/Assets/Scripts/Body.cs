@@ -33,6 +33,9 @@ public class Body : MonoBehaviour {
     List<Affecter> affecterList = new List<Affecter>(); //List of Affecters
     List<Affecter> traitList = new List<Affecter>(); //List of Traits 
 
+    List<Affecter> spreadList = new List<Affecter>();
+    List<Affecter> layerList = new List<Affecter>();
+
     void Start() {
         time = (TimeManager)FindObjectOfType(typeof(TimeManager)); //Set Time manager
         foreach (Transform child in transform) if (child.CompareTag("Renderer")) { bodyRender = child; } //Set bodyRender equal to the transform of the proper childObject
@@ -120,6 +123,37 @@ public class Body : MonoBehaviour {
         return face;
     }
 
+    //COLLISION
+    private void OnTriggerEnter2D(Collider2D other) {
+        Body otherBody = other.gameObject.GetComponent<Body>();
+        if (otherBody != null)
+            Spread(otherBody);
+    }
+
+    void Spread(Body otherBody) {
+        foreach (Affecter otherAffecter in otherBody.GetSpreadList()) {
+            bool skip = false;
+            if (otherAffecter.IsLayered())
+                if (otherBody.GetLayerVal(otherAffecter) > 2)
+                    continue;
+            foreach (Affecter ownAffecter in spreadList) {
+                if (ownAffecter.IsLayered())
+                    if (GetLayerVal(ownAffecter) > 2) {
+                        skip = true;
+                        break;
+                    }
+                if (ownAffecter.GetType() == otherAffecter.GetType()) {
+                    skip = true;
+                    break;
+                }
+            }
+            if (skip)
+                continue;
+            AddAffecter(otherAffecter.GetSpreadAffecter());
+        }
+    } 
+
+
     //SET ACTION
     public void SetCurrAct(Action _currAct) {
         currAct = _currAct;
@@ -143,15 +177,16 @@ public class Body : MonoBehaviour {
 
     //ADD/REMOVE TO/FROM APPROPRIATE AFFECTER LIST
     public void AddAffecter(Affecter _affecter) {
-        affecterList.Add(_affecter);
-        _affecter.Enact();
+        if (_affecter.Enact(this)) 
+            affecterList.Add(_affecter);
     }
-    public void RemoveAffecterFromAffecters(Affecter _affecter) {
+
+    public void RemoveFromAffecterList(Affecter _affecter) {
         affecterList.Remove(_affecter);
         _affecter.Deact();
     }
 
-    public void RemoveAffecterFromTraits(Affecter _affecter) {
+    public void RemoveFromTraitList(Affecter _affecter) {
         traitList.Remove(_affecter);
         _affecter.Deact();
     }
@@ -161,17 +196,48 @@ public class Body : MonoBehaviour {
         return affecterList;
     }
 
-    public void AddToAffecterList(Affecter newAffecter) {
-        affecterList.Add(newAffecter);
+    public void AddToAffecterList(Affecter _affecter) {
+        affecterList.Add(_affecter);
     }
 
     public List<Affecter> GetTraitList() {
         return traitList;
     }
 
-    public void AddToTraitList(Affecter newAffecter) {
-        traitList.Add(newAffecter);
+    public void AddToTraitList(Affecter _affecter) {
+        traitList.Add(_affecter);
     }
+
+    //GET/SET SPREADLIST
+    public void AddToSpreadList(Affecter _affecter) {
+        spreadList.Add(_affecter);
+    }
+
+    public List<Affecter> GetSpreadList() {
+        return spreadList;
+    }
+
+    public void RemoveFromSpreadList(Affecter _affecter) {
+        spreadList.Remove(_affecter);
+    }
+
+    //GET/SET LAYERLIST
+    public void AddToLayerList(Affecter _affecter) {
+        layerList.Add(_affecter);
+    }
+
+    public void RemoveFromLayerList(Affecter _affecter) {
+        layerList.Remove(_affecter);
+    }
+
+    public List<Affecter> GetLayerList() {
+        return layerList;
+    }
+
+    public int GetLayerVal(Affecter _affecter) {
+        return layerList.IndexOf(_affecter);
+    }
+
 
     public int GetMoveSpeed() {
         return 15 - coordination;
