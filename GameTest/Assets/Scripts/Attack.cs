@@ -13,7 +13,7 @@ public class Attack : MonoBehaviour {
     int moveTimer;
     int currFrame = 0;
     char[] moveScheme;
-    Affecter[] damages;
+    Affecter[] effects;
     TimeManager time;
     List<string> targetTags;
     List<GameObject> alreadyHit = new List<GameObject>();
@@ -29,7 +29,7 @@ public class Attack : MonoBehaviour {
         moveScheme = new char[] {'f', 'f', 'f', 'b', 'f', 'f', 'w'};
         moveTimes = new int[] {   4,   3,   2,   1,   2,   3,   4 };
         moveTimer = moveTimes[0];
-        damages = new Affecter[] { };
+        effects = new Affecter[] { new Wound(genitor, 0.1f)};
     }
 
     void Update() {
@@ -90,9 +90,11 @@ public class Attack : MonoBehaviour {
     }
 
     private void OnTriggerEnter2D(Collider2D other) {
+        Debug.Log("Slam bam, thank you, ma'am");
         foreach (GameObject go in alreadyHit)
-            if (go == other.gameObject)
+            if (go == other.gameObject) {
                 return;
+            }
 
         bool isTarget = false;
         foreach (string tag in other.gameObject.tags()) {
@@ -103,9 +105,10 @@ public class Attack : MonoBehaviour {
         }
 
         if (isTarget) {
+            Debug.Log("GET ON THE FLOOR AND JAM");
             Body body = other.gameObject.GetComponent<Body>();
-            foreach (Affecter dam in damages) {
-                body.AddAffecter(dam);
+            foreach (Affecter eff in effects) {
+                body.AddAffecter(eff);
             }
             alreadyHit.Add(other.gameObject);
         }

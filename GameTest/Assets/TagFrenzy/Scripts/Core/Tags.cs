@@ -6,6 +6,7 @@ Background,
 Enemy,
 Foreground,
 Friend,
+Hostile,
 MainCamera
 }
 }

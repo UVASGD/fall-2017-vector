@@ -42,7 +42,6 @@ public class Affecter {
 
     public virtual void Tick() {
         if (timer <= 0) { //WHEN THE AFFECTER IS READY TO INTERACT WITH OTHER AFFECTERS
-            turnVitality = vitality; //THE VITALITY WITH WHICH OTHER AFFECTERS ARE AFFECTED
             for (int i = 0; i < reactorList.Count; i++) {  //THIS WILL ADJUST THE VITALITY OF EACH REACTOR AT THE START OF EACH WAVE OF AFFECTER INTERACTIONS
                 Reactor reactor = reactorList.ElementAt(i);  //THIS WILL ADJUST THE VITALITY OF EACH REACTOR AT THE START OF EACH WAVE OF AFFECTER INTERACTIONS
                 reactor.Check();  //THIS WILL ADJUST THE VITALITY OF EACH REACTOR AT THE START OF EACH WAVE OF AFFECTER INTERACTIONS
@@ -68,7 +67,7 @@ public class Affecter {
                 }
             }
             Dewit(); //PERFORM ITS FUNCTION AND INTERACT WITH OTHER AFFECTERS
-            
+            turnVitality = vitality; //THE VITALITY WITH WHICH OTHER AFFECTERS ARE AFFECTED
             timer = freq; //RESET TIMER 
         }
         timer--; //DECREASE TIMER
@@ -120,7 +119,6 @@ public class Affecter {
 
     public virtual void Dewit() { //THIS IS WHAT THE AFFECTER WILL PERFORM EVERY TURN, IF ACTIVE
         vitality += vRate; //UPDATE VITALITY
-        Debug.Log(vitality);
         for (int i = 0; i < interactorList.Count; i++) { //FOR EACH INTERACTOR IN THE LIST
             Affecter interactor = interactorList.ElementAt(i); //FOR EACH INTERACTOR IN THE LIST
             if (!(interactor).IsPresent()) { //IF THE INTERACTOR ISN'T ALIVE
@@ -262,7 +260,12 @@ public class Water : Affecter {
                                           new Watering(this, _vitality, Mathf.Infinity, false, true)};
         combinable = true;
         spreadable = true;
-        layered = false;
+        layered = true;
+    }
+
+    public void Freeze() {
+        present = false;
+        targetBody.AddAffecter(new Ice(targetBody, vitality)); //TO DO, MAKE THIS ADD AT THE PROPER LAYER LEVEL
     }
 
     public override Affecter GetSpreadAffecter() {
@@ -283,9 +286,9 @@ public class Ice : Affecter {
     }
 
 
-    public override void Tick() {
+    public override void Dewit() {
 
-        base.Tick();
+        base.Dewit();
     }
 }
 
@@ -296,7 +299,7 @@ public class Oil : Affecter {
                                           new Fueling(this, _vitality, Mathf.Infinity, false, true)};
         combinable = true;
         spreadable = true;
-        layered = false;
+        layered = true;
     }
 
     public override Affecter GetSpreadAffecter() {
@@ -305,6 +308,35 @@ public class Oil : Affecter {
     }
 }
 
+public class Wound : Affecter {
+    protected float threshold = 10f;
+
+    public Wound(Body _targetBody, float _vitality, float _vRate = -1f) : base(_targetBody, _vitality, _vRate) {
+        reactorList = new List<Reactor> { new Harming(this, _vitality, Mathf.Infinity, false, true)};
+        combinable = false;
+        spreadable = false;
+        layered = false;
+    }
+
+    public override bool Enact(Body _targetBody) {
+        bool result = base.Enact(_targetBody);
+        if (result) {
+            targetBody.ChangeHarm(vitality);
+            Debug.Log("Rock it, sock it, 'round the room");
+        }
+        return result;
+    }
+
+    public override void Dewit() {
+        if (vitality > threshold)
+            vRate = 0;
+        else 
+            vRate = 1f - (vitality/threshold);
+        float delt = vitality - turnVitality;
+        targetBody.ChangeHarm(delt);
+        base.Dewit();
+    }
+}
 /* 
 Reactor goes to 0, nothing changes - Closed wound can reopen, therefore damage reactor remains : linkMod = null, immortal = true, vital = true/false
 Reactor goes to 0, delete Reactor - Chilling reactor on water can be heated, will delete self without altering Parent : linkMod = null, immortal = false, vital = false
@@ -492,8 +524,8 @@ public class Watering : Reactor {
 
     protected override void React(Reactor reactant) {
         if (reactant.GetType() == typeof(Chilling))
-            if (reactant.turnVitality > (turnVitality * 1.25f)) { }
-                //(Water)parentAffecter.Freeze(); - The water parentAffecter should turn into an iceLayer affecter
+            if (reactant.turnVitality > (turnVitality * 1.25f))
+                ((Water)parentAffecter).Freeze(); //The water parentAffecter should turn into an ice affecter
     }
 
     public override Reactor CloneReactor(Affecter _affecter) {
@@ -768,7 +800,7 @@ public class Harming : Reactor {
     public Harming() { }
 
     protected override void React(Reactor reactant) {
-        if (reactant.GetType() == typeof(Winding))
+        if (reactant.GetType() == typeof(Healing))
             AffectVitality(-reactant.turnVitality / 2);
     }
 
@@ -787,7 +819,7 @@ public class Healing : Reactor {
     public Healing() { }
 
     protected override void React(Reactor reactant) {
-        if (reactant.GetType() == typeof(Winding))
+        if (reactant.GetType() == typeof(Harming))
             AffectVitality(-reactant.turnVitality / 2);
     }
 

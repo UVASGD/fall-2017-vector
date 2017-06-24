@@ -4,5 +4,6 @@
   <tag id="3">Enemy</tag>
   <tag id="4">Foreground</tag>
   <tag id="5">Friend</tag>
+  <tag id="6">Hostile</tag>
   <tag id="1">MainCamera</tag>
 </tags>

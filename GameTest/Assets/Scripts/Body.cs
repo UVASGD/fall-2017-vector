@@ -69,16 +69,23 @@ public class Body : MonoBehaviour {
     void Tick() {
         for (int i = 0; i < affecterList.Count; i++) {
             Affecter affecter = affecterList.ElementAt(i);
-            //Debug.Log("EEEEE");
             affecter.Tick();
         }
         mind.Tick();
         currMoveAct.Tick();
         currAct.Tick();
+        if (harmQuant > harmThreshold) {
+            Debug.Log("Shake it, quake it, space KABOOM");
+            DieIdiot();
+        }
+    }
+
+    public void DieIdiot() {
+        Destroy(gameObject);
     }
 
     //ABILITY TO GET HURT AND TO BE TARGETED
-    public void Harm(float delt) {
+    public void ChangeHarm(float delt) {
         harmQuant += delt;
     }
 
@@ -87,7 +94,7 @@ public class Body : MonoBehaviour {
     }
 
     public void Damage(DamageType _damType, float _damQuant) {
-        Harm(_damQuant * damMods[(int)_damType]);
+        ChangeHarm(_damQuant * damMods[(int)_damType]);
     }
 
     public List<string> GetTargetTags() {
