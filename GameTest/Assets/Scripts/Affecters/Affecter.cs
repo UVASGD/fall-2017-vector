@@ -228,13 +228,26 @@ public class Affecter {
 }
 
 //Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false
+/*
+    protected List<Reactor> reactorList = new List<Reactor>(); //
+    protected bool combinable; //Whether this affecter will combine with similar affecters
+    protected bool spreadable; //Whether this affecter can be spread to other objects by contact
+    protected float spreadMod; //The ratio of how much vitality will be shared with an object to which the affecter has been spread
+    protected bool layered; //Whether this affecter can be layered over/under another layered affecter
+    protected float vitality; //The strength/time left/'life' of the affecter
+    protected float fullVitality;
+    protected float vRate; //The inherent rate at which this affecter is altered
+    protected int freq; //The frequency at which the timer goes off
+ */
 
 public class Fire : Affecter {
-    public Fire(Body _targetBody, float _vitality, float _vRate = -1f) : base(_targetBody, _vitality, _vRate) {
+    public Fire(Body _targetBody, float _vitality, float _vRate = -1f, float _spreadMod = .5f) : base(_targetBody, _vitality, _vRate) {
         reactorList = new List<Reactor> { new Burning(this, _vitality, Mathf.Infinity, false, true),
                                           new Drying(this, _vitality, Mathf.Infinity, false, true),
                                           new Heating(this, _vitality, Mathf.Infinity, false, true)};
         combinable = true;
+        spreadable = true;
+        layered = true;
     }
 
     public override Affecter GetSpreadAffecter() {
@@ -243,11 +256,60 @@ public class Fire : Affecter {
     }
 }
 
+public class Water : Affecter {
+    public Water(Body _targetBody, float _vitality, float _vRate = -1f, float _spreadMod = .25f) : base(_targetBody, _vitality, _vRate) {
+        reactorList = new List<Reactor> { new Dampening(this, _vitality, Mathf.Infinity, false, true),
+                                          new Watering(this, _vitality, Mathf.Infinity, false, true)};
+        combinable = true;
+        spreadable = true;
+        layered = false;
+    }
+
+    public override Affecter GetSpreadAffecter() {
+        Water spreadAffecter = (Water)base.GetSpreadAffecter();
+        return spreadAffecter;
+    }
+}
+
+public class Ice : Affecter {
+    public Ice(Body _targetBody, float _vitality, float _vRate = -1f, float _spreadMod = .25f) : base(_targetBody, _vitality, _vRate) {
+        reactorList = new List<Reactor> { new Dampening(this, _vitality, Mathf.Infinity, false, true),
+                                          new Freezing(this, _vitality, Mathf.Infinity, false, true),
+                                          new Chilling(this, _vitality, Mathf.Infinity, false, true)
+        };
+        combinable = true;
+        spreadable = false;
+        layered = true;
+    }
+
+
+    public override void Tick() {
+
+        base.Tick();
+    }
+}
+
+public class Oil : Affecter {
+    public Oil(Body _targetBody, float _vitality, float _vRate = -1f) : base(_targetBody, _vitality, _vRate) {
+        reactorList = new List<Reactor> { new Dampening(this, _vitality, Mathf.Infinity, false, true),
+                                          new Oiling(this, _vitality, Mathf.Infinity, false, true),
+                                          new Fueling(this, _vitality, Mathf.Infinity, false, true)};
+        combinable = true;
+        spreadable = true;
+        layered = false;
+    }
+
+    public override Affecter GetSpreadAffecter() {
+        Oil spreadAffecter = (Oil)base.GetSpreadAffecter();
+        return spreadAffecter;
+    }
+}
+
 /* 
 Reactor goes to 0, nothing changes - Closed wound can reopen, therefore damage reactor remains : linkMod = null, immortal = true, vital = true/false
 Reactor goes to 0, delete Reactor - Chilling reactor on water can be heated, will delete self without altering Parent : linkMod = null, immortal = false, vital = false
 Reactor goes to 0, delete ParentAffecter - Ties of armor count as fueling. When they get destroyed, the armor falls apart : linkMod = null, immortal = false, vital = true
-Reactor changed, Parent changed by some amt, Reactor can die before Parent - Dirt-caked stone armor, reduced dirt would affect affecteriveness : linkMod = +, immortal = false, vital = false
+Reactor changed, Parent changed by some amt, Reactor can die before Parent - Dirt-caked armor, reduced dirt reduces effectiveness : linkMod = +, immortal = false, vital = false
 Reactor changed, Reactor has same health as Parent - Heating of fire gets reduced by Chilling; affects fire's vitality : linkMod = Mathf.Infinity, immortal = false, vital = true 
 float linkMod - Proportional modifier for linked damage
 bool immortal - Can this reactor be destroyed
