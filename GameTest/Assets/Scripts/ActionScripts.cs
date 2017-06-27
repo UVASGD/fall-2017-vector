@@ -82,11 +82,9 @@ public class AttackAction : Action {
         Vector3 newPos = new Vector3();
         newPos = genitor.transform.position;
         GameObject newAttackObject = (GameObject) MonoBehaviour.Instantiate(attack, newPos, Quaternion.identity);
-        BoxCollider2D coll = newAttackObject.GetComponent<BoxCollider2D>();
-        coll.isTrigger = true;
-        coll.size = new Vector3(2f, 1f, 0f);
         Attack newAttackScript = newAttackObject.GetComponent<Attack>();
         newAttackScript.AttackConstructor(genitor);
+        nextAction = new Action("Open", 0, genitor);
         base.Dewit();
     }
 }
