@@ -50,7 +50,6 @@ public class MoveAction : Action {
 
     protected override void Dewit() {
         genitor.Move(dir);
-        //Debug.Log("genitor dir after move: " + genitor.dir);
         genitor.SetCurrMoveAct(nextAction);
     }
 }

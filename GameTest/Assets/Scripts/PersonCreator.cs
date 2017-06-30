@@ -51,7 +51,7 @@ public class PersonCreator { //This class exists just to spawn in a person. Not 
         personBodyObject = (GameObject)MonoBehaviour.Instantiate(Resources.Load(prefab), new Vector3(loc, 0, 0), Quaternion.identity);
         personBodyObject.AddComponent(System.Type.GetType("Body"));
         BoxCollider2D coll = personBodyObject.GetComponent<BoxCollider2D>();
-        coll.isTrigger = false;
+        coll.isTrigger = true;
         coll.size = new Vector3(size*2, 1f, 0f);
         personBodyObject.name = objectName;
         Body personBody = personBodyObject.GetComponent<Body>();

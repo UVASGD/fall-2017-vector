@@ -12,6 +12,8 @@ public class Body : MonoBehaviour {
 
     Transform bodyRender; //Reference to the body-renderer's transform
 
+    int bodyCollisions = 0; 
+
     float harmQuant; //Harm Variables
     float harmThreshold;
 
@@ -133,8 +135,10 @@ public class Body : MonoBehaviour {
     //COLLISION
     private void OnTriggerEnter2D(Collider2D other) {
         Body otherBody = other.gameObject.GetComponent<Body>();
-        if (otherBody != null)
+        if (otherBody != null) {
             Spread(otherBody);
+            bodyCollisions++;
+        }
     }
 
     void Spread(Body otherBody) {
@@ -158,7 +162,15 @@ public class Body : MonoBehaviour {
                 continue;
             AddAffecter(otherAffecter.GetSpreadAffecter());
         }
-    } 
+    }
+
+    private void OnTriggerExit2D(Collider2D other) {
+        Body otherBody = other.gameObject.GetComponent<Body>();
+        if (otherBody != null) {
+            bodyCollisions--;
+            bodyRender.position = gameObject.transform.position;
+        }
+    }
 
 
     //SET ACTION
@@ -229,8 +241,8 @@ public class Body : MonoBehaviour {
     }
 
     //GET/SET LAYERLIST
-    public void AddToLayerList(Affecter _affecter) {
-        layerList.Add(_affecter);
+    public void AddToLayerList(Affecter _affecter, int ind = 0) {
+        layerList.Insert(ind, _affecter);
     }
 
     public void RemoveFromLayerList(Affecter _affecter) {

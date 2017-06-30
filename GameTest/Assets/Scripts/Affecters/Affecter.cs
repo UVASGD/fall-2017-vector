@@ -110,7 +110,7 @@ public class Affecter {
         if (Scan()) { //SCAN TO UPDATE INTERACTOR LIST
             if (spreadable) //IF THIS AFFECTER CAN BE SPREAD BY CONTACT
                 targetBody.AddToSpreadList(this); //ADD IT TO THE SPREAD LIST
-            if (layered) //IF THIS AFFECTER SERVES AS A LAYER
+            if (layered && !targetBody.GetLayerList().Contains(this)) //IF THIS AFFECTER SERVES AS A LAYER
                 targetBody.AddToLayerList(this); //ADD IT TO THE LAYER LIST
             return true;
         }
@@ -265,7 +265,10 @@ public class Water : Affecter {
 
     public void Freeze() {
         present = false;
-        targetBody.AddAffecter(new Ice(targetBody, vitality)); //TO DO, MAKE THIS ADD AT THE PROPER LAYER LEVEL
+        Ice ice = new Ice(targetBody, vitality);
+        int index = targetBody.GetLayerVal(this);
+        targetBody.AddAffecter(ice);
+        targetBody.AddToLayerList(ice, index);
     }
 
     public override Affecter GetSpreadAffecter() {
@@ -525,7 +528,7 @@ public class Watering : Reactor {
     protected override void React(Reactor reactant) {
         if (reactant.GetType() == typeof(Chilling))
             if (reactant.turnVitality > (turnVitality * 1.25f))
-                ((Water)parentAffecter).Freeze(); //The water parentAffecter should turn into an ice affecter
+                ((Water)parentAffecter).Freeze(); 
     }
 
     public override Reactor CloneReactor(Affecter _affecter) {
@@ -580,8 +583,9 @@ public class Puny : Reactor {
 
     protected override void React(Reactor reactant) {
         if (reactant.GetType() == typeof(Winding)) {
-            if (reactant.turnVitality > turnVitality) { }
+            if (reactant.turnVitality > turnVitality) {
                 //(Item)parentAffecter.Drop(); - The small object affecter shouldn't just remove itself from the list, it should drop into the world
+            }
         }
     }
 
@@ -604,7 +608,6 @@ public class Drying : Reactor {
 
     public override void Check() {
         base.Check();
-        //Debug.Log("HOWDY DOODY, I'M THE DRIER");
     }
 
     public void SetOilFire(bool _oilFire) {
