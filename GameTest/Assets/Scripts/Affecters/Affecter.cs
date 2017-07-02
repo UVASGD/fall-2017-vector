@@ -278,7 +278,7 @@ public class Water : Affecter {
 }
 
 public class Ice : Affecter {
-    public Ice(Body _targetBody, float _vitality, float _vRate = -1f, float _spreadMod = .25f) : base(_targetBody, _vitality, _vRate) {
+    public Ice(Body _targetBody, float _vitality, float _vRate = -1f, float _spreadMod = .25f) : base(_targetBody, _vitality, _vRate, _spreadMod) {
         reactorList = new List<Reactor> { new Dampening(this, _vitality, Mathf.Infinity, false, true),
                                           new Freezing(this, _vitality, Mathf.Infinity, false, true),
                                           new Chilling(this, _vitality, Mathf.Infinity, false, true)
@@ -355,6 +355,7 @@ public class Reactor {
     protected Reactor[] reactants;
     public float vitality;
     public float turnVitality;
+    protected float fullVitality;
     float lastParentVitality;
     protected float linkMod;
     protected bool immortal;
@@ -364,6 +365,7 @@ public class Reactor {
         parentAffecter = _parentAffecter;
         vitality = _vitality;
         turnVitality = _vitality;
+        fullVitality = _vitality;
         lastParentVitality = parentAffecter.GetTurnVitality();
         linkMod = _linkMod;
         immortal = _immortal;
@@ -419,6 +421,10 @@ public class Reactor {
 
     public virtual void AffectVitality(float _delta) {
         if (!immortal) {
+            if (Mathf.Sign(_delta) == -1 && Mathf.Abs(_delta) > vitality)
+                _delta = -vitality;
+            else if ((_delta + vitality) > fullVitality)
+                _delta = fullVitality - vitality;
             vitality += _delta;
             if (linkMod != Mathf.NegativeInfinity) {
                 if (linkMod == Mathf.Infinity)
