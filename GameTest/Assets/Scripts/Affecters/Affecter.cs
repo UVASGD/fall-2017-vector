@@ -325,7 +325,6 @@ public class Wound : Affecter {
         bool result = base.Enact(_targetBody);
         if (result) {
             targetBody.ChangeHarm(vitality);
-            Debug.Log("Rock it, sock it, 'round the room");
         }
         return result;
     }

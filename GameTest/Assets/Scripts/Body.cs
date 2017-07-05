@@ -12,7 +12,7 @@ public class Body : MonoBehaviour {
 
     Transform bodyRender; //Reference to the body-renderer's transform
 
-    int bodyCollisions = 0; 
+    int bodyCollisions = 0;
 
     float harmQuant; //Harm Variables
     float harmThreshold;
@@ -69,6 +69,10 @@ public class Body : MonoBehaviour {
 
     //TICK FUNCTION
     void Tick() {
+        if (mind.GetType() == typeof(PlayerAI)) {
+            float mousePos = (Camera.main.ScreenToViewportPoint(Input.mousePosition).x - 0.5f) * 38;
+            face = (Direction)Mathf.Sign(mousePos - (gameObject.transform.position.x));
+        }
         for (int i = 0; i < affecterList.Count; i++) {
             Affecter affecter = affecterList.ElementAt(i);
             affecter.Tick();
@@ -77,7 +81,6 @@ public class Body : MonoBehaviour {
         currMoveAct.Tick();
         currAct.Tick();
         if (harmQuant > harmThreshold) {
-            Debug.Log("Shake it, quake it, space KABOOM");
             DieIdiot();
         }
     }

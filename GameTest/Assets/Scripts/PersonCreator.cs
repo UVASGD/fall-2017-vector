@@ -55,11 +55,11 @@ public class PersonCreator { //This class exists just to spawn in a person. Not 
         coll.size = new Vector3(size*2, 1f, 0f);
         personBodyObject.name = objectName;
         Body personBody = personBodyObject.GetComponent<Body>();
-        personBody.BodyConstructor(size, Direction.Left, new List<string> {"Hostile"}, new PlayerAI(new Personality(), personBody));
         if (mindNum != 0) {
-            personBody.SetMind(new AI(new Personality(), personBody));
+            personBody.BodyConstructor(size, Direction.Left, new List<string> { "Hostile" }, new AI(new Personality(), personBody));
             personBodyObject.AddTag("Hostile");
         }
+        else personBody.BodyConstructor(size, Direction.Left, new List<string> { "Hostile" }, new PlayerAI(new Personality(), personBody));
     }
 
     public void SetBody() {

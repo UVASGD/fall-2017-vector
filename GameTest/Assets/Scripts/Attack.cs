@@ -90,7 +90,6 @@ public class Attack : MonoBehaviour {
     }
 
     private void OnTriggerEnter2D(Collider2D other) {
-        Debug.Log("Slam bam, thank you, ma'am");
         foreach (GameObject go in alreadyHit)
             if (go == other.gameObject) {
                 return;
@@ -105,7 +104,6 @@ public class Attack : MonoBehaviour {
         }
 
         if (isTarget) {
-            Debug.Log("GET ON THE FLOOR AND JAM");
             Body body = other.gameObject.GetComponent<Body>();
             foreach (Affecter eff in effects) {
                 body.AddAffecter(eff);

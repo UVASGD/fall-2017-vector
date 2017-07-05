@@ -69,11 +69,9 @@ public class HaltAction : Action {
 
 public class AttackAction : Action {
 
-    Direction dir;
     GameObject attack;
 
     public AttackAction(string _name, int _timeLeft, Body _genitor, GameObject _attack) : base(_name, _timeLeft, _genitor) {
-        dir = genitor.GetFace();
         attack = _attack;
     }
 
@@ -81,6 +79,8 @@ public class AttackAction : Action {
         Vector3 newPos = new Vector3();
         newPos = genitor.transform.position;
         GameObject newAttackObject = (GameObject) MonoBehaviour.Instantiate(attack, newPos, Quaternion.identity);
+        SpriteRenderer attackRender = newAttackObject.GetComponent<SpriteRenderer>();
+        attackRender.sortingLayerName = "0";
         Attack newAttackScript = newAttackObject.GetComponent<Attack>();
         newAttackScript.AttackConstructor(genitor);
         nextAction = new Action("Open", 0, genitor);

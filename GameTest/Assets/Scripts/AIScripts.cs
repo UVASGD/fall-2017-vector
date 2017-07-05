@@ -30,6 +30,10 @@ public class PlayerAI : AI {
     float dashTime = 0.2f;
     float dashTimer = 0f;
 
+    float heavyTime = 1.5f;
+    float button1Timer = 0;
+    float button2Timer = 0;
+
     public PlayerAI(Personality _personality, Body _body) : base(_personality, _body) {
     }
 
@@ -79,8 +83,70 @@ public class PlayerAI : AI {
     }
 
     void GetAttackInput() {
+
+        if (Input.GetMouseButtonUp(0)) {
+            if (button1Timer > heavyTime) {
+                if (button2Timer > heavyTime) {
+                    Debug.Log("THROW");
+                }
+                else {
+                    Debug.Log("HEAVY ATTACK");
+                    body.SetCurrAct(new AttackAction("SampleAttack", 2, body, (GameObject)Resources.Load("Chest")));
+                }
+            }
+            else if (button1Timer > 0) {
+                if (button2Timer > heavyTime) {
+                    Debug.Log("PARRY");
+                }
+                else {
+                    Debug.Log("LIGHT ATTACK");
+                    body.SetCurrAct(new AttackAction("SampleAttack", 2, body, (GameObject)Resources.Load("Attack")));
+                }
+            }
+
+            button1Timer = 0;
+            button2Timer = 0;
+        }
+        if (Input.GetMouseButtonUp(1)) {
+            if (button2Timer > heavyTime) {
+                if (button1Timer > heavyTime) {
+                    Debug.Log("THROW");
+                }
+                else {
+                    Debug.Log("END BLOCK");
+                }
+            }
+            else if (button2Timer > 0) {
+                Debug.Log("SHOVE");
+            }
+
+            button1Timer = 0;
+            button2Timer = 0;
+        }
+
+        if (Input.GetMouseButtonDown(0)) {
+            Debug.Log("PREPARE PRIMARY");
+            button1Timer = 1;
+        }
+        if (Input.GetMouseButtonDown(1)) {
+            Debug.Log("PREPARE SECONDARY");
+            button2Timer = 1;
+        }
+
+        if (Input.GetMouseButton(0)) {
+            if (button1Timer > 0.5 && button1Timer < 10) {
+                button1Timer += Time.deltaTime;
+            }
+        }
+        if (Input.GetMouseButton(1)) {
+            if (button2Timer > 0.5f && button2Timer < 10) {
+                button2Timer += Time.deltaTime;
+            }
+        }
+
+
+
         if (Input.GetKeyDown("space")) {
-            body.SetCurrAct(new AttackAction("SampleAttack", 2, body, (GameObject) Resources.Load("Attack")));
         }
     }
 
