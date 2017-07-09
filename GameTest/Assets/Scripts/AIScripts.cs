@@ -47,6 +47,8 @@ public class PlayerAI : AI {
     }
 
     void GetMoveInput() {
+        if (body.Impediment == ImpedimentLevel.noMove)
+            return;
         if (Input.anyKeyDown) {
             //DASH CONTROLS
             int moveKey = (int)Input.GetAxisRaw("Horizontal");
@@ -86,7 +88,6 @@ public class PlayerAI : AI {
 
         if (Input.GetMouseButtonUp(0)) {
             if (button1Timer > heavyTime) {
-                body.Impediment = ImpedimentLevel.noMove;
                 if (button2Timer > heavyTime) {
                     Debug.Log("THROW");
                 }
@@ -139,6 +140,8 @@ public class PlayerAI : AI {
             if (button1Timer > 0.5 && button1Timer < 10) {
                 button1Timer += Time.deltaTime;
             }
+            if (button1Timer > heavyTime)
+                body.Impediment = ImpedimentLevel.noMove;
         }
         if (Input.GetMouseButton(1)) {
             if (button2Timer > 0.5f && button2Timer < 10) {

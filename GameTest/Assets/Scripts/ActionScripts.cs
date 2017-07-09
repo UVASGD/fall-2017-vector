@@ -18,7 +18,7 @@ public class Action {
 
     protected virtual void Dewit() {
         nextAction = nextAction ?? new Action("Open", 0, genitor);
-        genitor.SetCurrMoveAct(nextAction);
+        genitor.SetCurrAct(nextAction);
     }
 
     public virtual void Tick() {
