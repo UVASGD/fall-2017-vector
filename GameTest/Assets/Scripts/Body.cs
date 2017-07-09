@@ -6,20 +6,15 @@ using UnityEngine;
 public class Body : MonoBehaviour {
 
     public int brawn = 5;
-    public int Brawn 
-        {
-        get { return brawn; }
-        //set { brawn = value; }
-        }
-    public int coordination = 5;
-    public int Coordination
-        {
-        get { return coordination; }
-        }
+    public int Brawn { get { return brawn; } }
 
-    public int Athletics {
-        get { return (brawn + coordination) / 2; }
-    }
+    public int coordination = 5;
+    public int Coordination { get { return coordination; } }
+
+    public int Athletics { get { return (brawn + coordination) / 2; } }
+
+    ImpedimentLevel impediment = ImpedimentLevel.unimpeded;
+    public ImpedimentLevel Impediment { get { return impediment; } set { impediment = value; } }
 
     TimeManager time; //Reference to time manager
 
@@ -42,8 +37,10 @@ public class Body : MonoBehaviour {
     Action currAct; //Current non-movement action
 
     List<string> targetTags = new List<string>(); //List of tag-filters *MUST BE SET
+    public List<string> TargetTags { get { return targetTags;  } }
 
     AI mind; //The AI object that will generate actions *MUST BE SET
+    public AI Mind { get { return mind; } }
 
     List<Affecter> affecterList = new List<Affecter>(); //List of Affecters
     List<Affecter> traitList = new List<Affecter>(); //List of Traits 
@@ -115,10 +112,6 @@ public class Body : MonoBehaviour {
         ChangeHarm(_damQuant * damMods[(int)_damType]);
     }
 
-    public List<string> GetTargetTags() {
-        return targetTags;
-    }
-
     //ABILITY TO MOVE
     public void Move(Direction _dir) {
         switch (_dir) {
@@ -187,7 +180,6 @@ public class Body : MonoBehaviour {
             bodyRender.position = gameObject.transform.position;
         }
     }
-
 
     //SET ACTION
     public void SetCurrAct(Action _currAct) {

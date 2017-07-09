@@ -47,7 +47,7 @@ public class Attack : MonoBehaviour {
     public void AttackConstructor(Body _genitor) {
         genitor = _genitor;
         dir = genitor.GetFace();
-        targetTags = genitor.GetTargetTags();
+        targetTags = genitor.TargetTags;
         alreadyHit.Add(genitor.gameObject);
     }
 

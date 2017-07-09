@@ -17,12 +17,8 @@ public class Action {
     }
 
     protected virtual void Dewit() {
-        if (nextAction != null) {
-            genitor.SetCurrAct(nextAction);
-            return;
-        }
-
-        nextAction = new Action("Open", 0, genitor);
+        nextAction = nextAction ?? new Action("Open", 0, genitor);
+        genitor.SetCurrMoveAct(nextAction);
     }
 
     public virtual void Tick() {
@@ -106,23 +102,35 @@ public class ShortMeleeLightAttack : Action {
     }
 }
 
+public enum ImpedimentLevel { unimpeded, noAttack, noAct, noMove };
+
 public class Recovery : Action {
-    protected enum ImpedimentLevel { unimpeded, noAttack, noAct, noMove};
-
-    Affecter curImpediment;
-
-    // TODO: make these Affecters
-    Affecter noMove;  // = new MoveDenier ??
-    Affecter noAct;  //  = new ActionDenier  ??
-    Affecter noAttack;  //  = new AttackDenier  ??
 
     ImpedimentLevel curImpLevel = ImpedimentLevel.unimpeded;
+
+    //Affecter curImpediment;
+
+    // TODO: make these Affecters
+    //Affecter noMove;  // = new MoveDenier ??
+    //Affecter noAct;  //  = new ActionDenier  ??
+    //Affecter noAttack;  //  = new AttackDenier  ??
 
     public Recovery(string _name, int _speedFactor, Body _genitor) : base(_name, _speedFactor, _genitor) {
     }
 
     public override void Tick() {
-        base.Tick();
+        if (timeLeft > 20 && curImpLevel == ImpedimentLevel.unimpeded)
+            genitor.Impediment = ImpedimentLevel.noMove;
+        else if (timeLeft > 10)
+            genitor.Impediment = ImpedimentLevel.noAct;
+        else if (timeLeft > 0)
+            genitor.Impediment = ImpedimentLevel.noAttack;
+        else if (timeLeft <= 0)
+            genitor.Impediment = ImpedimentLevel.unimpeded;
+    }
+
+    /*
+    public override void Tick() {
         if (timeLeft > 20 && curImpLevel == ImpedimentLevel.unimpeded) {
             ApplyImpediment(ImpedimentLevel.noMove);
         }
@@ -132,6 +140,12 @@ public class Recovery : Action {
         else if (timeLeft > 0) {
             ApplyImpediment(ImpedimentLevel.noAttack);
         }
+
+        if (timeLeft <= 0) {
+            genitor.RemoveFromAffecterList(curImpediment);
+        }
+
+        base.Tick();
     }
 
     protected void ApplyImpediment(ImpedimentLevel level) {
@@ -147,4 +161,5 @@ public class Recovery : Action {
 
         genitor.AddAffecter(curImpediment);
     }
+    */
 }
