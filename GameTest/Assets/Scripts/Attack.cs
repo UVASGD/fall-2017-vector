@@ -12,6 +12,7 @@ public class Attack : MonoBehaviour {
     public int[] moveTimes;
     int moveTimer;
     int currFrame = 0;
+    int repeats = 3;
     char[] moveScheme;
     Affecter[] effects;
     TimeManager time;
@@ -26,8 +27,8 @@ public class Attack : MonoBehaviour {
     void Start() {
         time = (TimeManager)FindObjectOfType(typeof(TimeManager));
         done = false;
-        moveScheme = new char[] {'f', 'f', 'f', 'b', 'f', 'f', 'w'};
-        moveTimes = new int[] {   4,   3,   2,   1,   2,   3,   4 };
+        moveScheme = new char[] {'f', 'f', 'b' };
+        moveTimes = new int[] {   3,   3,   3  };
         moveTimer = moveTimes[0];
         effects = new Affecter[] { new Wound(genitor, 0.1f)};
     }
@@ -57,10 +58,15 @@ public class Attack : MonoBehaviour {
     public void Tick() {
         if (moveTimer == 0 && !done) {
 
-            if (currFrame >= moveScheme.Length) {
+            if (currFrame >= moveScheme.Length && repeats <= 0) {
                 done = true;
                 return;
             }
+            else if (currFrame >= moveScheme.Length && repeats > 0) {
+                currFrame = 0;
+                repeats--;
+            }
+
             Move();
         }
         else if (moveTimer != 0 && !done) {

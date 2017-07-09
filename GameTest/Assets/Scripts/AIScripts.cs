@@ -91,7 +91,7 @@ public class PlayerAI : AI {
                 }
                 else {
                     Debug.Log("HEAVY ATTACK");
-                    body.SetCurrAct(new AttackAction("SampleAttack", 5 * (10-body.Athletics), body, (GameObject)Resources.Load("Chest")));
+                    body.SetCurrAct(new AttackAction("SampleAttack", 10 - body.Athletics, body, (GameObject)Resources.Load("Chest")));
                 }
             }
             else if (button1Timer > 0) {
@@ -100,7 +100,7 @@ public class PlayerAI : AI {
                 }
                 else {
                     Debug.Log("LIGHT ATTACK");
-                    body.SetCurrAct(new AttackAction("SampleAttack", 3 * (10-body.Athletics), body, (GameObject)Resources.Load("Attack")));
+                    body.SetCurrAct(new AttackAction("SampleAttack", 10 - body.Athletics, body, (GameObject)Resources.Load("Attack")));
                 }
             }
 

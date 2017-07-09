@@ -24,3 +24,7 @@ public class Item {
         size = _size;
     }
 }
+
+public interface ICloseMelee {
+
+}
