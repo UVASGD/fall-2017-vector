@@ -6,7 +6,20 @@ using UnityEngine;
 public class Body : MonoBehaviour {
 
     public int brawn = 5;
+    public int Brawn 
+        {
+        get { return brawn; }
+        //set { brawn = value; }
+        }
     public int coordination = 5;
+    public int Coordination
+        {
+        get { return coordination; }
+        }
+
+    public int Athletics {
+        get { return (brawn + coordination) / 2; }
+    }
 
     TimeManager time; //Reference to time manager
 
