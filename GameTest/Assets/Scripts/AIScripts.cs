@@ -86,11 +86,13 @@ public class PlayerAI : AI {
 
         if (Input.GetMouseButtonUp(0)) {
             if (button1Timer > heavyTime) {
+                body.Impediment = ImpedimentLevel.noMove;
                 if (button2Timer > heavyTime) {
                     Debug.Log("THROW");
                 }
                 else {
                     Debug.Log("HEAVY ATTACK");
+                    body.Impediment = ImpedimentLevel.unimpeded;
                     body.SetCurrAct(new AttackAction("SampleAttack", 10 - body.Athletics, body, (GameObject)Resources.Load("Chest")));
                 }
             }
