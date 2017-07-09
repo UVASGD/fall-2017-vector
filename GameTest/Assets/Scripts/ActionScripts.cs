@@ -87,3 +87,9 @@ public class AttackAction : Action {
         base.Dewit();
     }
 }
+
+public class ShortMeleeLightAttack : Action {
+
+    public ShortMeleeLightAttack(string _name, int _timeLeft, Body _genitor) : base(_name, _timeLeft, _genitor) {
+    }
+}
