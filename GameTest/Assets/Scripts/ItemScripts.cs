@@ -28,6 +28,22 @@ public class Item {
         size = _size;
         speed = 5;
     }
+
+    protected T AddAttackScript<T>(string resource) where T : Component {
+        GameObject attackObj = (GameObject)Resources.Load(resource);
+        Vector3 pos = new Vector3(holder.transform.position.x + (2 * ((int)holder.face)), 0, 0);
+        var newAttackObject = Object.Instantiate(attackObj, pos, Quaternion.identity) as GameObject;
+
+        newAttackObject.AddComponent<T>();
+
+        T attackScript = newAttackObject.GetComponent<T>();
+        return attackScript;
+    }
+
+    protected void SetupAttack(Attack _attack) {
+        _attack.AttackConstructor(holder, speed);
+        holder.SetCurrAct(new Recovery("Recovery", _attack.Rate * _attack.Duration, holder));
+    }
 }
 
 public interface ICloseMelee {

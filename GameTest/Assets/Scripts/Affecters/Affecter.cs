@@ -168,7 +168,7 @@ public class Affecter {
     public float GetSpreadVitality() {
         return turnVitality * spreadMod;
     }
-
+   
     public virtual Affecter GetSpreadAffecter() {
         Affecter spreadAffecter = (Affecter)MemberwiseClone();
         spreadAffecter.interactorList = new List<Affecter>();

@@ -113,9 +113,9 @@ public class Recovery : Action {
     }
 
     public override void Tick() {
-        if (timeLeft > 20 && curImpLevel == ImpedimentLevel.unimpeded)
+        if (timeLeft > 5 && curImpLevel == ImpedimentLevel.unimpeded)
             genitor.Impediment = ImpedimentLevel.noMove;
-        else if (timeLeft > 10)
+        else if (timeLeft > 3)
             genitor.Impediment = ImpedimentLevel.noAct;
         else if (timeLeft > 0)
             genitor.Impediment = ImpedimentLevel.noAttack;
