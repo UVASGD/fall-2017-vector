@@ -12,6 +12,7 @@ public class Attack : MonoBehaviour {
     public int[] moveTimes;
     protected int moveTimer;
     protected int currFrame = 0;
+    protected int rate;
     protected int repeats;
     protected char[] moveScheme;
     protected Affecter[] effects;
@@ -45,11 +46,14 @@ public class Attack : MonoBehaviour {
         }
     }
 
-    public void AttackConstructor(Body _genitor) {
+    public void AttackConstructor(Body _genitor, int _speed) {
+        gameObject.GetComponent<SpriteRenderer>().sortingLayerName = "0";
         genitor = _genitor;
         dir = genitor.GetFace();
         targetTags = genitor.TargetTags;
         alreadyHit.Add(genitor.gameObject);
+        rate = ((5-_speed) + (10 - _genitor.Athletics)) / 2; 
+        
     }
 
     public void setTargetTags(List<string> _targetTags) {
@@ -77,6 +81,9 @@ public class Attack : MonoBehaviour {
 
     public virtual void Move() {
         switch (moveScheme[currFrame++]) {
+            case 'p':
+                genitor.transform.Translate((int)dir, 0, 0);
+                break;
             case 'l':
                 gameObject.transform.Translate(-1, 0, 0);
                 break;

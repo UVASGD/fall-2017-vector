@@ -5,6 +5,7 @@ using UnityEngine;
 public class Item {
     protected Body holder;
     protected int size;
+    protected int speed;
     protected Affecter material;
 
     protected List<Affecter> EquippedList;
@@ -25,6 +26,7 @@ public class Item {
     public Item(Body _holder, int _size) {
         holder = _holder;
         size = _size;
+        speed = 5;
     }
 }
 
