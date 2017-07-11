@@ -13,7 +13,10 @@ public class Attack : MonoBehaviour {
     protected int moveTimer;
     protected int currFrame = 0;
     protected int rate;
-    protected int repeats;
+    public int Rate { get { return rate; } }
+    protected int duration;
+    public int Duration { get { return duration; } }
+    protected int repeats = 0;
     protected char[] moveScheme;
     protected Affecter[] effects;
     protected TimeManager time;
@@ -23,7 +26,7 @@ public class Attack : MonoBehaviour {
     protected Direction dir;
     protected Body genitor;
 
-    protected bool done = true;
+    protected bool done = false;
 
     void Start() {
         /*time = (TimeManager)FindObjectOfType(typeof(TimeManager));
@@ -39,7 +42,6 @@ public class Attack : MonoBehaviour {
         if (time.clock) {
             Tick();
         }
-
         // Deletes parent GameObject when finished
         if (done) {
             Destroy(gameObject);
@@ -52,8 +54,7 @@ public class Attack : MonoBehaviour {
         dir = genitor.GetFace();
         targetTags = genitor.TargetTags;
         alreadyHit.Add(genitor.gameObject);
-        rate = ((5-_speed) + (10 - _genitor.Athletics)) / 2; 
-        
+        rate = ((5-_speed) + (10 - _genitor.Athletics)) / 2;    
     }
 
     public void setTargetTags(List<string> _targetTags) {

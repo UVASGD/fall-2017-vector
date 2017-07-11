@@ -16,11 +16,20 @@ public class Sword : Item, ICloseMelee {
         CloseMeleeLightAttackScript lightAttack = newAttackObject.GetComponent<CloseMeleeLightAttackScript>();
         lightAttack.AttackConstructor(holder, speed);
 
-        holder.SetCurrAct(new Recovery("Recovery", 10 - holder.Athletics, holder));
+        holder.SetCurrAct(new Recovery("Recovery", lightAttack.Rate * lightAttack.Duration, holder));
     }
 
     public void CloseMeleeHeavyAttack() {
+        GameObject attackObj = (GameObject)Resources.Load("Chest");
+        Vector3 pos = new Vector3(holder.transform.position.x + (2 * ((int)holder.face)), 0, 0);
+        var newAttackObject = Object.Instantiate(attackObj, pos, Quaternion.identity) as GameObject;
 
+        newAttackObject.AddComponent<CloseMeleeHeavyAttackScript>();
+
+        CloseMeleeHeavyAttackScript heavyAttack = newAttackObject.GetComponent<CloseMeleeHeavyAttackScript>();
+        heavyAttack.AttackConstructor(holder, speed);
+
+        holder.SetCurrAct(new Recovery("Recovery", heavyAttack.Rate * heavyAttack.Duration, holder));
     }
 }
 
