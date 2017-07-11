@@ -10,27 +10,28 @@ public enum DamageType { Crushing, Piercing, Slashing, Burning, Freezing, Electr
 public class Attack : MonoBehaviour {
 
     public int[] moveTimes;
-    int moveTimer;
-    int currFrame = 0;
-    int repeats = 3;
-    char[] moveScheme;
-    Affecter[] effects;
-    TimeManager time;
-    List<string> targetTags;
-    List<GameObject> alreadyHit = new List<GameObject>();
+    protected int moveTimer;
+    protected int currFrame = 0;
+    protected int repeats;
+    protected char[] moveScheme;
+    protected Affecter[] effects;
+    protected TimeManager time;
+    protected List<string> targetTags;
+    protected List<GameObject> alreadyHit = new List<GameObject>();
 
-    Direction dir;
-    Body genitor;
+    protected Direction dir;
+    protected Body genitor;
 
-    bool done = true;
+    protected bool done = true;
 
     void Start() {
-        time = (TimeManager)FindObjectOfType(typeof(TimeManager));
+        /*time = (TimeManager)FindObjectOfType(typeof(TimeManager));
         done = false;
         moveScheme = new char[] {'f', 'f', 'b' };
         moveTimes = new int[] {   3,   3,   3  };
         moveTimer = moveTimes[0];
-        effects = new Affecter[] { new Wound(genitor, 0.1f)};
+        repeats = 0;
+        effects = new Affecter[] { new Wound(genitor, 0.1f)};*/
     }
 
     void Update() {
@@ -74,7 +75,7 @@ public class Attack : MonoBehaviour {
         }
     }
 
-    public void Move() {
+    public virtual void Move() {
         switch (moveScheme[currFrame++]) {
             case 'l':
                 gameObject.transform.Translate(-1, 0, 0);

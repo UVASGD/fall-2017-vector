@@ -111,6 +111,9 @@ Disgust, Anger, Intimidate, Sad
 
         PersonCreator player = new PersonCreator("RPlayer", "Player", "Player", 0.5f, 1, 0);
         Body playerBody = (Body)FindObjectOfType(typeof(Body));
+
+        Sword sword = new Sword(playerBody, 1);
+        playerBody.Weapon = sword;
         //playerBody.AddAffecter(new Fire(playerBody, 12f));
         //playerBody.AddAffecter(new Fire(playerBody, 20f));
         //playerBody.AddAffecter(new Affecter(playerBody, 20f, -2f));

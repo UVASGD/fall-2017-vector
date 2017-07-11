@@ -73,7 +73,7 @@ public class AttackAction : Action {
     }
 
     protected override void Dewit() {
-        Vector3 newPos = new Vector3();
+        /*Vector3 newPos = new Vector3();
         newPos = genitor.transform.position;
 
         if (genitor.GetFace() == Direction.Left) {
@@ -91,14 +91,8 @@ public class AttackAction : Action {
         Attack newAttackScript = newAttackObject.GetComponent<Attack>();
         newAttackScript.AttackConstructor(genitor);
 
-        nextAction = new Action("Open", 0, genitor);
+        nextAction = new Action("Open", 0, genitor);*/
         base.Dewit();
-    }
-}
-
-public class ShortMeleeLightAttack : Action {
-
-    public ShortMeleeLightAttack(string _name, int _speedFactor, Body _genitor) : base(_name, _speedFactor, _genitor) {
     }
 }
 

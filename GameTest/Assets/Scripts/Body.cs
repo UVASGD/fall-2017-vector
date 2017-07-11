@@ -48,6 +48,9 @@ public class Body : MonoBehaviour {
     List<Affecter> spreadList = new List<Affecter>();
     List<Affecter> layerList = new List<Affecter>();
 
+    Item weapon;
+    public Item Weapon { get { return weapon; } set { weapon = value; } }
+
     void Start() {
         time = (TimeManager)FindObjectOfType(typeof(TimeManager)); //Set Time manager
         foreach (Transform child in transform) if (child.CompareTag("Renderer")) { bodyRender = child; } //Set bodyRender equal to the transform of the proper childObject

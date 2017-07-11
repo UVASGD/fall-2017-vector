@@ -94,7 +94,9 @@ public class PlayerAI : AI {
                 else {
                     Debug.Log("HEAVY ATTACK");
                     body.Impediment = ImpedimentLevel.unimpeded;
-                    body.SetCurrAct(new AttackAction("SampleAttack", 10 - body.Athletics, body, (GameObject)Resources.Load("Chest")));
+                    if (body.Weapon is ICloseMelee)
+                        ((ICloseMelee)body.Weapon).CloseMeleeHeavyAttack();
+                    //body.SetCurrAct(new AttackAction("SampleAttack", 10 - body.Athletics, body, (GameObject)Resources.Load("Chest")));
                 }
             }
             else if (button1Timer > 0) {
@@ -103,7 +105,9 @@ public class PlayerAI : AI {
                 }
                 else {
                     Debug.Log("LIGHT ATTACK");
-                    body.SetCurrAct(new AttackAction("SampleAttack", 10 - body.Athletics, body, (GameObject)Resources.Load("Attack")));
+                    if (body.Weapon is ICloseMelee)
+                        ((ICloseMelee)body.Weapon).CloseMeleeLightAttack();
+                    //body.SetCurrAct(new AttackAction("SampleAttack", 10 - body.Athletics, body, (GameObject)Resources.Load("Attack")));
                 }
             }
 

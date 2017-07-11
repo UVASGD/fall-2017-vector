@@ -5,6 +5,8 @@ using UnityEngine;
 public class Item {
     protected Body holder;
     protected int size;
+    protected Affecter material;
+
     protected List<Affecter> EquippedList;
     protected List<Affecter> HoldingList;
     protected List<Affecter> DroppedList;
@@ -20,11 +22,14 @@ public class Item {
 
     protected List<Attack> ThrowList;
 
-    public Item(int _size, Affecter _essence) {
+    public Item(Body _holder, int _size) {
+        holder = _holder;
         size = _size;
     }
 }
 
 public interface ICloseMelee {
+    void CloseMeleeLightAttack();
 
+    void CloseMeleeHeavyAttack();
 }
