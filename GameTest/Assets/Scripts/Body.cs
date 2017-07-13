@@ -22,8 +22,8 @@ public class Body : MonoBehaviour {
 
     int bodyCollisions = 0;
 
-    float harmQuant; //Harm Variables
-    float harmThreshold;
+    public float harmQuant; //Harm Variables
+    public float harmThreshold;
 
     float hinderQuant; //Hinder Variables
     float hinderThreshold;
@@ -172,7 +172,7 @@ public class Body : MonoBehaviour {
             }
             if (skip)
                 continue;
-            AddAffecter(otherAffecter.GetSpreadAffecter());
+            AddAffecter(otherAffecter.GetAffecterClone(true));
         }
     }
 

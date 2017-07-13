@@ -10,6 +10,6 @@ public class CloseMeleeHeavyAttackScript : Attack {
         moveTimes = new int[] { rate, rate, rate, rate, 0, rate };
         duration = 5;
         moveTimer = moveTimes[0];
-        effects = new Affecter[] { new Wound(genitor, 0.4f) };
+        //effects = new List<Affecter> { new Wound(genitor, 0.4f) };
     }
 }

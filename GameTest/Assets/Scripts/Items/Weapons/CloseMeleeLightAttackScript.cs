@@ -10,6 +10,6 @@ public class CloseMeleeLightAttackScript : Attack {
         moveTimes = new int[] { rate, rate, 0, rate };
         duration = 3;
         moveTimer = moveTimes[0];
-        effects = new Affecter[] { new Wound(genitor, 0.1f) };
+        //effects = new List<Affecter> { new Wound(genitor, 0.1f) };
     }
 }

@@ -12,16 +12,16 @@ public class Item {
     protected List<Affecter> HoldingList;
     protected List<Affecter> DroppedList;
 
-    protected List<Attack> LightAttackList;
-    protected List<Attack> HeavyAttackList;
-    protected List<Attack> LightDashAttackList;
-    protected List<Attack> HeavyDashAttackList;
+    protected List<Affecter> LightAttackList;
+    protected List<Affecter> HeavyAttackList;
+    protected List<Affecter> LightDashAttackList;
+    protected List<Affecter> HeavyDashAttackList;
 
-    protected List<Attack> RangedAttackList;
+    protected List<Affecter> RangedAttackList;
 
-    protected List<Attack> CastList;
+    protected List<Affecter> CastList;
 
-    protected List<Attack> ThrowList;
+    protected List<Affecter> ThrowList;
 
     public Item(Body _holder, int _size) {
         holder = _holder;
@@ -40,8 +40,13 @@ public class Item {
         return attackScript;
     }
 
-    protected void SetupAttack(Attack _attack) {
+    protected void SetupAttack(Attack _attack, List<Affecter> _effects) {
         _attack.AttackConstructor(holder, speed);
+        _attack.effects = _effects;
+        for (int i = 0; i < _effects.Count; i++) {
+            Affecter effect = _effects[i];
+            _effects[i] = effect.GetAffecterClone();
+        }
         holder.SetCurrAct(new Recovery("Recovery", _attack.Rate * _attack.Duration, holder));
     }
 }

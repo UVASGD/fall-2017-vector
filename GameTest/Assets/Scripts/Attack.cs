@@ -18,7 +18,7 @@ public class Attack : MonoBehaviour {
     public int Duration { get { return duration; } }
     protected int repeats = 0;
     protected char[] moveScheme;
-    protected Affecter[] effects;
+    public List<Affecter> effects;
     protected TimeManager time;
     protected List<string> targetTags;
     protected List<GameObject> alreadyHit = new List<GameObject>();
@@ -121,8 +121,11 @@ public class Attack : MonoBehaviour {
         if (isTarget) {
             Body body = other.gameObject.GetComponent<Body>();
             foreach (Affecter eff in effects) {
+                Debug.Log("Affecter vitality, yo: " + eff.GetTurnVitality());
                 body.AddAffecter(eff);
             }
+            Debug.Log("IT A HIT OOGA, hittee health is " + body.harmQuant);
+            Debug.Log("HARM THRESHOLD: " + body.harmThreshold);
             alreadyHit.Add(other.gameObject);
         }
     }
