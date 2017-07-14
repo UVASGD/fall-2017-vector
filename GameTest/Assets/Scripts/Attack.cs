@@ -121,11 +121,8 @@ public class Attack : MonoBehaviour {
         if (isTarget) {
             Body body = other.gameObject.GetComponent<Body>();
             foreach (Affecter eff in effects) {
-                Debug.Log("Affecter vitality, yo: " + eff.GetTurnVitality());
                 body.AddAffecter(eff);
             }
-            Debug.Log("IT A HIT OOGA, hittee health is " + body.harmQuant);
-            Debug.Log("HARM THRESHOLD: " + body.harmThreshold);
             alreadyHit.Add(other.gameObject);
         }
     }

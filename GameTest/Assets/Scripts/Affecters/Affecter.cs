@@ -25,7 +25,7 @@ public class Affecter {
     protected int timer; //The timer that designates when to activate
     protected int freq; //The frequency at which the timer goes off
 
-    public Affecter(Body _targetBody, float _vitality, float _vRate, float spreadMod = 1f, int _freq = 5) {
+    public Affecter(Body _targetBody, float _vitality, float _vRate, float _spreadMod = 1f, int _freq = 5) {
         //targetBody = _targetBody;
         vitality = _vitality;
         fullVitality = _vitality;
@@ -33,6 +33,7 @@ public class Affecter {
         turnVitality = _vitality;
         combinable = false;
         spreadable = false;
+        spreadMod = _spreadMod;
         layered = false;
         present = true;
         inAffecter = true;
@@ -146,7 +147,6 @@ public class Affecter {
     }
 
     public virtual void Deact() {
-        Debug.Log("UMBUNGO");
     }
 
     public virtual void Combine(Affecter combiner) {
@@ -170,20 +170,23 @@ public class Affecter {
     public float GetSpreadVitality() {
         return turnVitality * spreadMod;
     }
-   
-    public virtual Affecter GetAffecterClone(bool spread = false) {
-        Affecter affecterClone = (Affecter)MemberwiseClone();
+
+    public Affecter GetAffecterClone<T>(T _this, bool spread = false) where T : Affecter {
+        Affecter affecterClone = (Affecter)_this.MemberwiseClone();
+        affecterClone.present = true;
+        affecterClone.inAffecter = true;
+        affecterClone.inAffecterChanged = false;
         affecterClone.interactorList = new List<Affecter>();
         affecterClone.reactorList = new List<Reactor>();
-        for (int i = 0; i < reactorList.Count; i++) {
-            Reactor reactor = reactorList.ElementAt(i);
+        for (int i = 0; i < _this.reactorList.Count; i++) {
+            Reactor reactor = _this.reactorList.ElementAt(i);
             affecterClone.reactorList.Add(reactor.CloneReactor(affecterClone));
         }
         if (spread) {
             affecterClone.vitality *= spreadMod;
-            affecterClone.turnVitality = vitality;
+            affecterClone.turnVitality = affecterClone.vitality;
         }
-        else { affecterClone.vitality = naturalVitality; affecterClone.turnVitality = affecterClone.vitality;}
+        else { affecterClone.vitality = naturalVitality; affecterClone.turnVitality = affecterClone.vitality; }
         return affecterClone;
     }
 
@@ -244,32 +247,27 @@ public class Affecter {
  */
 
 public class Fire : Affecter {
-    public Fire(Body _targetBody, float _vitality, float _vRate = -1f, float _spreadMod = .5f) : base(_targetBody, _vitality, _vRate) {
+    public Fire(Body _targetBody, float _vitality, float _vRate = -1f, float _spreadMod = 0.5f) : base(_targetBody, _vitality, _vRate, _spreadMod) {
         reactorList = new List<Reactor> { new Burning(this, _vitality, Mathf.Infinity, false, true),
                                           new Drying(this, _vitality, Mathf.Infinity, false, true),
                                           new Heating(this, _vitality, Mathf.Infinity, false, true)};
+
         combinable = true;
         spreadable = true;
         layered = true;
     }
 
     public override void Dewit() {
-        Debug.Log(targetBody.GetType() + " is on fire!!! With " + vitality + " vitality!!!");
         base.Dewit();
     }
 
     public override void Deact() {
         base.Deact();
     }
-
-    public override Affecter GetAffecterClone(bool spread = false) {
-        Fire affecterClone = (Fire)base.GetAffecterClone(spread);
-        return affecterClone;
-    }
 }
 
 public class Water : Affecter {
-    public Water(Body _targetBody, float _vitality, float _vRate = -1f, float _spreadMod = .25f) : base(_targetBody, _vitality, _vRate) {
+    public Water(Body _targetBody, float _vitality, float _vRate = -1f, float _spreadMod = 0.25f) : base(_targetBody, _vitality, _vRate, _spreadMod) {
         reactorList = new List<Reactor> { new Dampening(this, _vitality, Mathf.Infinity, false, true),
                                           new Watering(this, _vitality, Mathf.Infinity, false, true)};
         combinable = true;
@@ -284,15 +282,10 @@ public class Water : Affecter {
         targetBody.AddAffecter(ice);
         targetBody.AddToLayerList(ice, index);
     }
-
-    public override Affecter GetAffecterClone(bool spread = false) {
-        Water affecterClone = (Water)base.GetAffecterClone(spread);
-        return affecterClone;
-    }
 }
 
 public class Ice : Affecter {
-    public Ice(Body _targetBody, float _vitality, float _vRate = -1f, float _spreadMod = .25f) : base(_targetBody, _vitality, _vRate, _spreadMod) {
+    public Ice(Body _targetBody, float _vitality, float _vRate = -1f, float _spreadMod = 0.25f) : base(_targetBody, _vitality, _vRate, _spreadMod) {
         reactorList = new List<Reactor> { new Dampening(this, _vitality, Mathf.Infinity, false, true),
                                           new Freezing(this, _vitality, Mathf.Infinity, false, true),
                                           new Chilling(this, _vitality, Mathf.Infinity, false, true)
@@ -318,11 +311,6 @@ public class Oil : Affecter {
         spreadable = true;
         layered = true;
     }
-
-    public override Affecter GetAffecterClone(bool spread = false) {
-        Oil affecterClone = (Oil)base.GetAffecterClone(spread);
-        return affecterClone;
-    }
 }
 
 public class Wound : Affecter {
@@ -330,6 +318,7 @@ public class Wound : Affecter {
 
     public Wound(Body _targetBody, float _vitality, float _vRate = -1f) : base(_targetBody, _vitality, _vRate) {
         reactorList = new List<Reactor> { new Harming(this, _vitality, Mathf.Infinity, false, true)};
+
         combinable = false;
         spreadable = false;
         layered = false;

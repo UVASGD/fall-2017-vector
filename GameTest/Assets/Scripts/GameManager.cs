@@ -114,9 +114,8 @@ Disgust, Anger, Intimidate, Sad
 
         Sword sword = new Sword(playerBody, 1);
         playerBody.Weapon = sword;
-        //playerBody.AddAffecter(new Fire(playerBody, 12f));
+        //playerBody.AddAffecter(new Fire(playerBody, 40f));
         //playerBody.AddAffecter(new Fire(playerBody, 20f));
-        //playerBody.AddAffecter(new Affecter(playerBody, 20f, -2f));
         PersonCreator innkeeper = new PersonCreator("RInnkeeper", "Innkeeper", "Innkeeper", -6.5f, 1, 1);
 
         DontDestroyOnLoad(gameObject);

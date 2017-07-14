@@ -22,8 +22,8 @@ public class Body : MonoBehaviour {
 
     int bodyCollisions = 0;
 
-    public float harmQuant; //Harm Variables
-    public float harmThreshold;
+    float harmQuant; //Harm Variables
+    float harmThreshold;
 
     float hinderQuant; //Hinder Variables
     float hinderThreshold;
@@ -172,7 +172,8 @@ public class Body : MonoBehaviour {
             }
             if (skip)
                 continue;
-            AddAffecter(otherAffecter.GetAffecterClone(true));
+            //Debug.Log(otherAffecter.GetAffecterClone(otherAffecter, true).GetTurnVitality());
+            AddAffecter(otherAffecter.GetAffecterClone(otherAffecter, true));
         }
     }
 
@@ -207,7 +208,9 @@ public class Body : MonoBehaviour {
 
     //ADD/REMOVE TO/FROM APPROPRIATE AFFECTER LIST
     public void AddAffecter(Affecter _affecter) {
-        if (_affecter.Enact(this)) 
+        if (_affecter.Enact(this))
+            if (_affecter.GetType() == typeof(Fire))
+                Debug.Log(_affecter.GetTurnVitality());
             affecterList.Add(_affecter);
     }
 
