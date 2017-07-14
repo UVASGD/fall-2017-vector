@@ -113,14 +113,16 @@ public class Recovery : Action {
     }
 
     public override void Tick() {
-        if (timeLeft > 5 && curImpLevel == ImpedimentLevel.unimpeded)
+        if (timeLeft > 10 && curImpLevel == ImpedimentLevel.unimpeded)
             genitor.Impediment = ImpedimentLevel.noMove;
-        else if (timeLeft > 3)
+        else if (timeLeft > 5)
             genitor.Impediment = ImpedimentLevel.noAct;
-        else if (timeLeft > 0)
+        else if (timeLeft > 3)
             genitor.Impediment = ImpedimentLevel.noAttack;
         else if (timeLeft <= 0)
             genitor.Impediment = ImpedimentLevel.unimpeded;
+
+        base.Tick();
     }
 
     /*

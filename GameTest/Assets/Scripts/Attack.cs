@@ -11,6 +11,7 @@ public class Attack : MonoBehaviour {
 
     public int[] moveTimes;
     protected int moveTimer;
+    protected Vector3 distance;
     protected int currFrame = 0;
     protected int rate;
     public int Rate { get { return rate; } }
@@ -28,16 +29,6 @@ public class Attack : MonoBehaviour {
 
     protected bool done = false;
 
-    void Start() {
-        /*time = (TimeManager)FindObjectOfType(typeof(TimeManager));
-        done = false;
-        moveScheme = new char[] {'f', 'f', 'b' };
-        moveTimes = new int[] {   3,   3,   3  };
-        moveTimer = moveTimes[0];
-        repeats = 0;
-        effects = new Affecter[] { new Wound(genitor, 0.1f)};*/
-    }
-
     void Update() {
         if (time.clock) {
             Tick();
@@ -48,13 +39,16 @@ public class Attack : MonoBehaviour {
         }
     }
 
-    public void AttackConstructor(Body _genitor, int _speed) {
+    public virtual void AttackConstructor(Body _genitor, int _speed) {
+        distance = new Vector3();
+        distance.x = (2 * ((int)_genitor.face));
+        time = (TimeManager)FindObjectOfType(typeof(TimeManager));
         gameObject.GetComponent<SpriteRenderer>().sortingLayerName = "0";
         genitor = _genitor;
         dir = genitor.GetFace();
         targetTags = genitor.TargetTags;
         alreadyHit.Add(genitor.gameObject);
-        rate = ((5-_speed) + (10 - _genitor.Athletics)) / 2;    
+        rate = ((5-_speed) + (10 - _genitor.Athletics)) / 2;
     }
 
     public void setTargetTags(List<string> _targetTags) {
@@ -62,6 +56,7 @@ public class Attack : MonoBehaviour {
     }
 
     public void Tick() {
+        transform.position = genitor.transform.position+distance;
         if (moveTimer == 0 && !done) {
 
             if (currFrame >= moveScheme.Length && repeats <= 0) {
@@ -86,16 +81,16 @@ public class Attack : MonoBehaviour {
                 genitor.transform.Translate((int)dir, 0, 0);
                 break;
             case 'l':
-                gameObject.transform.Translate(-1, 0, 0);
+                distance.x += -1;
                 break;
             case 'r':
-                gameObject.transform.Translate(1, 0, 0);
+                distance.x += 1;
                 break;
             case 'f':
-                gameObject.transform.Translate((int)dir, 0, 0);
+                distance.x += (int)dir;
                 break;
             case 'b':
-                gameObject.transform.Translate((int)dir * -1, 0, 0);
+                distance.x += -(int)dir;
                 break;
             case 'w':
                 break;
