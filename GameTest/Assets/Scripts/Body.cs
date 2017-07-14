@@ -172,7 +172,6 @@ public class Body : MonoBehaviour {
             }
             if (skip)
                 continue;
-            //Debug.Log(otherAffecter.GetAffecterClone(otherAffecter, true).GetTurnVitality());
             AddAffecter(otherAffecter.GetAffecterClone(otherAffecter, true));
         }
     }
@@ -209,8 +208,6 @@ public class Body : MonoBehaviour {
     //ADD/REMOVE TO/FROM APPROPRIATE AFFECTER LIST
     public void AddAffecter(Affecter _affecter) {
         if (_affecter.Enact(this))
-            if (_affecter.GetType() == typeof(Fire))
-                Debug.Log(_affecter.GetTurnVitality());
             affecterList.Add(_affecter);
     }
 
