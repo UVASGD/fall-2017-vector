@@ -194,6 +194,10 @@ public class Affecter {
         vitality = _vitality;
     }
 
+    public void ResetVitality() {
+        vitality = naturalVitality;
+    }
+
     public void AffectVitality(float _mod) {
         vitality += _mod;
     }

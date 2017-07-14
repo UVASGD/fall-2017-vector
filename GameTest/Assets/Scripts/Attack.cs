@@ -78,7 +78,8 @@ public class Attack : MonoBehaviour {
     public virtual void Move() {
         switch (moveScheme[currFrame++]) {
             case 'p':
-                genitor.transform.Translate((int)dir, 0, 0);
+                if (genitor.GetCurrMoveAct().name.Equals("Halt"))
+                    genitor.transform.Translate((int)dir, 0, 0);
                 break;
             case 'l':
                 distance.x += -1;

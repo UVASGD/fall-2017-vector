@@ -45,6 +45,7 @@ public class Item {
         _attack.effects = _effects;
         for (int i = 0; i < _effects.Count; i++) {
             Affecter effect = _effects[i];
+            effect.ResetVitality();
             _effects[i] = effect.GetAffecterClone(effect);
         }
         holder.SetCurrAct(new Recovery("Recovery", _attack.Rate * _attack.Duration, holder));

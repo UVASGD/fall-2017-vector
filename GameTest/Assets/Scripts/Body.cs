@@ -22,7 +22,7 @@ public class Body : MonoBehaviour {
 
     int bodyCollisions = 0;
 
-    float harmQuant; //Harm Variables
+    public float harmQuant; //Harm Variables
     float harmThreshold;
 
     float hinderQuant; //Hinder Variables
@@ -120,11 +120,11 @@ public class Body : MonoBehaviour {
         switch (_dir) {
             case Direction.Left:
                 gameObject.transform.Translate(-1, 0, 0);
-                face = Direction.Left;
+                //face = Direction.Left;
                 break;
             case Direction.Right:
                 gameObject.transform.Translate(1, 0, 0);
-                face = Direction.Right;
+                //face = Direction.Right;
                 break;
         }
     }
