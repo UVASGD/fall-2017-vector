@@ -398,12 +398,14 @@ public class Harming : Reactor {
     protected override void React(Reactor reactant) {
         if (reactant.GetType() == typeof(Healing))
             AffectVitality(-reactant.turnVitality / 2);
-        if (reactant.GetType() == typeof(DamageResist)) {
+        else if (reactant.GetType() == typeof(DamageResist)) {
             if (reactant.turnVitality < 1f)
                 AffectVitality(vitality * reactant.turnVitality);
             else
                 AffectVitality(-vitality);
         }
+        else if (reactant.GetType() == typeof(DamageReduce))
+            AffectVitality(-reactant.turnVitality);
         Debug.Log(string.Format("Reactant vitality: {0}", reactant.vitality));
     }
 }
@@ -560,8 +562,5 @@ public class DamageReduce : Reactor {
 
     public DamageReduce() { }
 
-    protected override void React(Reactor reactant) {
-        if (reactant.GetType() == typeof(Harming))
-            AffectVitality(-reactant.turnVitality / 2);
-    }
+    protected override void React(Reactor reactant) { }
 }
