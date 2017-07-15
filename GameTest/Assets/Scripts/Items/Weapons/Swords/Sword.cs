@@ -22,6 +22,13 @@ public class Sword : Item, ICloseMelee {
         SetupAttack(AddAttackScript<CloseMeleeHeavyAttackScript>("Chest"), HeavyAttackList);
     }
 
+    public void CloseMeleeBlockEnact() {
+
+    }
+
+    public void CloseMeleeBlockDeact() {
+
+    }
 }
 
 public class SwordMat : Affecter {

@@ -8,7 +8,7 @@ public class CloseMeleeHeavyAttackScript : Attack {
         rate *= 5;
         actScheme = genitor.Weapon.HeavyScheme;
         moveScheme = new char[] { 'w', 'f', 'f', 'f', 'f' };
-        moveTimes = new int[] { rate, rate, rate, rate, rate, 0 };
+        moveTimes = new int[] { rate, rate, rate, rate, rate };
         duration = 5;
         moveTimer = moveTimes[0];
         actTimer = 0;

@@ -67,4 +67,8 @@ public interface ICloseMelee {
     void CloseMeleeLightAttack();
 
     void CloseMeleeHeavyAttack();
+
+    void CloseMeleeBlockEnact();
+
+    void CloseMeleeBlockDeact();
 }

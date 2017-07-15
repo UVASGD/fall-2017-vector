@@ -5,6 +5,8 @@ using UnityEngine;
 public enum Direction { Left = -1, Right = 1 };
 //public enum Reaction { Dampening, Oiling, Watering, Dirtying, Drying, Burning, Fueling, Hindering, Freeing, Harming, Healing, Crushing, Slashing, Piercing};
 
+public enum AINum { player, dummy, turret};
+
 public class GameManager : MonoBehaviour {
     /*enum Mood
 {
@@ -109,14 +111,14 @@ Disgust, Anger, Intimidate, Sad
             Destroy(gameObject);
         }
 
-        PersonCreator player = new PersonCreator("RPlayer", "Player", "Player", 0.5f, 1, 0);
+        PersonCreator player = new PersonCreator("RPlayer", "Player", "Player", 0.5f, 1, AINum.player);
         Body playerBody = (Body)FindObjectOfType(typeof(Body));
 
-        Sword sword = new Sword(playerBody, 1);
-        playerBody.Weapon = sword;
+
         //playerBody.AddAffecter(new Fire(playerBody, 40f));
         //playerBody.AddAffecter(new Fire(playerBody, 20f));
-        PersonCreator innkeeper = new PersonCreator("RInnkeeper", "Innkeeper", "Innkeeper", -6.5f, 1, 1);
+        PersonCreator innkeeper = new PersonCreator("RInnkeeper", "Innkeeper", "Innkeeper", -6.5f, 1, AINum.turret);
+        //Sword sword2 = new Sword(innkeeperBody, 1);
 
         DontDestroyOnLoad(gameObject);
     }
@@ -126,3 +128,4 @@ Disgust, Anger, Intimidate, Sad
 		
 	}
 }
+

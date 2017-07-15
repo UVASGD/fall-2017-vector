@@ -20,9 +20,9 @@ public class PersonCreator { //This class exists just to spawn in a person. Not 
     float loc;
     int size;
 
-    int mindNum;
+    AINum mindNum;
 
-    public PersonCreator(string _renderName, string _objectName, string _prefab, float _loc, int _size, int _minNum) {
+    public PersonCreator(string _renderName, string _objectName, string _prefab, float _loc, int _size, AINum _minNum) {
         renderName = _renderName; //Name of the sprite rendering prefab found in Resources
         objectName = _objectName; //Name of the actual person game object once in play
         prefab = _prefab; //Name of the prefab of the actual person object found in Resources
@@ -50,16 +50,32 @@ public class PersonCreator { //This class exists just to spawn in a person. Not 
     public void SetObject() {
         personBodyObject = (GameObject)MonoBehaviour.Instantiate(Resources.Load(prefab), new Vector3(loc, 0, 0), Quaternion.identity);
         personBodyObject.AddComponent(System.Type.GetType("Body"));
+
+        Body personBody = personBodyObject.GetComponent<Body>();
+
         BoxCollider2D coll = personBodyObject.GetComponent<BoxCollider2D>();
         coll.isTrigger = true;
         coll.size = new Vector3(size*2, 1f, 0f);
+
         personBodyObject.name = objectName;
-        Body personBody = personBodyObject.GetComponent<Body>();
-        if (mindNum != 0) {
+
+        if (mindNum == AINum.player) {
+            personBody.BodyConstructor(size, Direction.Left, new List<string> { "Hostile" }, new PlayerAI(new Personality(), personBody));
+            personBodyObject.AddTag("Player");
+
+            Sword sword = new Sword(personBody, 1);
+            personBody.Weapon = sword;
+        }
+        else if (mindNum == AINum.dummy) {
             personBody.BodyConstructor(size, Direction.Left, new List<string> { "Hostile" }, new AI(new Personality(), personBody));
             personBodyObject.AddTag("Hostile");
         }
-        else personBody.BodyConstructor(size, Direction.Left, new List<string> { "Hostile" }, new PlayerAI(new Personality(), personBody));
+        else if (mindNum == AINum.turret) {
+            personBody.BodyConstructor(size, Direction.Right, new List<string> { "Hostile", "Player" }, new TurretAI(new Personality(), personBody));
+            personBodyObject.AddTag("Hostile");
+            Sword sword = new Sword(personBody, 1);
+            personBody.Weapon = sword;
+        }
     }
 
     public void SetBody() {

@@ -104,8 +104,9 @@ public class Attack : MonoBehaviour {
     }
 
     public static void Push(Attack a, int amount = 1) {
-        if (a.genitor.GetCurrMoveAct().name.Equals("Halt"))
-            a.genitor.transform.Translate(amount * (int)a.dir, 0, 0);
+        if (a.genitor.GetCurrMoveAct().name.Equals("Halt")) {
+            //a.genitor.transform.Translate(amount * (int)a.dir, 0, 0);
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other) {

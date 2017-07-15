@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class AI {
-    Personality personality;
+    protected Personality personality;
     protected Body body;
 
     public AI(Personality _personality, Body _body) {
@@ -160,4 +160,33 @@ public class PlayerAI : AI {
         }
     }
 
+}
+
+public class TurretAI : AI {
+
+    int coolTime = 20;
+    int coolCount = 20;
+
+    public TurretAI(Personality _personality, Body _body) : base(_personality, _body) {
+    }
+
+    public override void Start() {
+        Debug.Log("ree");
+    }
+
+    public override void Update() {
+    }
+
+    public override void Tick() {
+        coolCount--;
+
+        if (coolCount == 0) {
+            ReleaseAttack();
+            coolCount = coolTime;
+        }
+    }
+
+    public void ReleaseAttack() {
+        ((ICloseMelee)body.Weapon).CloseMeleeLightAttack();
+    }
 }
