@@ -5,6 +5,8 @@ using System;
 
 public class Sword : Item, ICloseMelee {
 
+    Resistance blockPower;
+
     public Sword(Body _holder, int _size) : base(_holder, _size) {
         LightAttackList = new List<Affecter> { new Wound(holder, 0.1f) };
         lightAttackActScheme.Add(new AttackAct(Attack.Push, 3));
@@ -12,6 +14,8 @@ public class Sword : Item, ICloseMelee {
         HeavyAttackList = new List<Affecter> { new Wound(holder, 0.4f),
                                                new Fire(holder, 5f)};
         heavyAttackActScheme.Add(new AttackAct(Attack.Push, 5));
+
+        blockPower = new Resistance(_holder, 1f);
     }
 
     public void CloseMeleeLightAttack() {
@@ -23,11 +27,11 @@ public class Sword : Item, ICloseMelee {
     }
 
     public void CloseMeleeBlockEnact() {
-
+        holder.AddAffecter(blockPower);
     }
 
     public void CloseMeleeBlockDeact() {
-
+        holder.RemoveFromAffecterList(blockPower);
     }
 }
 

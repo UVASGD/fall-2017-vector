@@ -126,7 +126,7 @@ public class Attack : MonoBehaviour {
         if (isTarget) {
             Body body = other.gameObject.GetComponent<Body>();
             foreach (Affecter eff in effects) {
-                body.AddAffecter(eff);
+                body.AddAffecter(eff.GetAffecterClone(eff));
             }
             alreadyHit.Add(other.gameObject);
         }

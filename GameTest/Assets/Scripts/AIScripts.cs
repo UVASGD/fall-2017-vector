@@ -121,6 +121,7 @@ public class PlayerAI : AI {
                 }
                 else {
                     Debug.Log("END BLOCK");
+                    ((ICloseMelee)body.Weapon).CloseMeleeBlockDeact();
                 }
             }
             else if (button2Timer > 0) {
@@ -139,6 +140,7 @@ public class PlayerAI : AI {
         if (Input.GetMouseButtonDown(1)) {
             Debug.Log("PREPARE SECONDARY");
             button2Timer = 1;
+            ((ICloseMelee)body.Weapon).CloseMeleeBlockEnact();
         }
 
         if (Input.GetMouseButton(0)) {

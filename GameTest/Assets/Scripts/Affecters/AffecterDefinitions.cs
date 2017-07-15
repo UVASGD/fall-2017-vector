@@ -100,3 +100,25 @@ public class Wound : Affecter {
         base.Dewit();
     }
 }
+
+public class ResistanceAggrigate : Affecter {
+    public ResistanceAggrigate(Body _targetBody, float _vitality, float _vRate = -1f) : base(_targetBody, _vitality, _vRate) {
+        reactorList = new List<Reactor> { new DamageResist(this) };
+
+    }
+}
+
+public class Resistance : Affecter {
+    public Resistance(Body _targetBody, float _vitality, float _vRate = -1f) : base(_targetBody, _vitality, _vRate) {
+        reactorList = new List<Reactor> { new ResistanceAdder(this, _vitality, Mathf.Infinity, false, true) };
+
+
+    }
+}
+
+public class Reduction : Affecter {  //  ToDo: think clearly about these decision and reconsider them
+    public Reduction(Body _targetBody, float _vitality, float _vRate = -1f) : base(_targetBody, _vitality, _vRate) {
+        reactorList = new List<Reactor> { new DamageReduce(this, _vitality, Mathf.Infinity, false, true) };
+
+    }
+}

@@ -416,24 +416,24 @@ public class Healing : Reactor {
 public class Crushing : Reactor {
     public Crushing(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) :
         base(_parentAffecter, _vitality, _linkMod, _immortal, _vital) {
-        reactants = new Reactor[] { new CrushingBlock() };
+        reactants = new Reactor[] { new CrushingResist() };
     }
 
     public Crushing() { }
 
     protected override void React(Reactor reactant) {
-        if (reactant.GetType() == typeof(CrushingBlock))
+        if (reactant.GetType() == typeof(CrushingResist))
             AffectVitality(-reactant.turnVitality / 2);
     }
 }
 
-public class CrushingBlock : Reactor {
-    public CrushingBlock(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) :
+public class CrushingResist : Reactor {
+    public CrushingResist(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) :
         base(_parentAffecter, _vitality, _linkMod, _immortal, _vital) {
         reactants = new Reactor[] { new Crushing() };
     }
 
-    public CrushingBlock() { }
+    public CrushingResist() { }
 
     protected override void React(Reactor reactant) {
         if (reactant.GetType() == typeof(Crushing))
@@ -444,24 +444,24 @@ public class CrushingBlock : Reactor {
 public class Slashing : Reactor {
     public Slashing(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) :
         base(_parentAffecter, _vitality, _linkMod, _immortal, _vital) {
-        reactants = new Reactor[] { new SlashingBlock() };
+        reactants = new Reactor[] { new SlashingResist() };
     }
 
     public Slashing() { }
 
     protected override void React(Reactor reactant) {
-        if (reactant.GetType() == typeof(SlashingBlock))
+        if (reactant.GetType() == typeof(SlashingResist))
             AffectVitality(-reactant.turnVitality / 2);
     }
 }
 
-public class SlashingBlock : Reactor {
-    public SlashingBlock(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) :
+public class SlashingResist : Reactor {
+    public SlashingResist(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) :
         base(_parentAffecter, _vitality, _linkMod, _immortal, _vital) {
         reactants = new Reactor[] { new Slashing() };
     }
 
-    public SlashingBlock() { }
+    public SlashingResist() { }
 
     protected override void React(Reactor reactant) {
         if (reactant.GetType() == typeof(Slashing))
@@ -472,24 +472,24 @@ public class SlashingBlock : Reactor {
 public class Piercing : Reactor {
     public Piercing(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) :
         base(_parentAffecter, _vitality, _linkMod, _immortal, _vital) {
-        reactants = new Reactor[] { new PiercingBlock() };
+        reactants = new Reactor[] { new PiercingResist() };
     }
 
     public Piercing() { }
 
     protected override void React(Reactor reactant) {
-        if (reactant.GetType() == typeof(PiercingBlock))
+        if (reactant.GetType() == typeof(PiercingResist))
             AffectVitality(-reactant.turnVitality / 2);
     }
 }
 
-public class PiercingBlock : Reactor {
-    public PiercingBlock(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) :
+public class PiercingResist : Reactor {
+    public PiercingResist(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) :
         base(_parentAffecter, _vitality, _linkMod, _immortal, _vital) {
         reactants = new Reactor[] { new Piercing() };
     }
 
-    public PiercingBlock() { }
+    public PiercingResist() { }
 
     protected override void React(Reactor reactant) {
         if (reactant.GetType() == typeof(Piercing))
@@ -497,6 +497,70 @@ public class PiercingBlock : Reactor {
     }
 }
 
-public class DamageBlock : Reactor {
+public class DamageResist : Reactor {
+    public DamageResist(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) :
+        base(_parentAffecter, _vitality, _linkMod, _immortal, _vital) {
+        reactants = new Reactor[] { new Harming() };
+    }
 
+    public DamageResist() { }
+
+    protected override void React(Reactor reactant) {
+        if (reactant.GetType() == typeof(Harming)) {
+            if (vitality < 1f)
+                reactant.AffectVitality(-reactant.vitality * turnVitality);
+            else
+                reactant.AffectVitality(-reactant.vitality);
+        }
+        Debug.Log(string.Format("Reactant vitality: {0}", reactant.vitality));
+    }
+}
+
+public class ResistanceAdder : Reactor {
+    Reactor aggrigate;
+
+    public ResistanceAdder(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.Infinity, bool _immortal = false, bool _vital = false) :
+        base(_parentAffecter, _vitality, _linkMod, _immortal, _vital) {
+        reactants = new Reactor[] { new DamageResist() };
+    }
+
+    public ResistanceAdder() { }
+
+    protected override void React(Reactor reactant) {
+        if (reactant.GetType() == typeof(DamageResist)) {
+            aggrigate = reactant;
+            aggrigate.AffectVitality(vitality);
+            Debug.Log(string.Format("aggrigate vitality: {0}", aggrigate.vitality));
+        }
+    }
+
+    public override void Deact() {
+        aggrigate.AffectVitality(-vitality);
+    }
+
+    public override void AffectVitality(float _delta) {
+        if (vitality - _delta < 0) {
+            aggrigate.AffectVitality(-vitality);
+        }
+        else {
+            aggrigate.AffectVitality(_delta);
+        }
+        base.AffectVitality(_delta);
+    }
+}
+
+
+// Ignore this one; not used yet
+public class DamageReduce : Reactor {
+    public DamageReduce(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) :
+        base(_parentAffecter, _vitality, _linkMod, _immortal, _vital) {
+        reactants = new Reactor[] { new Harming() };
+    }
+
+    public DamageReduce() { }
+
+    protected override void React(Reactor reactant) {
+        if (reactant.GetType() == typeof(Piercing))
+            AffectVitality(-reactant.turnVitality / 2);
+    }
 }

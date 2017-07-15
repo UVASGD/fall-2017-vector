@@ -41,7 +41,7 @@ public class Body : MonoBehaviour {
     public AI Mind { get { return mind; } }
 
     List<Affecter> affecterList = new List<Affecter>(); //List of Affecters
-    List<Affecter> traitList = new List<Affecter>(); //List of Traits 
+    List<Affecter> traitList; //List of Traits 
 
     List<Affecter> spreadList = new List<Affecter>();
     List<Affecter> layerList = new List<Affecter>();
@@ -52,6 +52,8 @@ public class Body : MonoBehaviour {
     void Start() {
         time = (TimeManager)FindObjectOfType(typeof(TimeManager)); //Set Time manager
         foreach (Transform child in transform) if (child.CompareTag("Renderer")) { bodyRender = child; } //Set bodyRender equal to the transform of the proper childObject
+
+        traitList = new List<Affecter>() { new ResistanceAggrigate(this, 1f) };
 
         harmQuant = 0f;
         harmThreshold = 1f;
