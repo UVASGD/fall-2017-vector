@@ -28,8 +28,6 @@ public class Body : MonoBehaviour {
     float hinderQuant; //Hinder Variables
     float hinderThreshold;
 
-    float[] damMods = { 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f }; //Mods for sensitivity to each type of damage
-
     int size; //Self-Explanatory *MUST BE SET
     public Direction face; //Self-Explanatory *MUST BE SET
 
@@ -109,10 +107,6 @@ public class Body : MonoBehaviour {
 
     public void Hinder(float delt) {
         hinderQuant += delt;
-    }
-
-    public void Damage(DamageType _damType, float _damQuant) {
-        ChangeHarm(_damQuant * damMods[(int)_damType]);
     }
 
     //ABILITY TO MOVE

@@ -6,9 +6,11 @@ public class CloseMeleeLightAttackScript : Attack {
     public override void AttackConstructor(Body _genitor, int _speed) {
         base.AttackConstructor(_genitor, _speed);
         rate *= 3;
-        moveScheme = new char[] { 'f', 'f', 'f', 'p' };
-        moveTimes = new int[] { rate, rate, rate, 0 };
+        actScheme = genitor.Weapon.LightScheme;
+        moveScheme = new char[] { 'f', 'f', 'f'};
+        moveTimes = new int[] { rate, rate, rate};
         duration = 3;
         moveTimer = moveTimes[0];
+        actTimer = 0;
     }
 }

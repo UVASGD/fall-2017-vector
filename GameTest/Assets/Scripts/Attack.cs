@@ -1,24 +1,22 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 using TagFrenzy;
-
-public enum DamageType { Crushing, Piercing, Slashing, Burning, Freezing, Electric, Hindering, Magic };
 
 // The Attack class attaches to a prefab gameobject to be instantiated by an AttackAction
 public class Attack : MonoBehaviour {
-
+    protected Vector3 distance;
     public int[] moveTimes;
     protected int moveTimer;
-    protected Vector3 distance;
+    protected char[] moveScheme;
+    protected List<AttackAct> actScheme;
+    protected int actTimer;
     protected int currFrame = 0;
     protected int rate;
     public int Rate { get { return rate; } }
     protected int duration;
     public int Duration { get { return duration; } }
     protected int repeats = 0;
-    protected char[] moveScheme;
     public List<Affecter> effects;
     protected TimeManager time;
     protected List<string> targetTags;
@@ -67,7 +65,7 @@ public class Attack : MonoBehaviour {
                 currFrame = 0;
                 repeats--;
             }
-
+            Act();
             Move();
         }
         else if (moveTimer != 0 && !done) {
@@ -77,10 +75,6 @@ public class Attack : MonoBehaviour {
 
     public virtual void Move() {
         switch (moveScheme[currFrame++]) {
-            case 'p':
-                if (genitor.GetCurrMoveAct().name.Equals("Halt"))
-                    genitor.transform.Translate((int)dir, 0, 0);
-                break;
             case 'l':
                 distance.x += -1;
                 break;
@@ -98,6 +92,20 @@ public class Attack : MonoBehaviour {
         }
         if (currFrame < moveTimes.Length)
             moveTimer = moveTimes[currFrame];
+    }
+
+    public virtual void Act() {
+        if (actTimer < actScheme.Count) {
+            AttackAct a = actScheme[actTimer];
+            if (a.Check(currFrame, this)) {
+                actTimer++;
+            }
+        }
+    }
+
+    public static void Push(Attack a, int amount = 1) {
+        if (a.genitor.GetCurrMoveAct().name.Equals("Halt"))
+            a.genitor.transform.Translate(amount * (int)a.dir, 0, 0);
     }
 
     private void OnTriggerEnter2D(Collider2D other) {

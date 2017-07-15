@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public delegate float ReactorDelegate(float val);
-
 public class Affecter {
 
     protected Body targetBody; //Body to which this affecter is attached
