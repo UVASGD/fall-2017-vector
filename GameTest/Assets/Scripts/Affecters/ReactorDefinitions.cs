@@ -401,12 +401,12 @@ public class Harming : Reactor {
         else if (reactant.GetType() == typeof(DamageResist)) {
             if (reactant.turnVitality < 1f)
                 AffectVitality(vitality * reactant.turnVitality);
-            else
+            else if (reactant.turnVitality > 0f)
                 AffectVitality(-vitality);
+            Debug.Log(string.Format("Resist vitality: {0}", reactant.vitality));
         }
         else if (reactant.GetType() == typeof(DamageReduce))
             AffectVitality(-reactant.turnVitality);
-        Debug.Log(string.Format("Reactant vitality: {0}", reactant.vitality));
     }
 }
 
@@ -509,18 +509,25 @@ public class PiercingResist : Reactor {
 }
 
 public class DamageResist : Reactor {
-    public DamageResist(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) :
+    public DamageResist(Affecter _parentAffecter, float _vitality = 0f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) :
         base(_parentAffecter, _vitality, _linkMod, _immortal, _vital) {
-        reactants = new Reactor[] { new Harming() };
+        reactants = new Reactor[] { new Harming(), new ResistanceAdder() };
     }
 
     public DamageResist() { }
 
-    protected override void React(Reactor reactant) { }
+    protected override void React(Reactor reactant) {
+        if (reactant.GetType() == typeof(ResistanceAdder)) {
+            ((ResistanceAdder)reactant).Aggregate = this;
+            AffectVitality(reactant.vitality);
+            Debug.Log(string.Format("DAMAGERESIST react aggregate vitality: {0}; adder vitality: {1}", vitality, reactant.vitality));
+        }
+    }
 }
 
 public class ResistanceAdder : Reactor {
-    Reactor aggregate;
+    public Reactor aggregate;
+    public Reactor Aggregate { set { aggregate = value; } }
 
     public ResistanceAdder(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.Infinity, bool _immortal = false, bool _vital = false) :
         base(_parentAffecter, _vitality, _linkMod, _immortal, _vital) {
@@ -533,12 +540,13 @@ public class ResistanceAdder : Reactor {
         if (reactant.GetType() == typeof(DamageResist)) {
             aggregate = reactant;
             aggregate.AffectVitality(vitality);
-            Debug.Log(string.Format("aggregate vitality: {0}", aggregate.vitality));
+            Debug.Log(string.Format("ADDER react aggregate vitality: {0}; adder vitality: {1}", aggregate.vitality, vitality));
         }
     }
 
     public override void Deact() {
         aggregate.AffectVitality(-vitality);
+        Debug.Log(string.Format("deact aggregate vitality: {0}; adder vitality: {1}", aggregate.vitality, vitality));
     }
 
     public override void AffectVitality(float _delta) {

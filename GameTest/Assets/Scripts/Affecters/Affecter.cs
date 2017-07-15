@@ -155,6 +155,11 @@ public class Affecter {
     }
 
     public virtual void Deact() {
+        int leng = reactorList.Count;
+        for (int i = 0; i < leng; i++) {
+            Reactor r = reactorList[i];
+            r.Deact();
+        }
     }
 
     public virtual void Combine(Affecter combiner) {
@@ -244,6 +249,10 @@ public class Affecter {
 
     public List<Affecter> GetInteractorList() {
         return interactorList;
+    }
+
+    public void Kill() {
+        present = false;
     }
 }
 

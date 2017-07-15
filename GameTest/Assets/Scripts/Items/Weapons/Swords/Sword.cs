@@ -31,7 +31,8 @@ public class Sword : Item, ICloseMelee {
     }
 
     public void CloseMeleeBlockDeact() {
-        holder.RemoveFromAffecterList(blockPower);
+        //holder.RemoveFromAffecterList(blockPower);
+        blockPower.Kill();
     }
 }
 

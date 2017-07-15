@@ -53,7 +53,7 @@ public class Body : MonoBehaviour {
         time = (TimeManager)FindObjectOfType(typeof(TimeManager)); //Set Time manager
         foreach (Transform child in transform) if (child.CompareTag("Renderer")) { bodyRender = child; } //Set bodyRender equal to the transform of the proper childObject
 
-        traitList = new List<Affecter>() { new ResistanceAggrigate(this, 1f) };
+        traitList = new List<Affecter>() { new ResistanceAggregate(this, 0f) };
 
         harmQuant = 0f;
         harmThreshold = 1f;
