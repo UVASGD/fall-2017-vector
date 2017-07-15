@@ -388,7 +388,9 @@ public class Freeing : Reactor {
 public class Harming : Reactor {
     public Harming(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.NegativeInfinity, bool _immortal = false, bool _vital = false) :
         base(_parentAffecter, _vitality, _linkMod, _immortal, _vital) {
-        reactants = new Reactor[] { new Healing() };
+        reactants = new Reactor[] { new Healing(),
+                                    new DamageResist(),
+                                    new DamageReduce()};
     }
 
     public Harming() { }
@@ -396,6 +398,13 @@ public class Harming : Reactor {
     protected override void React(Reactor reactant) {
         if (reactant.GetType() == typeof(Healing))
             AffectVitality(-reactant.turnVitality / 2);
+        if (reactant.GetType() == typeof(DamageResist)) {
+            if (reactant.turnVitality < 1f)
+                AffectVitality(vitality * reactant.turnVitality);
+            else
+                AffectVitality(-vitality);
+        }
+        Debug.Log(string.Format("Reactant vitality: {0}", reactant.vitality));
     }
 }
 
@@ -505,19 +514,11 @@ public class DamageResist : Reactor {
 
     public DamageResist() { }
 
-    protected override void React(Reactor reactant) {
-        if (reactant.GetType() == typeof(Harming)) {
-            if (vitality < 1f)
-                reactant.AffectVitality(-reactant.vitality * turnVitality);
-            else
-                reactant.AffectVitality(-reactant.vitality);
-        }
-        Debug.Log(string.Format("Reactant vitality: {0}", reactant.vitality));
-    }
+    protected override void React(Reactor reactant) { }
 }
 
 public class ResistanceAdder : Reactor {
-    Reactor aggrigate;
+    Reactor aggregate;
 
     public ResistanceAdder(Affecter _parentAffecter, float _vitality = 1f, float _linkMod = Mathf.Infinity, bool _immortal = false, bool _vital = false) :
         base(_parentAffecter, _vitality, _linkMod, _immortal, _vital) {
@@ -528,22 +529,22 @@ public class ResistanceAdder : Reactor {
 
     protected override void React(Reactor reactant) {
         if (reactant.GetType() == typeof(DamageResist)) {
-            aggrigate = reactant;
-            aggrigate.AffectVitality(vitality);
-            Debug.Log(string.Format("aggrigate vitality: {0}", aggrigate.vitality));
+            aggregate = reactant;
+            aggregate.AffectVitality(vitality);
+            Debug.Log(string.Format("aggregate vitality: {0}", aggregate.vitality));
         }
     }
 
     public override void Deact() {
-        aggrigate.AffectVitality(-vitality);
+        aggregate.AffectVitality(-vitality);
     }
 
     public override void AffectVitality(float _delta) {
         if (vitality - _delta < 0) {
-            aggrigate.AffectVitality(-vitality);
+            aggregate.AffectVitality(-vitality);
         }
         else {
-            aggrigate.AffectVitality(_delta);
+            aggregate.AffectVitality(_delta);
         }
         base.AffectVitality(_delta);
     }
@@ -560,7 +561,7 @@ public class DamageReduce : Reactor {
     public DamageReduce() { }
 
     protected override void React(Reactor reactant) {
-        if (reactant.GetType() == typeof(Piercing))
+        if (reactant.GetType() == typeof(Harming))
             AffectVitality(-reactant.turnVitality / 2);
     }
 }
