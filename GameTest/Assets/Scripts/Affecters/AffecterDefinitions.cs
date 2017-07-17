@@ -103,7 +103,12 @@ public class Wound : Affecter {
 
 public class ResistanceAggregate : Affecter {
     public ResistanceAggregate(Body _targetBody, float _vitality, float _vRate = 0f) : base(_targetBody, _vitality, _vRate) {
-        reactorList = new List<Reactor> { new DamageResist(this) };
+        reactorList = new List<Reactor> { new DamageResist(this, 0, Mathf.NegativeInfinity, true, false) };
+
+        combinable = false;
+        spreadable = false;
+        layered = false;
+        immortal = true;
 
     }
 }
@@ -112,13 +117,21 @@ public class Resistance : Affecter {
     public Resistance(Body _targetBody, float _vitality, float _vRate = 0f) : base(_targetBody, _vitality, _vRate) {
         reactorList = new List<Reactor> { new ResistanceAdder(this, _vitality, Mathf.Infinity, false, true) };
 
-
+        combinable = false;
+        spreadable = false;
+        layered = false;
+}
+    public override void Deact() {
+        base.Deact();
     }
 }
 
-public class Reduction : Affecter {  //  ToDo: think clearly about these decision and reconsider them
+public class Reduction : Affecter {  //  ToDo: think clearly about these decisions and reconsider them
     public Reduction(Body _targetBody, float _vitality, float _vRate = 0f) : base(_targetBody, _vitality, _vRate) {
         reactorList = new List<Reactor> { new DamageReduce(this, _vitality, Mathf.Infinity, false, true) };
 
+        combinable = false;
+        spreadable = false;
+        layered = false;
     }
 }

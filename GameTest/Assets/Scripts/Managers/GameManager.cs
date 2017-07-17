@@ -113,11 +113,10 @@ Disgust, Anger, Intimidate, Sad
 
         PersonCreator player = new PersonCreator("RPlayer", "Player", "Player", 0.5f, 1, AINum.player);
         Body playerBody = (Body)FindObjectOfType(typeof(Body));
-
-
         //playerBody.AddAffecter(new Fire(playerBody, 40f));
         //playerBody.AddAffecter(new Fire(playerBody, 20f));
         PersonCreator innkeeper = new PersonCreator("RInnkeeper", "Innkeeper", "Innkeeper", -6.5f, 1, AINum.turret);
+
         //Sword sword2 = new Sword(innkeeperBody, 1);
 
         DontDestroyOnLoad(gameObject);

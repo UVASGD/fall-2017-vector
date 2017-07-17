@@ -86,6 +86,16 @@ public class PlayerAI : AI {
 
     void GetAttackInput() {
 
+        if (Input.GetMouseButtonDown(0)) {
+            Debug.Log("PREPARE PRIMARY");
+            button1Timer = 1;
+        }
+        if (Input.GetMouseButtonDown(1)) {
+            Debug.Log("PREPARE SECONDARY");
+            button2Timer = 1;
+            ((ICloseMelee)body.Weapon).CloseMeleeBlockEnact();
+        }
+
         if (Input.GetMouseButtonUp(0)) {
             if (button1Timer > heavyTime) {
                 if (button2Timer > heavyTime) {
@@ -115,32 +125,19 @@ public class PlayerAI : AI {
             body.Impediment = ImpedimentLevel.unimpeded;
         }
         if (Input.GetMouseButtonUp(1)) {
-            if (button2Timer > heavyTime) {
-                if (button1Timer > heavyTime) {
-                    Debug.Log("THROW");
-                }
-                else {
-                    Debug.Log("END BLOCK");
-                    ((ICloseMelee)body.Weapon).CloseMeleeBlockDeact();
-                }
+            if (button2Timer > heavyTime && button1Timer > heavyTime) {
+                Debug.Log("THROW");
             }
             else if (button2Timer > 0) {
                 Debug.Log("SHOVE");
             }
 
+            Debug.Log("END BLOCK");
+            ((ICloseMelee)body.Weapon).CloseMeleeBlockDeact();
+
             button1Timer = 0;
             button2Timer = 0;
             body.Impediment = ImpedimentLevel.unimpeded;
-        }
-
-        if (Input.GetMouseButtonDown(0)) {
-            Debug.Log("PREPARE PRIMARY");
-            button1Timer = 1;
-        }
-        if (Input.GetMouseButtonDown(1)) {
-            Debug.Log("PREPARE SECONDARY");
-            button2Timer = 1;
-            ((ICloseMelee)body.Weapon).CloseMeleeBlockEnact();
         }
 
         if (Input.GetMouseButton(0)) {
@@ -153,6 +150,9 @@ public class PlayerAI : AI {
         if (Input.GetMouseButton(1)) {
             if (button2Timer > 0.5f && button2Timer < 10) {
                 button2Timer += Time.deltaTime;
+                if (button2Timer > heavyTime) {
+                    button2Timer = 20;
+                }
             }
         }
 

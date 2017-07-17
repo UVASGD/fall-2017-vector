@@ -25,6 +25,8 @@ public class Affecter {
     protected float natVrate;
 
     protected bool present; //Whether or not this affecter is still 'alive'
+    public bool Present { set { present = value; } }
+    protected bool immortal;
 
     protected bool inAffecter; //Whether or not this affecter should actively tick
     bool inAffecterChanged; //Dirty bit to detect change
@@ -32,10 +34,10 @@ public class Affecter {
     protected int timer; //The timer that designates when to activate
     protected int freq; //The frequency at which the timer goes off
 
-    public Affecter(Body _targetBody, float _vitality, float _vRate, float _spreadMod = 1f, int _freq = 5) {
+    public Affecter(Body _targetBody, float _vitality, float _vRate, float _spreadMod = 1f, bool _immortal = false, int _freq = 5) {
         //targetBody = _targetBody;
         vitality = _vitality;
-        fullVitality = _vitality;
+        fullVitality = 100f;
         naturalVitality = _vitality;
         turnVitality = _vitality;
         combinable = false;
@@ -43,6 +45,7 @@ public class Affecter {
         spreadMod = _spreadMod;
         layered = false;
         present = true;
+        immortal = _immortal;
         inAffecter = true;
         inAffecterChanged = false;
         vRate = _vRate;
@@ -92,8 +95,10 @@ public class Affecter {
             if (inAffecter) { inAffecterChanged = true; } //IF THE AFFECTER IS ACTIVELY BEING TICKED
             inAffecter = false; //OOFA FIX THAT
         }
-        if (vitality <= 0 || !present) //IF THE AFFECTER IS DEAD
+        if ((vitality <= 0 || !present) && !immortal) {//IF THE AFFECTER IS DEAD 
             present = false; //SET IT TO INACTIVE
+            Deact();
+        }
         return present; //RETURN WHETHER OR NOT IT'S STILL ALIVE
     }
 
@@ -108,8 +113,10 @@ public class Affecter {
             else //IF THEY SHOULDN'T COMBINE
                 for (int j = 0; j < reactorList.Count; j++) { //FOR EACH REACTOR IN THE REACTOR LIST
                     Reactor reactor = reactorList.ElementAt(j); //FOR EACH REACTOR IN THE REACTOR LIST
-                    if (reactor.FindMatches(affecter) && (!interactorList.Contains(affecter))) //IF THE AFFECTER FROM THE COMBINED HAS A MATCHING REACTOR
+                    if (reactor.FindMatches(affecter) && (!interactorList.Contains(affecter))) {//IF THE AFFECTER FROM THE COMBINED HAS A MATCHING REACTOR
                         interactorList.Add(affecter); //ADD THAT AFFECTER TO THE INTERACTOR LIST
+                        affecter.AddToInteractorList(this);
+                    }
                 }
         }
         return true;
@@ -155,8 +162,7 @@ public class Affecter {
     }
 
     public virtual void Deact() {
-        int leng = reactorList.Count;
-        for (int i = 0; i < leng; i++) {
+        for (int i = 0; i < reactorList.Count; i++) {
             Reactor r = reactorList[i];
             r.Deact();
         }
@@ -244,6 +250,10 @@ public class Affecter {
     }
 
     public void AddToInteractorList(Affecter _affecter) {
+        inAffecter = true;
+        inAffecterChanged = true;
+        timer = 0;
+        Tick();
         interactorList.Add(_affecter);
     }
 

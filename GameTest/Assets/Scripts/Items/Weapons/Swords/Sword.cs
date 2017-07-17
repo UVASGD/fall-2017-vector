@@ -27,6 +27,7 @@ public class Sword : Item, ICloseMelee {
     }
 
     public void CloseMeleeBlockEnact() {
+        blockPower.Present = true;
         holder.AddAffecter(blockPower);
     }
 
