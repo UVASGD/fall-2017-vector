@@ -8,12 +8,14 @@ public class Sword : Item, ICloseMelee {
     Resistance blockPower;
 
     public Sword(Body _holder, int _size) : base(_holder, _size) {
-        LightAttackList = new List<Affecter> { new Wound(holder, 0.1f) };
+        LightAttackList = new List<Affecter> { new Wound(holder, 0.2f) };
         lightAttackActScheme.Add(new AttackAct(Attack.Push, 3));
 
         HeavyAttackList = new List<Affecter> { new Wound(holder, 0.4f),
                                                new Fire(holder, 5f)};
         heavyAttackActScheme.Add(new AttackAct(Attack.Push, 5));
+
+        ParryList = new List<Affecter> { new Wound(holder, 0.1f) };
 
         blockPower = new Resistance(_holder, 1f);
     }
@@ -34,6 +36,10 @@ public class Sword : Item, ICloseMelee {
     public void CloseMeleeBlockDeact() {
         //holder.RemoveFromAffecterList(blockPower);
         blockPower.Kill();
+    }
+
+    public void CloseMeleeParry() {
+        SetupAttack(AddAttackScript<CloseMeleeParryScript>("Attack"), ParryList);
     }
 }
 

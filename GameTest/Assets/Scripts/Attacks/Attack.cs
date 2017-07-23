@@ -44,6 +44,7 @@ public class Attack : MonoBehaviour {
         gameObject.GetComponent<SpriteRenderer>().sortingLayerName = "0";
         genitor = _genitor;
         dir = genitor.GetFace();
+        gameObject.AddTag("Attack");
         targetTags = genitor.TargetTags;
         alreadyHit.Add(genitor.gameObject);
         rate = ((5-_speed) + (10 - _genitor.Athletics)) / 2;
@@ -54,6 +55,10 @@ public class Attack : MonoBehaviour {
     }
 
     public void Tick() {
+        if (genitor == null) {
+            Destroy(gameObject);
+            return;
+        }
         transform.position = genitor.transform.position+distance;
         if (moveTimer == 0 && !done) {
 
@@ -125,10 +130,17 @@ public class Attack : MonoBehaviour {
 
         if (isTarget) {
             Body body = other.gameObject.GetComponent<Body>();
-            foreach (Affecter eff in effects) {
-                body.AddAffecter(eff.GetAffecterClone(eff));
+            Attack attack = other.gameObject.GetComponent<Attack>();
+            if (body != null) {
+                foreach (Affecter eff in effects) {
+                    body.AddAffecter(eff.GetAffecterClone(eff));
+                }
+                alreadyHit.Add(other.gameObject);
             }
-            alreadyHit.Add(other.gameObject);
+            else if (attack != null) {
+                attack.genitor.SetCurrAct(new Recovery("Recovery", 15, attack.genitor));
+                Destroy(attack.gameObject);
+            }
         }
     }
 

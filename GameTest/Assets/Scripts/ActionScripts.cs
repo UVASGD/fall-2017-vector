@@ -109,7 +109,7 @@ public class Recovery : Action {
     //Affecter noAct;  //  = new ActionDenier  ??
     //Affecter noAttack;  //  = new AttackDenier  ??
 
-    public Recovery(string _name, int _speedFactor, Body _genitor) : base(_name, _speedFactor, _genitor) {
+    public Recovery(string _name, int _timeLeft, Body _genitor) : base(_name, _timeLeft, _genitor) {
     }
 
     public override void Tick() {

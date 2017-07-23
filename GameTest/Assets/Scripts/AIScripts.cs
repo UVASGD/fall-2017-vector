@@ -111,6 +111,8 @@ public class PlayerAI : AI {
             else if (button1Timer > 0) {
                 if (button2Timer > heavyTime) {
                     Debug.Log("PARRY");
+                    if (body.Weapon is ICloseMelee)
+                        ((ICloseMelee)body.Weapon).CloseMeleeParry();
                 }
                 else {
                     Debug.Log("LIGHT ATTACK");

@@ -28,6 +28,10 @@ public class Item {
     protected List<AttackAct> heavyDashAttackActScheme = new List<AttackAct>();
     public List<AttackAct> HeavyDashScheme { get { return heavyDashAttackActScheme; } }
 
+    protected List<Affecter> ParryList;
+    protected List<AttackAct> parryActScheme = new List<AttackAct>();
+    public List<AttackAct> ParryScheme { get { return parryActScheme; } }
+
     protected List<Affecter> RangedAttackList;
 
     protected List<Affecter> CastList;
@@ -71,4 +75,6 @@ public interface ICloseMelee {
     void CloseMeleeBlockEnact();
 
     void CloseMeleeBlockDeact();
+
+    void CloseMeleeParry();
 }

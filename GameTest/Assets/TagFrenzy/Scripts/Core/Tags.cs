@@ -2,6 +2,7 @@ namespace TagFrenzy
 {
 public enum Tags
 {
+Attack,
 Background,
 Enemy,
 Foreground,
