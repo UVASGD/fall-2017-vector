@@ -8,6 +8,9 @@ public class Item {
     protected int speed;
     protected Affecter material;
 
+    protected string name = "Generic Item";
+    public string Name { get { return name; } }
+
     protected List<Affecter> EquippedList;
     protected List<Affecter> HoldingList;
     protected List<Affecter> DroppedList;

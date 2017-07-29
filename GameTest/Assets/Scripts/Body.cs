@@ -13,45 +13,49 @@ public class Body : MonoBehaviour {
 
     public int Athletics { get { return (brawn + coordination) / 2; } }
 
-    ImpedimentLevel impediment = ImpedimentLevel.unimpeded;
+    protected ImpedimentLevel impediment = ImpedimentLevel.unimpeded;
     public ImpedimentLevel Impediment { get { return impediment; } set { impediment = value; } }
 
-    TimeManager time; //Reference to time manager
+    protected TimeManager time; //Reference to time manager
 
-    Transform bodyRender; //Reference to the body-renderer's transform
+    protected Transform bodyRenderTransform; //Reference to the body-renderer's transform
 
     int bodyCollisions = 0;
 
     public float harmQuant; //Harm Variables
-    float harmThreshold;
+    protected float harmThreshold;
 
-    float hinderQuant; //Hinder Variables
-    float hinderThreshold;
+    protected float hinderQuant; //Hinder Variables
+    protected float hinderThreshold;
 
-    int size; //Self-Explanatory *MUST BE SET
+    protected int size; //Self-Explanatory *MUST BE SET
     public Direction face; //Self-Explanatory *MUST BE SET
 
-    Action currMoveAct; //Current movement action
-    Action currAct; //Current non-movement action
+    protected Action currMoveAct; //Current movement action
+    protected Action currAct; //Current non-movement action
 
-    List<string> targetTags = new List<string>(); //List of tag-filters *MUST BE SET
+    protected List<string> targetTags = new List<string>(); //List of tag-filters *MUST BE SET
     public List<string> TargetTags { get { return targetTags;  } }
 
-    AI mind; //The AI object that will generate actions *MUST BE SET
+    protected AI mind; //The AI object that will generate actions *MUST BE SET
     public AI Mind { get { return mind; } }
 
-    List<Affecter> affecterList = new List<Affecter>(); //List of Affecters
-    List<Affecter> traitList = new List<Affecter>(); //List of Traits 
+    protected List<Affecter> affecterList = new List<Affecter>(); //List of Affecters
+    protected List<Affecter> traitList = new List<Affecter>(); //List of Traits 
 
-    List<Affecter> spreadList = new List<Affecter>();
-    List<Affecter> layerList = new List<Affecter>();
+    protected List<Affecter> spreadList = new List<Affecter>();
+    protected List<Affecter> layerList = new List<Affecter>();
+
+    protected List<Item> inventory = new List<Item>();
 
     Item weapon;
     public Item Weapon { get { return weapon; } set { weapon = value; } }
 
+    public Vector3 Position { get { return transform.position; } }
+
     void Start() {
         time = (TimeManager)FindObjectOfType(typeof(TimeManager)); //Set Time manager
-        foreach (Transform child in transform) if (child.CompareTag("Renderer")) { bodyRender = child; } 
+        foreach (Transform child in transform) if (child.CompareTag("Renderer")) { bodyRenderTransform = child; } 
         //Set bodyRender equal to the transform of the proper childObject
 
         harmQuant = 0f;
@@ -81,11 +85,7 @@ public class Body : MonoBehaviour {
     }
 
     //TICK FUNCTION
-    void Tick() {
-        if (mind.GetType() == typeof(PlayerAI)) {
-            float mousePos = (Camera.main.ScreenToViewportPoint(Input.mousePosition).x - 0.5f) * 38;
-            face = (Direction)Mathf.Sign(mousePos - (gameObject.transform.position.x));
-        }
+    protected void Tick() {
         for (int i = 0; i < affecterList.Count; i++) {
             Affecter affecter = affecterList.ElementAt(i);
             affecter.Tick();
@@ -176,8 +176,19 @@ public class Body : MonoBehaviour {
         Body otherBody = other.gameObject.GetComponent<Body>();
         if (otherBody != null) {
             bodyCollisions--;
-            bodyRender.position = gameObject.transform.position;
+            bodyRenderTransform.position = gameObject.transform.position;
         }
+    }
+
+    public void TakeItemPackage(ItemPackage package) {
+        Debug.Log("Imma take dat");
+        Debug.Log("Player inventory is: {");
+        foreach (Item item in package.Inventory) {
+            inventory.Add(item);
+            Debug.Log(string.Format("{0},", item.Name));
+        }
+        Debug.Log("}");
+        
     }
 
     //SET ACTION

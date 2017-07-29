@@ -33,7 +33,7 @@ public class PersonCreator { //This class exists just to spawn in a person. Not 
 
         SetObject(); //Establishes the actual game object with size and location and collider
 
-        SetHealthBar(); //Sets the healthbar. Make sure this comes before setBody
+        //SetHealthBar(); //Sets the healthbar. Make sure this comes before setBody
 
         SetBody(); //Sets the body render
     }
@@ -48,7 +48,7 @@ public class PersonCreator { //This class exists just to spawn in a person. Not 
 	}
 
     public void SetObject() {
-        personBodyObject = (GameObject)MonoBehaviour.Instantiate(Resources.Load(prefab), new Vector3(loc, 0, 0), Quaternion.identity);
+        personBodyObject = Object.Instantiate(Resources.Load(prefab), new Vector3(loc, 0, 0), Quaternion.identity) as GameObject;
         personBodyObject.AddComponent(System.Type.GetType("Body"));
 
         Body personBody = personBodyObject.GetComponent<Body>();

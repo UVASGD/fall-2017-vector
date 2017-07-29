@@ -18,6 +18,8 @@ public class Sword : Item, ICloseMelee {
         ParryList = new List<Affecter> { new Wound(holder, 0.1f) };
 
         blockPower = new Resistance(_holder, 1f);
+
+        name = "Sword";
     }
 
     public void CloseMeleeLightAttack() {

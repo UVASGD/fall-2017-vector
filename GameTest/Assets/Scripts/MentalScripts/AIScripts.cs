@@ -35,6 +35,7 @@ public class PlayerAI : AI {
     float button2Timer = 0;
 
     public PlayerAI(Personality _personality, Body _body) : base(_personality, _body) {
+        
     }
 
     public override void Start() {
@@ -44,6 +45,12 @@ public class PlayerAI : AI {
     public override void Update() {
         GetMoveInput();
         GetAttackInput();
+    }
+
+    public override void Tick() {
+        float mousePos = (Camera.main.ScreenToViewportPoint(Input.mousePosition).x - 0.5f) * 38;
+        body.face = (Direction)Mathf.Sign(mousePos - (body.gameObject.transform.position.x));
+        InteractableSearch();
     }
 
     void GetMoveInput() {
@@ -164,6 +171,16 @@ public class PlayerAI : AI {
         }
     }
 
+    void InteractableSearch() {
+        GameObject[] objs = GameObject.FindGameObjectsWithTag("Interactable");
+        foreach (GameObject obj in objs) {
+            //Interactable inter = obj.GetComponent<Interactable>();
+            ItemPackage inter = obj.GetComponent<ItemPackage>();
+            if (inter != null)
+                inter.CheckInteract(body);
+        }
+    }
+
 }
 
 public class TurretAI : AI {
@@ -193,4 +210,8 @@ public class TurretAI : AI {
     public void ReleaseAttack() {
         ((ICloseMelee)body.Weapon).CloseMeleeLightAttack();
     }
+}
+
+public class Inanimate : AI {
+    public Inanimate(Personality _personality, Body _body) : base(_personality, _body) { }
 }

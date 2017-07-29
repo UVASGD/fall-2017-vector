@@ -117,6 +117,13 @@ Disgust, Anger, Intimidate, Sad
         //playerBody.AddAffecter(new Fire(playerBody, 20f));
         PersonCreator innkeeper = new PersonCreator("RInnkeeper", "Innkeeper", "Innkeeper", -6.5f, 1, AINum.turret);
 
+        //List<Item> items = new List<Item> { };
+
+        //GameObject packObj = Instantiate(Resources.Load("ItemPackage"), new Vector3(5.5f, 0f), Quaternion.identity) as GameObject;
+
+        //ItemPackage pack = packObj.GetComponent<ItemPackage>();
+        //pack.CreateItemPackage(items, "RChest", 5.5f, 2);
+
         //Sword sword2 = new Sword(innkeeperBody, 1);
 
         DontDestroyOnLoad(gameObject);
