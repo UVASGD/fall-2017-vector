@@ -5,10 +5,10 @@ using UnityEngine;
 
 public class Body : MonoBehaviour {
 
-    public int brawn = 5;
+    protected int brawn = 5;
     public int Brawn { get { return brawn; } }
 
-    public int coordination = 5;
+    protected int coordination = 5;
     public int Coordination { get { return coordination; } }
 
     public int Athletics { get { return (brawn + coordination) / 2; } }

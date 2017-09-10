@@ -1,12 +1,149 @@
-﻿//RE-ENGINEER TO MAKE A NON-MONOBEHAVIOUR SCRIPT
+﻿//Association class
+//Mood class
+//List mapping associations to other associations / moods
+//special character to denote association with this 
 
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Personality {
+public class Association {
+    string name; //The name that will appear in 'dialogue' strings
+    public string Name { get { return name; } }
 
-    // enum Moods { Charm, Disgust, Amuse, Anger, Inspire, Intimidate, Happy, Sad, Hinder, Harm, Heal, Expedite };
+    string id; //The name that will be used to match with other associations
+    public string Id { get { return id; } }
+
+    float interest;
+    public float Interest { get { return interest; } }
+
+    public Dictionary<string, float[]> associations; //The assocs this is connected to [0] being polarity, [1] being strength, [2] being exhaustion multiplier
+    public Dictionary<string, float[]> marks; //The associations to which this association is 'perma' connected to
+
+    public Association(string _name, string _id, Dictionary<string, float[]> _marks = null) {
+        name = _name;
+        id = _id;
+        marks = _marks;
+    }
+
+
+    public void AddMark(string n, float s) {
+    }
+
+    public void AddAssoc(string n, float[] interaction) {
+        if (associations.ContainsKey(n)) {
+            for (int i = 0; i < associations[n].Length - 1; i++)
+                break;
+        }
+    }
+}
+
+public class VerbAssoc : Association {
+    string gerund;
+    public string Gerund { get { return gerund; } }
+
+    float polarity; //Kindness of the interaction
+    public float Polarity { get { return polarity; } }
+
+    public VerbAssoc(string _name, string _id, string _gerund, float _polarity, Dictionary<string, float[]> _marks = null) : 
+                     base(_name, _id, _marks) {
+        gerund = _gerund;
+        polarity = _polarity;
+    }
+
+    public override string ToString() {
+        return gerund;
+    }
+}
+
+public class MoodAssoc : Association {
+    public MoodAssoc(string _name, string _id, Dictionary<string, float[]> _marks = null) : 
+                     base(_name, _id, _marks) {
+    }
+}
+
+public class PersonAssoc : Association {
+    public PersonAssoc(string _name, string _id, Dictionary<string, float[]> _marks = null) :
+                       base(_name, _id, _marks) {
+    }
+}
+
+public class PlaceAssoc : Association {
+    public PlaceAssoc(string _name, string _id, Dictionary<string, float[]> _marks = null) :
+                      base(_name, _id, _marks) {
+    }
+}
+
+public class ItemAssoc : Association {
+    public ItemAssoc(string _name, string _id, Dictionary<string, float[]> _marks = null) :
+                     base(_name, _id, _marks) {
+    }
+}
+
+public class Personality {
+    List<Association> associator;
+    Dictionary<string, float> seenEvents;
+    Identity identity;
+
+    float markThreshold;
+    float objMarkThreshold;
+    float interestThreshold;
+
+    public void Perceive(string[] info, float[] interaction) {
+        float totalInt = 0;
+        float objvbInt = 0;
+        float vbInt = 0;
+        Association subj = null;
+        VerbAssoc vb = null;
+        Association obj = null;
+        string sentence = "";
+
+        for (int i = 0; i < info.Length; i++) {
+            string id = info[i];
+            if (id == "")
+                continue;
+            else {
+                sentence += id;
+                if (i < (info.Length - 1))
+                    sentence += ", ";
+            }
+            foreach (Association a in associator)
+                if (a.Id == id) {
+                    switch (i) {
+                        case 0: subj = a; totalInt += a.Interest; break;
+                        case 1: vb = (VerbAssoc)a; totalInt += a.Interest; objvbInt += a.Interest; break;
+                        case 2: obj = a; totalInt += a.Interest; objvbInt += a.Interest; vbInt += a.Interest; break;
+                    }
+                }
+        }
+
+        if (seenEvents.ContainsKey(sentence)) {
+            seenEvents[sentence] = Mathf.Min(1, seenEvents[sentence] + vbInt);
+            if (seenEvents[sentence] - subj.Interest > markThreshold)
+                subj.AddMark(sentence, (seenEvents[sentence] - subj.Interest) / 2);
+            if (obj != null) subj.AddAssoc(obj.Name, interaction);
+            Feel(sentence, 4);
+        }
+        else if (totalInt < interestThreshold) {
+            seenEvents.Add(sentence, totalInt);
+            Feel(sentence, 2);
+        }
+        else {
+            if (objvbInt > markThreshold)
+                subj.AddMark(sentence, objvbInt / 2);
+
+        }
+
+
+    }
+
+    public void Feel(string info, int div, bool opine = false) { }
+
+    public void Feel(string identity) { }
+
+}
+/*
+// enum Moods { Charm, Disgust, Amuse, Anger, Inspire, Intimidate, Happy, Sad, Hinder, Harm, Heal, Expedite };
 
     public enum Mood {
         Charm, Amuse, Inspire, Happy,
@@ -77,12 +214,6 @@ public class Personality {
                 trait.Check(m, quant);  // TODO: Consider passing in the mood being activated to the trait to ensure traits can act on the right mood
                 ChangeQuant(m, quant, mods[(int)m]);  // Make Change
             }
-        /*  SIMON: I noticed that we never actually changed the quant, so I added the below. Then, I thought it may be useful in ChangeQuant as well, and therefore just called that.
-        if ((int)m < 4)
-            quants[(int)m] += quant;
-        else
-            quants[(int)m % 4] -= quant;
-        */
         DetermineDominant();  // Check if dominant mood has changed.
     }
 
@@ -159,5 +290,6 @@ public class Personality {
         else
             return quant <= thresholds[moodInt];
     }
-}
+    }
+    */
 

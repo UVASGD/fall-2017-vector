@@ -410,7 +410,7 @@ public class Harming : Reactor {
             else if (reactant.turnVitality > 0f) {
                 AffectVitality(-reactant.turnVitality);
             }
-            Debug.Log(string.Format("vitality: {0}", reactant.turnVitality));
+            //Debug.Log(string.Format("vitality: {0}", reactant.turnVitality));
         }
         else if (reactant.GetType() == typeof(DamageReduce))
             AffectVitality(-reactant.turnVitality);
@@ -544,7 +544,7 @@ public class ResistanceAdder : Reactor {
         if (reactant.GetType() == typeof(DamageResist) && !added) {
             aggregate = reactant;
             aggregate.AffectVitality(vitality);
-            Debug.Log(string.Format("ADDER react aggregate vitality: {0}; adder vitality: {1}", aggregate.vitality, vitality));
+            //Debug.Log(string.Format("ADDER react aggregate vitality: {0}; adder vitality: {1}", aggregate.vitality, vitality));
             added = true;
         }
     }
@@ -552,7 +552,7 @@ public class ResistanceAdder : Reactor {
     public override void Deact() {
         aggregate.AffectVitality(-vitality);
         added = false;
-        Debug.Log(string.Format("deact aggregate vitality: {0}; adder vitality: {1}", aggregate.vitality, vitality));
+        //Debug.Log(string.Format("deact aggregate vitality: {0}; adder vitality: {1}", aggregate.vitality, vitality));
     }
 
     public override void AffectVitality(float _delta) {

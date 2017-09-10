@@ -48,7 +48,7 @@ public class PlayerAI : AI {
     }
 
     public override void Tick() {
-        float mousePos = (Camera.main.ScreenToViewportPoint(Input.mousePosition).x - 0.5f) * 38;
+        float mousePos = (Camera.main.ScreenToViewportPoint(Input.mousePosition).x - 0.5f) * 55.2765f;
         body.face = (Direction)Mathf.Sign(mousePos - (body.gameObject.transform.position.x));
         InteractableSearch();
     }
@@ -191,12 +191,9 @@ public class TurretAI : AI {
     public TurretAI(Personality _personality, Body _body) : base(_personality, _body) {
     }
 
-    public override void Start() {
-        Debug.Log("ree");
-    }
+    public override void Start() { }
 
-    public override void Update() {
-    }
+    public override void Update() { }
 
     public override void Tick() {
         coolCount--;
