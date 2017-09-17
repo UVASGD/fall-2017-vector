@@ -82,58 +82,55 @@ public class ItemAssoc : Association {
 
 public class Personality {
     List<Association> associator;
-    Dictionary<string, float> seenEvents;
+    Dictionary<string[], float[]> seenEvents;
     Identity identity;
+
+    float totalInterest;
 
     float markThreshold;
     float objMarkThreshold;
     float interestThreshold;
 
+    float div = 1;
+
     public void Perceive(string[] info, float[] interaction) {
-        float totalInt = 0;
-        float objvbInt = 0;
-        float vbInt = 0;
+
         Association subj = null;
         VerbAssoc vb = null;
         Association obj = null;
-        string sentence = "";
 
-        for (int i = 0; i < info.Length; i++) {
-            string id = info[i];
-            if (id == "")
-                continue;
-            else {
-                sentence += id;
-                if (i < (info.Length - 1))
-                    sentence += ", ";
+        foreach (Association a in associator) { //Assign subject, verb, and object accordingly
+            if (info.Length == 3) {
+                if (a.Name.Equals(info[0])) subj = a;
+                else if (a.Name.Equals(info[1])) vb = (VerbAssoc)a;
+                else if (a.Name.Equals(info[2])) obj = a;
             }
-            foreach (Association a in associator)
-                if (a.Id == id) {
-                    switch (i) {
-                        case 0: subj = a; totalInt += a.Interest; break;
-                        case 1: vb = (VerbAssoc)a; totalInt += a.Interest; objvbInt += a.Interest; break;
-                        case 2: obj = a; totalInt += a.Interest; objvbInt += a.Interest; vbInt += a.Interest; break;
-                    }
-                }
+            else if (info.Length == 2) {
+                if (a.Name.Equals(info[0])) subj = a;
+                else if (a.Name.Equals(info[1])) vb = (VerbAssoc)a;
+            }
         }
 
-        if (seenEvents.ContainsKey(sentence)) {
-            seenEvents[sentence] = Mathf.Min(1, seenEvents[sentence] + vbInt);
-            if (seenEvents[sentence] - subj.Interest > markThreshold)
-                subj.AddMark(sentence, (seenEvents[sentence] - subj.Interest) / 2);
-            if (obj != null) subj.AddAssoc(obj.Name, interaction);
-            Feel(sentence, 4);
-        }
-        else if (totalInt < interestThreshold) {
-            seenEvents.Add(sentence, totalInt);
-            Feel(sentence, 2);
-        }
-        else {
-            if (objvbInt > markThreshold)
-                subj.AddMark(sentence, objvbInt / 2);
-
+        if (seenEvents.ContainsKey(info)) {
+            div = 1 / 4;
+            //process all emotions at 1 / 4
+            float tempInt = seenEvents[info][0];
+            seenEvents[info][0] = tempInt + vb.Interest;
         }
 
+        else { }
+
+        //Check whether this event has already been witnessed
+        //If it has, process all emotions at 1 / 4 !
+        //Only add the interest of the verb to the acculumative interest
+
+        //If it hasn't been witnessed, check whether it's passed the interest threshold
+
+        //If it has
+        //Process all emotions at full capacity
+        //Add to witnessed events
+        
+        //Check whether the seen event passes any interest threshold
 
     }
 
