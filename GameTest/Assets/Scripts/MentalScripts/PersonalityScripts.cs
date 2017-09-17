@@ -82,7 +82,7 @@ public class ItemAssoc : Association {
 
 public class Personality {
     List<Association> associator;
-    Dictionary<string[], float[]> seenEvents;
+    Dictionary<string[], float[]> seenEvents; //interest[0], interaction polarity [1], interaction [2], # times [3]
     Identity identity;
 
     float totalInterest;
@@ -101,18 +101,18 @@ public class Personality {
 
         foreach (Association a in associator) { //Assign subject, verb, and object accordingly
             if (info.Length == 3) {
-                if (a.Name.Equals(info[0])) subj = a;
-                else if (a.Name.Equals(info[1])) vb = (VerbAssoc)a;
-                else if (a.Name.Equals(info[2])) obj = a;
+                if (a.Id.Equals(info[0])) subj = a;
+                else if (a.Id.Equals(info[1])) vb = (VerbAssoc)a;
+                else if (a.Id.Equals(info[2])) obj = a;
             }
             else if (info.Length == 2) {
-                if (a.Name.Equals(info[0])) subj = a;
-                else if (a.Name.Equals(info[1])) vb = (VerbAssoc)a;
+                if (a.Id.Equals(info[0])) subj = a;
+                else if (a.Id.Equals(info[1])) vb = (VerbAssoc)a;
             }
         }
 
         if (seenEvents.ContainsKey(info)) {
-            div = 1 / 4;
+            div = 0.25f;
             //process all emotions at 1 / 4
             float tempInt = seenEvents[info][0];
             seenEvents[info][0] = tempInt + vb.Interest;
