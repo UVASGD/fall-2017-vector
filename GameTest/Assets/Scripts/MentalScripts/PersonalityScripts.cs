@@ -65,13 +65,13 @@ public class Association {
     public Interaction CheckAssoc(Association obj, Interaction interaction) {
         float[] thresholds  =new float[]{ 0.3f, 0.5f, 0.7f, 0.9f };
         Interaction retInt = new Interaction(interaction.Polarity, 0);
-        for (int i = thresholds.Length;i > 0; i--)
+        for (int i = thresholds.Length; i > 0; i--)
         {
             bool pastMark = associations[obj].Strength <= thresholds[i];
             float tempAdd = Mathf.Clamp(associations[obj].Strength + interaction.Strength,0,1);
             if(pastMark && tempAdd > thresholds[i])
             {
-                retInt.Apply(strengthDelt: tempAdd / 4);
+                retInt.Apply(strengthDelt: (tempAdd / 4));
             }
         }
         return retInt;
@@ -277,7 +277,8 @@ public class Personality {
         Feel(subj, obj, vb, totalInterest, interaction, div);
     }
 
-    public void Feel(Association subj, Association obj, Association vb, float interest, Interaction interaction, float div, bool opine = false) {
+    public void Feel(Association subj, Association obj, Association vb, float interest, Interaction interaction, float div, bool opine = false)
+    {
         Dictionary<MoodAssoc, float> feels = new Dictionary<MoodAssoc, float>();
         List<Association> branch = new List<Association>();
 
@@ -285,18 +286,19 @@ public class Personality {
 
         vb.GetMood(feels, branch, interest, div, 0);
 
-        if (obj != null) {
+        if (obj != null)
+        {
             obj.GetMood(feels, branch, interaction.Strength * Mathf.Sign(interaction.Polarity), div, 0);
         }
 
         //APPLY MOODS HERE
         Dictionary<Association, Interaction> newMarks = new Dictionary<Association, Interaction>();
 
-        //if (obj != null) {
-          //  int amount = subj.CheckAssoc(obj, interaction);
-        //}
-        //AddMark(subj, obj, branch, amount);
-        //subj.CheckAssoc(vb, new Interaction(1, vb.Interest));
+        if (obj != null) {
+            Interaction checkInt = subj.CheckAssoc(obj, interaction);
+            subj.GetMarks(subj, obj, branch, checkInt);
+        }
+        subj.GetMarks(subj, vb, branch, subj.CheckAssoc(vb,new Interaction(1,vb.Interest)));
     }
 
     /*TODO -
