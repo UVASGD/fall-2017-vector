@@ -225,7 +225,9 @@ public class Personality {
 
     float div = 1;
 
-    public Personality() {
+    public Personality() { }
+
+    public Personality(bool t = false) {
         foreach (Association a in associator)
             foreach (string s in a.addToMarks.Keys)
                 foreach (Association aOther in associator)
@@ -305,8 +307,6 @@ public class Personality {
     }
 
     /*TODO -
-     * Subject needs to form bonds with verb and object
-     * AddMark function must create shortcuts to MoodAssocs, stopping only for ConceptAssocs
      * Mood class needs to exemplify bipartite behavior
      * Feel has to apply feels in order to express actual moods
      */
