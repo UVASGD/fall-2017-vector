@@ -73,8 +73,10 @@ public class Association {
             if(pastMark && tempAdd > thresholds[i])
             {
                 retInt.Apply(strengthDelt: (tempAdd / 4));
+                break;
             }
         }
+        associations[obj].Apply(interaction.Polarity, interaction.Strength);
         return retInt;
     }
 
