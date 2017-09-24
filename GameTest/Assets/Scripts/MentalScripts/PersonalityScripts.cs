@@ -92,13 +92,19 @@ public class Association {
         branch.RemoveAt(acc);
     }
 
-    public void GetMarks(Association subj, Association obj, List<Association> branch, float amount, int acc = 0) {
+    public void GetMarks(Association subj, Association obj, List<Association> branch, Interaction markInteract, int acc = 0) {
         acc++;
         branch.Add(this);
         foreach (Association mark in obj.marks.Keys) {
+            Interaction interact = obj.marks[mark];
             if (mark.GetType() == typeof(MoodAssoc) || mark.GetType() == typeof(ConceptAssoc)) {
-                subj.marks.Add(mark, new Interaction(obj.marks[mark].Strength * amount, obj.marks[mark].Polarity));
+                if (subj.marks.ContainsKey(mark))
+                    subj.marks[mark].Apply(polarityDelt: markInteract.Polarity, strengthDelt: interact.Strength * markInteract.Strength);
+                else
+                    subj.marks.Add(mark, new Interaction(markInteract.Polarity, interact.Strength * markInteract.Strength));
             }
+
+            GetMarks(subj, mark, branch, subj.marks[mark], acc);
         }
         acc--;
         branch.RemoveAt(acc);
