@@ -24,7 +24,8 @@ public struct Interaction {
     }
 
     public void Apply(float polarityDelt = 0, float strengthDelt = 0, float capacityDelt = 0) {
-        polarity += polarityDelt;
+        float absPolarityDelt = Mathf.Abs(polarityDelt) * Mathf.Abs(polarity);
+        polarity += ((Mathf.Sign(polarity) + Mathf.Sign(polarityDelt) == 0)) ? -polarityDelt : polarity;
         strength += strengthDelt;
         capacity += capacityDelt;
     }
@@ -187,7 +188,7 @@ public struct EventInfo {
 
     public void Apply(float interestDelt = 0, float polarityDelt = 0, float strengthDelt = 0, int accessesDelt = 0) {
         interest += interestDelt;
-        polarity += polarityDelt;
+        polarity += ((Mathf.Sign(polarity) + Mathf.Sign(polarityDelt) == 0)) ? -polarityDelt : polarity;
         strength += strengthDelt;
         accesses += accessesDelt;
     }
