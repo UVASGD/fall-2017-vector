@@ -28,6 +28,12 @@ public struct Interaction {
         strength += strengthDelt;
         capacity += capacityDelt;
     }
+
+    public void Set(float polaritySet = 0, float strengthSet = 0, float capacitySet = 0) {
+        polarity = polaritySet;
+        strength = strengthSet;
+        capacity = capacitySet;
+    }
 }
 
 public class Association {
@@ -43,6 +49,8 @@ public class Association {
     float accesses;
     public float Accesses { set { accesses = value; } get { return accesses; } } 
 
+
+
     public Dictionary<string, Interaction> associations; //The assocs this is connected to [0] being polarity, [1] being strength
     public Dictionary<string, Interaction> addToMarks; //This is a temporary list of strings to association values
     public Dictionary<Association, Interaction> marks; //The associations to which this association is 'perma' connected to, [2] being exhaustion multiplier
@@ -54,12 +62,48 @@ public class Association {
         accesses = 0;
     }
 
-
-    public void AddMark(string n, float s) {
+    public int CheckAssoc(Association obj, Interaction interaction) {
+        return -1;
     }
 
-    public void AddAssoc(string n, float[] interaction) {
+
+    public void GetMood(Dictionary<MoodAssoc, float> feels, List<Association> branch, float percent, float div, int acc) {
+        accesses += div;
+        acc++;
+        branch.Add(this);
+        foreach (Association mark in marks.Keys) {
+            if (branch.Contains(mark) || accesses > marks[mark].Capacity)
+                continue;
+            if (mark.GetType() == typeof(MoodAssoc)) {
+                if (!feels.ContainsKey((MoodAssoc)mark))
+                    feels.Add((MoodAssoc)mark, percent * marks[mark].Strength);
+                else { feels[(MoodAssoc)mark] += percent; }
+            }
+            if (acc < 5 && marks[mark].Strength > (acc * 5)) {
+                float newStr = (marks[mark].Strength > Mathf.Abs(marks[mark].Polarity)) 
+                    ? (marks[mark].Strength + Mathf.Abs(marks[mark].Polarity)) / 2 
+                    : marks[mark].Strength;
+                newStr *= Mathf.Sign(marks[mark].Polarity);
+                marks[mark].Set(strengthSet: newStr);
+                mark.GetMood(feels, branch, newStr * percent, div, acc);
+            }
+        }
+        acc--;
+        branch.RemoveAt(acc);
     }
+
+    public void GetMarks(Association subj, Association obj, List<Association> branch, float amount, int acc = 0) {
+        acc++;
+        branch.Add(this);
+        foreach (Association mark in obj.marks.Keys) {
+            if (mark.GetType() == typeof(MoodAssoc) || mark.GetType() == typeof(ConceptAssoc)) {
+                subj.marks.Add(mark, new Interaction(obj.marks[mark].Strength * amount, obj.marks[mark].Polarity));
+            }
+        }
+        acc--;
+        branch.RemoveAt(acc);
+    }
+    //AddMark(subj, newMarks, subj.GetMarks(obj, newMarks, branch, 0.25f));
 }
 
 public class VerbAssoc : Association {
@@ -81,10 +125,21 @@ public class VerbAssoc : Association {
 }
 
 public class MoodAssoc : Association {
-    public MoodAssoc(string _name, string _id, Dictionary<string, Interaction> _marks = null) : 
+
+    float obl;
+
+    public MoodAssoc(string _name, string _id, float _obl, Dictionary<string, Interaction> _marks = null) : 
                      base(_name, _id, _marks) {
+        obl = _obl;
     }
 }
+
+public class ConceptAssoc : Association {
+    public ConceptAssoc(string _name, string _id, Dictionary<string, Interaction> _marks = null) :
+                       base(_name, _id, _marks) {
+    }
+}
+
 
 public class PersonAssoc : Association {
     public PersonAssoc(string _name, string _id, Dictionary<string, Interaction> _marks = null) :
@@ -130,14 +185,19 @@ public struct EventInfo {
         strength += strengthDelt;
         accesses += accessesDelt;
     }
+
+    public void Set(float interestSet = 0, float polaritySet = 0, float strengthSet = 0, int accessesSet = 0) {
+        interest = interestSet;
+        polarity = polaritySet;
+        strength = strengthSet;
+        accesses = accessesSet;
+    }
 }
 
 public class Personality {
     List<Association> associator;
     Dictionary<string[], EventInfo> seenEvents; //interest[0], interaction polarity [1], interaction [2], # times [3]
     Identity identity;
-
-    float totalInterest;
 
     float markThreshold;
     float objMarkThreshold;
@@ -159,6 +219,8 @@ public class Personality {
         VerbAssoc vb = null;
         Association obj = null;
 
+        float totalInterest = 0;
+
         foreach (Association a in associator) { //Assign subject, verb, and object accordingly
             if (info.Length == 3) {
                 if (a.Id.Equals(info[0])) subj = a;
@@ -176,18 +238,56 @@ public class Personality {
         if (seenEvents.ContainsKey(info)) {
             div = 0.25f;
             seenEvents[info].Apply(interestDelt: vb.Interest);
+            totalInterest += vb.Interest;
         }
-
         else {
             totalInterest += subj.Interest + vb.Interest + ((obj != null) ? obj.Interest : 0);
             seenEvents.Add(info, new EventInfo(totalInterest, interaction.Polarity, interaction.Strength));
             div = (totalInterest > interestThreshold) ? 1 : 0.25f;
         }
+        totalInterest *= div;
 
-        Feel(subj, obj, vb, div);
+        if (interaction.Strength == 0) {
+            interaction.Apply(polarityDelt: vb.Polarity, strengthDelt: vb.Interest);
+        }
+        else { interaction.Set(strengthSet: ((interaction.Strength + totalInterest) / 2)); }
+        interaction.Set(polaritySet: (interaction.Polarity * div), strengthSet: (interaction.Strength * div));
+        float newStr = (interaction.Strength > Mathf.Abs(interaction.Polarity))
+            ? (interaction.Strength + Mathf.Abs(interaction.Polarity)) / 2
+            : interaction.Strength;
+        interaction.Set(strengthSet: newStr);
+
+        Feel(subj, obj, vb, totalInterest, interaction, div);
     }
 
-    public void Feel(Association _subj, Association _obj, Association _vb, float div, bool opine = false) { }
+    public void Feel(Association subj, Association obj, Association vb, float interest, Interaction interaction, float div, bool opine = false) {
+        Dictionary<MoodAssoc, float> feels = new Dictionary<MoodAssoc, float>();
+        List<Association> branch = new List<Association>();
+
+        subj.GetMood(feels, branch, interest, div, 0);
+
+        vb.GetMood(feels, branch, interest, div, 0);
+
+        if (obj != null) {
+            obj.GetMood(feels, branch, interaction.Strength * Mathf.Sign(interaction.Polarity), div, 0);
+        }
+
+        //APPLY MOODS HERE
+        Dictionary<Association, Interaction> newMarks = new Dictionary<Association, Interaction>();
+
+        //if (obj != null) {
+          //  int amount = subj.CheckAssoc(obj, interaction);
+        //}
+        //AddMark(subj, obj, branch, amount);
+        //subj.CheckAssoc(vb, new Interaction(1, vb.Interest));
+    }
+
+    /*TODO -
+     * Subject needs to form bonds with verb and object
+     * AddMark function must create shortcuts to MoodAssocs, stopping only for ConceptAssocs
+     * Mood class needs to exemplify bipartite behavior
+     * Feel has to apply feels in order to express actual moods
+     */
 
     public void Feel(Association _concept) { }
 
