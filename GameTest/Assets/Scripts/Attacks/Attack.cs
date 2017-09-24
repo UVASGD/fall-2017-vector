@@ -13,10 +13,12 @@ public class Attack : MonoBehaviour {
     protected int actTimer;
     protected int currFrame = 0;
     protected int rate;
+
     public int Rate { get { return rate; } }
     protected int duration;
     public int Duration { get { return duration; } }
     protected int repeats = 0;
+
     public List<Affecter> effects;
     protected TimeManager time;
     protected List<string> targetTags;

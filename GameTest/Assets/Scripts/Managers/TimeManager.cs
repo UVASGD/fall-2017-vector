@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class TimeManager : MonoBehaviour {
 
+    public GameObject tickMarker;
     public bool clock = false;  // In a frame that this bool is set, all listeners with timers will clock one cycle.
 
     float clockTime = 0.001f;  // The 'clock' bool will be set for one frame every $clockTime seconds.
@@ -26,6 +27,7 @@ public class TimeManager : MonoBehaviour {
         }
         else if (clock == true)
             clock = false;
+        tickMarker.transform.localScale = new Vector3(32 * (sinceClock / clockTime), 0);
 	}
 
     void PauseToggle() {
