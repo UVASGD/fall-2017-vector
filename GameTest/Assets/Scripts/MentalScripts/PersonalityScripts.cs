@@ -51,7 +51,7 @@ public class Association {
 
 
 
-    public Dictionary<string, Interaction> associations; //The assocs this is connected to [0] being polarity, [1] being strength
+    public Dictionary<Association, Interaction> associations; //The assocs this is connected to [0] being polarity, [1] being strength
     public Dictionary<string, Interaction> addToMarks; //This is a temporary list of strings to association values
     public Dictionary<Association, Interaction> marks; //The associations to which this association is 'perma' connected to, [2] being exhaustion multiplier
 
@@ -62,8 +62,19 @@ public class Association {
         accesses = 0;
     }
 
-    public int CheckAssoc(Association obj, Interaction interaction) {
-        return -1;
+    public Interaction CheckAssoc(Association obj, Interaction interaction) {
+        float[] thresholds  =new float[]{ 0.3f, 0.5f, 0.7f, 0.9f };
+        Interaction retInt = new Interaction(interaction.Polarity, 0);
+        for (int i = thresholds.Length;i > 0; i--)
+        {
+            bool pastMark = associations[obj].Strength <= thresholds[i];
+            float tempAdd = Mathf.Clamp(associations[obj].Strength + interaction.Strength,0,1);
+            if(pastMark && tempAdd > thresholds[i])
+            {
+                retInt.Apply(strengthDelt: tempAdd / 4);
+            }
+        }
+        return retInt;
     }
 
 
