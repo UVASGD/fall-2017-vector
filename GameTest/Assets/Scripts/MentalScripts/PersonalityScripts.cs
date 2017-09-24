@@ -52,7 +52,7 @@ public class Association {
 
 
 
-    public Dictionary<string, Interaction> associations; //The assocs this is connected to [0] being polarity, [1] being strength
+    public Dictionary<Association, Interaction> associations; //The assocs this is connected to [0] being polarity, [1] being strength
     public Dictionary<string, Interaction> addToMarks; //This is a temporary list of strings to association values
     public Dictionary<Association, Interaction> marks; //The associations to which this association is 'perma' connected to, [2] being exhaustion multiplier
 
@@ -63,8 +63,19 @@ public class Association {
         accesses = 0;
     }
 
-    public int CheckAssoc(Association obj, Interaction interaction) {
-        return -1;
+    public Interaction CheckAssoc(Association obj, Interaction interaction) {
+        float[] thresholds  =new float[]{ 0.3f, 0.5f, 0.7f, 0.9f };
+        Interaction retInt = new Interaction(interaction.Polarity, 0);
+        for (int i = thresholds.Length; i > 0; i--)
+        {
+            bool pastMark = associations[obj].Strength <= thresholds[i];
+            float tempAdd = Mathf.Clamp(associations[obj].Strength + interaction.Strength,0,1);
+            if(pastMark && tempAdd > thresholds[i])
+            {
+                retInt.Apply(strengthDelt: (tempAdd / 4));
+            }
+        }
+        return retInt;
     }
 
 
@@ -267,7 +278,8 @@ public class Personality {
         Feel(subj, obj, vb, totalInterest, interaction, div);
     }
 
-    public void Feel(Association subj, Association obj, Association vb, float interest, Interaction interaction, float div, bool opine = false) {
+    public void Feel(Association subj, Association obj, Association vb, float interest, Interaction interaction, float div, bool opine = false)
+    {
         Dictionary<MoodAssoc, float> feels = new Dictionary<MoodAssoc, float>();
         List<Association> branch = new List<Association>();
 
@@ -275,18 +287,19 @@ public class Personality {
 
         vb.GetMood(feels, branch, interest, div, 0);
 
-        if (obj != null) {
+        if (obj != null)
+        {
             obj.GetMood(feels, branch, interaction.Strength * Mathf.Sign(interaction.Polarity), div, 0);
         }
 
         //APPLY MOODS HERE
         Dictionary<Association, Interaction> newMarks = new Dictionary<Association, Interaction>();
 
-        //if (obj != null) {
-          //  int amount = subj.CheckAssoc(obj, interaction);
-        //}
-        //AddMark(subj, obj, branch, amount);
-        //subj.CheckAssoc(vb, new Interaction(1, vb.Interest));
+        if (obj != null) {
+            Interaction checkInt = subj.CheckAssoc(obj, interaction);
+            subj.GetMarks(subj, obj, branch, checkInt);
+        }
+        subj.GetMarks(subj, vb, branch, subj.CheckAssoc(vb,new Interaction(1,vb.Interest)));
     }
 
     /*TODO -
