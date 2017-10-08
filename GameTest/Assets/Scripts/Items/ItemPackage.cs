@@ -18,8 +18,8 @@ public class ItemPackage : Body, Interactable {
     bool interacting;
     Body interactor;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start() {
         time = (TimeManager)FindObjectOfType(typeof(TimeManager)); //Set Time manager
         foreach (Transform child in transform) if (child.CompareTag("Renderer")) { bodyRenderTransform = child; }
         //Set bodyRender equal to the transform of the proper childObject
@@ -41,12 +41,12 @@ public class ItemPackage : Body, Interactable {
         CreateItemPackage(inventory, "RChest", 5.5f);
     }
 
-	// Update is called once per frame
-	void Update () {
+    // Update is called once per frame
+    void Update() {
         //mind.Update();
         if (time.clock)
             Tick();
-	}
+    }
 
     public void CreateItemPackage(List<Item> _inventory, string _renderName, float _loc, int size = 1) {
         inventory = _inventory;
@@ -67,7 +67,7 @@ public class ItemPackage : Body, Interactable {
 
         bodyRender.sortingLayerName = size.ToString();
         rend = bodyRenderObject.GetComponent<Renderer>();
-        
+
     }
 
     public bool CheckInteract(Body player) {
