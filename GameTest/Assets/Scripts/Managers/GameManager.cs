@@ -7,11 +7,13 @@ public enum Direction { Left = -1, Right = 1 };
 
 public enum AINum { player, dummy, turret};
 
-public enum Mood {
+/*public enum Mood {
     Charm, Amuse, Inspire, Happy,
     Disgust, Anger, Intimidate, Sad,
     None
-};
+};*/
+
+public enum CoreMood { CharmAxis, AmuseAxis, InspireAxis, HappyAxis };
 
 public class GameManager : MonoBehaviour {
     /*enum Mood
