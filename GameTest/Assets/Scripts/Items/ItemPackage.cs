@@ -5,14 +5,13 @@ using UnityEngine;
 public class ItemPackage : Body, Interactable {
 
     public List<Item> Inventory { get { return inventory; } }
-
+    public int inventorySize = 0;
     string renderName;
     float loc = 0f;
     GameObject bodyRenderObject;
     Renderer rend;
     SpriteOutline outline;
     SpriteRenderer bodyRender;
-
     int sortingLayer = 0;
 
     bool interacting;
@@ -37,8 +36,20 @@ public class ItemPackage : Body, Interactable {
         mind = new Inanimate(null, this);
         interacting = false;
         outline = GetComponent<SpriteOutline>();
-        inventory = new List<Item> { new Sword(this, 1) };
+        inventory = new List<Item> {};
+        //Manually adding items to the item package. This will be done outside this script.
+        for(int i = 0; i < 5; i ++)
+        {
+            AddItem(new Sword(this, 1));
+        }
         CreateItemPackage(inventory, "RChest", 5.5f);
+        //Item package scales y value based on the number of items in the package. 
+        float yScale = (inventory.Count / 15f * 2f);
+        //The size caps at 15 items.
+        if (yScale > 2)
+            yScale = 2;
+        transform.localScale = new Vector3(1, yScale, 1);
+        inventorySize = inventory.Count;
     }
 
     // Update is called once per frame
@@ -104,5 +115,18 @@ public class ItemPackage : Body, Interactable {
             interactor.TakeItemPackage(this);
             Destroy(transform.parent.gameObject);
         }
+    }
+
+    public void AddItem(Item i)
+    {
+        inventory.Add(i);
+    }
+    public void RemoveItem(Item i)
+    {
+        inventory.Remove(i);
+    }
+    public void ClearItems()
+    {
+        inventory.Clear();
     }
 }
