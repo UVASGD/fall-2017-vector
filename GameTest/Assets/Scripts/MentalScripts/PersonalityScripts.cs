@@ -221,6 +221,7 @@ public class Personality {
     List<Association> associator;
     Dictionary<string[], EventInfo> seenEvents; //interest[0], interaction polarity [1], interaction [2], # times [3]
     Identity identity;
+    MoodHandler moodHandler;
 
     float markThreshold;
     float objMarkThreshold;
@@ -230,7 +231,11 @@ public class Personality {
 
     public Personality() { }
 
-    public Personality(bool t = false) {
+    public Personality(List<Association> _associator, Identity _identity, MoodHandler _moodHandler, bool t = false) {
+        associator = _associator;
+        identity = _identity;
+        moodHandler = _moodHandler;
+        seenEvents = new Dictionary<string[], EventInfo>();
         foreach (Association a in associator)
             foreach (string s in a.addToMarks.Keys)
                 foreach (Association aOther in associator)
@@ -285,7 +290,7 @@ public class Personality {
         Feel(subj, obj, vb, totalInterest, interaction, div);
     }
 
-    public void Feel(Association subj, Association obj, Association vb, float interest, Interaction interaction, float div, bool opine = false)
+    public string Feel(Association subj, Association obj, Association vb, float interest, Interaction interaction, float div, bool opine = false)
     {
         Dictionary<MoodAssoc, float> feels = new Dictionary<MoodAssoc, float>(); //Apply this to the perceiver's moods
         List<Association> branch = new List<Association>();
@@ -299,14 +304,31 @@ public class Personality {
             obj.GetMood(feels, branch, interaction.Strength * Mathf.Sign(interaction.Polarity), div, 0);
         }
 
-        //APPLY MOODS HERE
-        Dictionary<Association, Interaction> newMarks = new Dictionary<Association, Interaction>();
 
-        if (obj != null) {
-            Interaction checkInt = subj.CheckAssoc(obj, interaction);
-            subj.GetMarks(subj, obj, branch, checkInt);
+        if (opine) {
+            float topVal = 0;
+            MoodAssoc topMood = null;
+            foreach (MoodAssoc m in feels.Keys) {
+                if (Mathf.Sign(feels[m]) > Mathf.Sign(topVal)) {
+                    topVal = feels[m];
+                    topMood = m;
+                }
+            }
+            //If mood != null
+            //MoodHandler.GetMoodName(topMood, topVal)
         }
-        subj.GetMarks(subj, vb, branch, subj.CheckAssoc(vb,new Interaction(1,vb.Interest)));
+        //APPLY MOODS HERE
+        else {
+            Dictionary<Association, Interaction> newMarks = new Dictionary<Association, Interaction>();
+
+            if (obj != null) {
+                Interaction checkInt = subj.CheckAssoc(obj, interaction);
+                subj.GetMarks(subj, obj, branch, checkInt);
+            }
+            subj.GetMarks(subj, vb, branch, subj.CheckAssoc(vb, new Interaction(1, vb.Interest)));
+        }
+
+        return "";
     }
 
     /*TODO -
