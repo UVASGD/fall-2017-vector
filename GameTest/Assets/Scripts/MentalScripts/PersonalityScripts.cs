@@ -90,8 +90,8 @@ public class Association {
                 continue;
             if (mark.GetType() == typeof(MoodAssoc)) {
                 if (!feels.ContainsKey((MoodAssoc)mark))
-                    feels.Add((MoodAssoc)mark, percent * marks[mark].Strength);
-                else { feels[(MoodAssoc)mark] += percent; }
+                    feels.Add((MoodAssoc)mark, percent * marks[mark].Strength * Mathf.Sign(marks[mark].Polarity));
+                else { feels[(MoodAssoc)mark] += percent * Mathf.Sign(marks[mark].Polarity); }
             }
             if (acc < 5 && marks[mark].Strength > (acc * 5)) {
                 float newStr = (marks[mark].Strength > Mathf.Abs(marks[mark].Polarity)) 
@@ -147,6 +147,9 @@ public class VerbAssoc : Association {
 public class MoodAssoc : Association {
 
     float obl;
+
+    CoreMood cMood;
+    public CoreMood CMood { get { return cMood; } }
 
     public MoodAssoc(string _name, string _id, float _obl, Dictionary<string, Interaction> _marks = null) : 
                      base(_name, _id, _marks) {
@@ -284,7 +287,7 @@ public class Personality {
 
     public void Feel(Association subj, Association obj, Association vb, float interest, Interaction interaction, float div, bool opine = false)
     {
-        Dictionary<MoodAssoc, float> feels = new Dictionary<MoodAssoc, float>();
+        Dictionary<MoodAssoc, float> feels = new Dictionary<MoodAssoc, float>(); //Apply this to the perceiver's moods
         List<Association> branch = new List<Association>();
 
         subj.GetMood(feels, branch, interest, div, 0);
@@ -313,4 +316,43 @@ public class Personality {
 
     public void Feel(Association _concept) { }
 
+}
+
+public class MoodHandler {
+    List<Mood> moodList;
+
+    public MoodHandler(List<Mood> _moodList) {
+        moodList = _moodList;
+    }
+
+    public void ApplyMood(Dictionary<MoodAssoc, float> _feels) {
+        foreach (MoodAssoc moodAssoc in _feels.Keys)
+            foreach (Mood mood in moodList)
+                if (moodAssoc.CMood == mood.CMood)
+                    mood.ApplyPolarity(_feels[moodAssoc]);
+    }
+}
+
+public class Mood {
+    string positive;
+    public string Positive { get { return positive; } }
+
+    string negative;
+    public string Negative { get { return negative; } }
+
+    float polarity;
+
+    CoreMood cMood;
+    public CoreMood CMood { get { return cMood; } } 
+
+    public Mood(string _positive, string _negative, float _polarity, CoreMood _cMood) {
+        positive = _positive;
+        negative = _negative;
+        polarity = _polarity;
+        cMood = _cMood;
+    }
+
+    public void ApplyPolarity(float _polarity) {
+        polarity += _polarity;
+    }
 }
