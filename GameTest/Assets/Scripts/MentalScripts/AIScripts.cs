@@ -34,6 +34,8 @@ public class PlayerAI : AI {
     float button1Timer = 0;
     float button2Timer = 0;
 
+    MouseManager mouse;
+
     public PlayerAI(Personality _personality, Body _body) : base(_personality, _body) {
         
     }
@@ -44,7 +46,7 @@ public class PlayerAI : AI {
 
     public override void Update() {
         GetMoveInput();
-        GetAttackInput();
+        GetMouseInput();
     }
 
     public override void Tick() {
@@ -91,7 +93,7 @@ public class PlayerAI : AI {
         }
     }
 
-    void GetAttackInput() {
+    void GetMouseInput() {
 
         if (Input.GetMouseButtonDown(0)) {
             Debug.Log("PREPARE PRIMARY");
