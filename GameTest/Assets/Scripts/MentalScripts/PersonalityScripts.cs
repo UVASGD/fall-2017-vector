@@ -353,6 +353,18 @@ public class MoodHandler {
                 if (moodAssoc.CMood == mood.CMood)
                     mood.ApplyPolarity(_feels[moodAssoc]);
     }
+
+    public Mood getDominantMood()
+    {
+        Mood curDom = null;
+
+        foreach(Mood m in moodList)
+        {
+            if (curDom == null || m.Polarity > curDom.Polarity)
+                curDom = m;
+        }
+        return curDom;
+    }
 }
 
 public class Mood {
@@ -363,6 +375,7 @@ public class Mood {
     public string Negative { get { return negative; } }
 
     float polarity;
+    public float Polarity { get { return polarity; } }
 
     CoreMood cMood;
     public CoreMood CMood { get { return cMood; } } 
