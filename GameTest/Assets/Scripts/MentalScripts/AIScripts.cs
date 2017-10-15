@@ -46,7 +46,7 @@ public class PlayerAI : AI {
 
     public override void Update() {
         GetMoveInput();
-        GetMouseInput();
+
     }
 
     public override void Tick() {
@@ -90,86 +90,6 @@ public class PlayerAI : AI {
         }
         if (dashTimer > 0) {
             dashTimer -= Time.deltaTime;
-        }
-    }
-
-    void GetMouseInput() {
-
-        if (Input.GetMouseButtonDown(0)) {
-            Debug.Log("PREPARE PRIMARY");
-            button1Timer = 1;
-        }
-        if (Input.GetMouseButtonDown(1)) {
-            Debug.Log("PREPARE SECONDARY");
-            button2Timer = 1;
-            ((ICloseMelee)body.Weapon).CloseMeleeBlockEnact();
-        }
-
-        if (Input.GetMouseButtonUp(0)) {
-            if (button1Timer > heavyTime) {
-                if (button2Timer > heavyTime) {
-                    Debug.Log("THROW");
-                }
-                else {
-                    Debug.Log("HEAVY ATTACK");
-                    if (body.Weapon is ICloseMelee)
-                        ((ICloseMelee)body.Weapon).CloseMeleeHeavyAttack();
-                    //body.SetCurrAct(new AttackAction("SampleAttack", 10 - body.Athletics, body, (GameObject)Resources.Load("Chest")));
-                }
-            }
-            else if (button1Timer > 0) {
-                if (button2Timer > heavyTime) {
-                    Debug.Log("PARRY");
-                    if (body.Weapon is ICloseMelee)
-                        ((ICloseMelee)body.Weapon).CloseMeleeParry();
-                }
-                else {
-                    Debug.Log("LIGHT ATTACK");
-                    if (body.Weapon is ICloseMelee)
-                        ((ICloseMelee)body.Weapon).CloseMeleeLightAttack();
-                    //body.SetCurrAct(new AttackAction("SampleAttack", 10 - body.Athletics, body, (GameObject)Resources.Load("Attack")));
-                }
-            }
-
-            button1Timer = 0;
-            button2Timer = 0;
-            body.Impediment = ImpedimentLevel.unimpeded;
-        }
-        if (Input.GetMouseButtonUp(1)) {
-            if (button2Timer > heavyTime && button1Timer > heavyTime) {
-                Debug.Log("THROW");
-            }
-            else if (button2Timer > 0) {
-                Debug.Log("SHOVE");
-            }
-
-            Debug.Log("END BLOCK");
-            ((ICloseMelee)body.Weapon).CloseMeleeBlockDeact();
-
-            button1Timer = 0;
-            button2Timer = 0;
-            body.Impediment = ImpedimentLevel.unimpeded;
-        }
-
-        if (Input.GetMouseButton(0)) {
-            if (button1Timer > 0.5 && button1Timer < 10) {
-                button1Timer += Time.deltaTime;
-            }
-            if (button1Timer > heavyTime)
-                body.Impediment = ImpedimentLevel.noMove;
-        }
-        if (Input.GetMouseButton(1)) {
-            if (button2Timer > 0.5f && button2Timer < 10) {
-                button2Timer += Time.deltaTime;
-                if (button2Timer > heavyTime) {
-                    button2Timer = 20;
-                }
-            }
-        }
-
-
-
-        if (Input.GetKeyDown("space")) {
         }
     }
 
