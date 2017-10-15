@@ -1,0 +1,30 @@
+seenEvent item:
+
+{<PLAYER>,<KILLS>,<BANDIT>} 
+
+Bandit: (25 interest, [Association: Banditry, 80% associated])
+-Banditry Recurses down
+
+
+Interaction [Association strength <90>, Polarity as percentage <100>]
+
+Event and Interaction are independent.
+-For an event:
+--Multiply associations by Strength
+--Determine if assocation is as given or the inverse.
+
+
+Perceive({<PLAYER>,<KILLS>,<BANDIT>}, {90,-100})
+subj: Player
+Verb: Kills
+obj: bandit
+
+if this event has been seen:
+-Respond at 1/4 div. 
+-Increase interest for verb
+-Enact feel.
+
+Else:
+-Respond at 1 div.
+-Increase interest for verb.
+-Enact feel

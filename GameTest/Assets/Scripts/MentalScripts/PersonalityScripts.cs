@@ -273,11 +273,11 @@ public class Personality {
         identity = _identity;
         moodHandler = _moodHandler;
         seenEvents = new Dictionary<string[], EventInfo>();
-        foreach (Association a in associator)
-            foreach (string s in a.addToMarks.Keys)
-                foreach (Association aOther in associator)
-                    if (aOther.Id.Equals(s))
-                        a.marks.Add(aOther, a.addToMarks[s]);
+        for(int i = 0; i < associator.Count; i++)
+            foreach (string s in associator[i].addToMarks.Keys)
+                for(int other = 0; other < associator.Count; other++)
+                    if (associator[other].Id.Equals(s))
+                        associator[i].marks.Add(associator[other], associator[i].addToMarks[s]);
     }
 
     public void ApplyContext(Context context) {

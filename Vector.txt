@@ -1,0 +1,62 @@
+Association:
+
+Interest: Used to determine if the association is interesting enough to consider.
+
+Marks: Permanent Associations
+
+-markThreshold: If interest is above, association becomes Mark
+-objMarkThreshold: Makes objects unique. 
+
+Associations (Polarity <Good or Bad>, Strength <How strong the emotional response is>, Exhaustive Multiplier <How fast should the emotion exhaust on repeated feeling>)
+
+
+
+Personality:
+associator: All assocations for the personality.
+seenEvents: 
+-[0]: List of strings 
+--[0] Subject
+--[1] Verb
+--[2] Object
+
+-[1]: List of floats
+--[0]: Interest for event
+--[1]: Polarity of event
+--[2]:Interaction
+--[3]: How many times the event has been accessed.
+
+div: The divider for multiple accesses
+
+Perceive:
+-String info:
+--[0] = Subj
+--[1] = Verb
+--[2] = Obj
+interaction: 
+-[0]: Polarity
+-[1]: Associative Strength
+
+Feel: 
+-string[] info: Same as perceive, but for one.
+-div: Same div from ealier
+-opine: 
+--If True: Just deliver opinion
+--If False: Also input to personality.
+-This is where the recursive associations occur. 
+--Go into assocations
+--Check ID to associator 
+--Determine if it is a mood or not
+---If not, progress deeper
+---If so, work from there. Go up.
+
+
+-Called at some point in Perceive:
+-Handles much of seenEvents
+-Add div to number of accesses directly in association. 
+
+
+
+CheckAssoc:
+--1. Check prior value. If above mark threshold, skip 3.
+--2. Adds interaction strength to Association
+--3. Call GetMarks
