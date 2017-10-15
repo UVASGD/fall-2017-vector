@@ -7,36 +7,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct Interaction {
-    float capacity;
-    public float Capacity { get { return capacity; } set { capacity = value; } }
-
-    float polarity;
-    public float Polarity { get { return polarity; } }
-
-    float strength;
-    public float Strength { get { return strength; } }
-
-    public Interaction(float _polarity, float _strength, int _capacity = 0) {
-        polarity = _polarity;
-        strength = _strength;
-        capacity = _capacity;
-    }
-
-    public void Apply(float polarityDelt = 0, float strengthDelt = 0, float capacityDelt = 0) {
-        float absPolarityDelt = Mathf.Abs(polarityDelt) * Mathf.Abs(polarity);
-        polarity += ((Mathf.Sign(polarity) + Mathf.Sign(polarityDelt) == 0)) ? -polarityDelt : polarity;
-        strength += strengthDelt;
-        capacity += capacityDelt;
-    }
-
-    public void Set(float polaritySet = 0, float strengthSet = 0, float capacitySet = 0) {
-        polarity = polaritySet;
-        strength = strengthSet;
-        capacity = capacitySet;
-    }
-}
-
 public class Association {
     string name; //The name that will appear in 'dialogue' strings
     public string Name { get { return name; } }
@@ -94,11 +64,8 @@ public class Association {
                 else { feels[(MoodAssoc)mark] += percent * Mathf.Sign(marks[mark].Polarity); }
             }
             if (acc < 5 && marks[mark].Strength > (acc * 5)) {
-                float newStr = (marks[mark].Strength > Mathf.Abs(marks[mark].Polarity)) 
-                    ? (marks[mark].Strength + Mathf.Abs(marks[mark].Polarity)) / 2 
-                    : marks[mark].Strength;
+                float newStr = marks[mark].CalibrateStrength();
                 newStr *= Mathf.Sign(marks[mark].Polarity);
-                marks[mark].Set(strengthSet: newStr);
                 mark.GetMood(feels, branch, newStr * percent, div, acc);
             }
         }
@@ -112,18 +79,23 @@ public class Association {
         foreach (Association mark in obj.marks.Keys) {
             Interaction interact = obj.marks[mark];
             if (mark.GetType() == typeof(MoodAssoc) || mark.GetType() == typeof(ConceptAssoc)) {
-                if (subj.marks.ContainsKey(mark))
+                if (subj.marks.ContainsKey(mark)) {
                     subj.marks[mark].Apply(polarityDelt: markInteract.Polarity, strengthDelt: interact.Strength * markInteract.Strength);
+                    subj.interest += interact.Strength * markInteract.Strength;
+                }
                 else
-                    subj.marks.Add(mark, new Interaction(markInteract.Polarity, interact.Strength * markInteract.Strength));
+                    subj.AddMark(subj, mark, new Interaction(markInteract.Polarity, interact.Strength * markInteract.Strength));
             }
-
             GetMarks(subj, mark, branch, subj.marks[mark], acc);
         }
         acc--;
         branch.RemoveAt(acc);
     }
-    //AddMark(subj, newMarks, subj.GetMarks(obj, newMarks, branch, 0.25f));
+
+    public void AddMark(Association subj, Association newMark, Interaction newInt) {
+        subj.marks.Add(newMark, newInt);
+        subj.interest += newInt.Strength / 2;
+    }
 }
 
 public class VerbAssoc : Association {
@@ -147,6 +119,7 @@ public class VerbAssoc : Association {
 public class MoodAssoc : Association {
 
     float obl;
+    public float Obl { get { return obl; } } 
 
     CoreMood cMood;
     public CoreMood CMood { get { return cMood; } }
@@ -165,8 +138,15 @@ public class ConceptAssoc : Association {
 
 
 public class PersonAssoc : Association {
-    public PersonAssoc(string _name, string _id, Dictionary<string, Interaction> _marks = null) :
+    float obligation;
+
+    public PersonAssoc(string _name, string _id, float _obligation, Dictionary<string, Interaction> _marks = null) :
                        base(_name, _id, _marks) {
+        obligation = _obligation;
+    }
+
+    public void ApplyObl(float oblDelt) {
+        obligation += oblDelt;
     }
 }
 
@@ -179,6 +159,45 @@ public class PlaceAssoc : Association {
 public class ItemAssoc : Association {
     public ItemAssoc(string _name, string _id, Dictionary<string, Interaction> _marks = null) :
                      base(_name, _id, _marks) {
+    }
+}
+
+public struct Interaction {
+    float capacity;
+    public float Capacity { get { return capacity; } set { capacity = value; } }
+
+    float polarity;
+    public float Polarity { get { return polarity; } }
+
+    float strength;
+    public float Strength { get { return strength; } }
+
+    public Interaction(float _polarity, float _strength, int _capacity = 0) {
+        polarity = _polarity;
+        strength = _strength;
+        capacity = _capacity;
+    }
+
+    public void Apply(float polarityDelt = 0, float strengthDelt = 0, float capacityDelt = 0) {
+        float absPolarityDelt = Mathf.Abs(polarityDelt) * Mathf.Abs(polarity);
+        polarity += ((Mathf.Sign(polarity) + Mathf.Sign(polarityDelt) == 0)) ? -polarityDelt : polarity;
+        strength += strengthDelt;
+        capacity += capacityDelt;
+    }
+
+    public void Set(float polaritySet = 0, float strengthSet = 0, float capacitySet = 0) {
+        polarity = polaritySet;
+        strength = strengthSet;
+        capacity = capacitySet;
+    }
+
+    public float CalibrateStrength() {
+        float newStr = (strength > (Mathf.Abs(polarity) * 1.5))
+            ? (strength + Mathf.Abs(polarity)) / 2
+            : strength;
+        Set(strengthSet: newStr);
+
+        return newStr;
     }
 }
 
@@ -265,29 +284,30 @@ public class Personality {
 
         //Logic in here to detect whether subj, vb, or obj are still null!
 
-        if (seenEvents.ContainsKey(info)) {
-            div = 0.25f;
-            seenEvents[info].Apply(interestDelt: vb.Interest);
-            totalInterest += vb.Interest;
-        }
-        else {
-            totalInterest += subj.Interest + vb.Interest + ((obj != null) ? obj.Interest : 0);
-            seenEvents.Add(info, new EventInfo(totalInterest, interaction.Polarity, interaction.Strength));
-            div = (totalInterest > interestThreshold) ? 1 : 0.25f;
-        }
-        totalInterest *= div;
+        string infoSentence = string.Join(" ", info);
+        foreach (string[] sentenceList in seenEvents.Keys) {
+            string sentence = string.Join(" ", sentenceList);
+            if (sentence.Equals(infoSentence)) {
+                div = 0.25f;
+                seenEvents[sentenceList].Apply(interestDelt: vb.Interest);
+                totalInterest += vb.Interest;
+            }
+            else {
+                totalInterest += subj.Interest + vb.Interest + ((obj != null) ? obj.Interest : 0);
+                seenEvents.Add(info, new EventInfo(totalInterest, interaction.Polarity, interaction.Strength));
+                div = (totalInterest > interestThreshold) ? 1 : 0.25f;
+            }
+            totalInterest *= div;
 
-        if (interaction.Strength == 0) {
-            interaction.Apply(polarityDelt: vb.Polarity, strengthDelt: vb.Interest);
-        }
-        else { interaction.Set(strengthSet: ((interaction.Strength + totalInterest) / 2)); }
-        interaction.Set(polaritySet: (interaction.Polarity * div), strengthSet: (interaction.Strength * div));
-        float newStr = (interaction.Strength > Mathf.Abs(interaction.Polarity))
-            ? (interaction.Strength + Mathf.Abs(interaction.Polarity)) / 2
-            : interaction.Strength;
-        interaction.Set(strengthSet: newStr);
+            if (interaction.Strength == 0) {
+                interaction.Apply(polarityDelt: vb.Polarity, strengthDelt: vb.Interest);
+            }
+            else { interaction.Set(strengthSet: ((interaction.Strength + totalInterest) / 2)); }
+            interaction.Set(polaritySet: (interaction.Polarity * div), strengthSet: (interaction.Strength * div));
+            interaction.CalibrateStrength();
 
-        Feel(subj, obj, vb, totalInterest, interaction, div);
+            Feel(subj, obj, vb, totalInterest, interaction, div);
+        }
     }
 
     public string Feel(Association subj, Association obj, Association vb, float interest, Interaction interaction, float div, bool opine = false)
@@ -309,32 +329,28 @@ public class Personality {
             float topVal = 0;
             MoodAssoc topMood = null;
             foreach (MoodAssoc m in feels.Keys) {
-                if (Mathf.Sign(feels[m]) > Mathf.Sign(topVal)) {
+                if (Mathf.Abs(feels[m]) > Mathf.Abs(topVal)) {
                     topVal = feels[m];
                     topMood = m;
                 }
             }
-            //If mood != null
-            //MoodHandler.GetMoodName(topMood, topVal)
+            if (topMood != null)
+                return moodHandler.GetName(topMood, topVal);
         }
         //APPLY MOODS HERE
         else {
-            Dictionary<Association, Interaction> newMarks = new Dictionary<Association, Interaction>();
-
+            moodHandler.ApplyMood(feels);
+            foreach (MoodAssoc moodAssoc in feels.Keys)
+                if (subj.GetType() == typeof(PersonAssoc))
+                    ((PersonAssoc)subj).ApplyObl(moodAssoc.Obl * feels[moodAssoc]);
             if (obj != null) {
                 Interaction checkInt = subj.CheckAssoc(obj, interaction);
                 subj.GetMarks(subj, obj, branch, checkInt);
             }
             subj.GetMarks(subj, vb, branch, subj.CheckAssoc(vb, new Interaction(1, vb.Interest)));
         }
-
         return "";
     }
-
-    /*TODO -
-     * Mood class needs to exemplify bipartite behavior
-     * Feel has to apply feels in order to express actual moods
-     */
 
     public void Feel(Association _concept) { }
 
@@ -354,13 +370,19 @@ public class MoodHandler {
                     mood.ApplyPolarity(_feels[moodAssoc]);
     }
 
-    public Mood getDominantMood()
-    {
+    public string GetName(MoodAssoc moodAssoc, float pol) {
+        foreach (Mood mood in moodList)
+            if (moodAssoc.CMood == mood.CMood)
+                return (Mathf.Sign(pol) == -1) ? mood.Negative : mood.Positive;
+        return "";
+    }
+
+    public Mood GetDominantMood() {
         Mood curDom = null;
 
         foreach(Mood m in moodList)
         {
-            if (curDom == null || m.Polarity > curDom.Polarity)
+            if (curDom == null || Mathf.Abs(m.Polarity) > Mathf.Abs(curDom.Polarity))
                 curDom = m;
         }
         return curDom;
