@@ -6,6 +6,8 @@ using System;
 public class Sword : Item, ICloseMelee {
 
     Resistance blockPower;
+    float heavyTime = 2f;
+    float power = 1f;
 
     public Sword(Body _holder, int _size) : base(_holder, _size) {
         LightAttackList = new List<Affecter> { new Wound(holder, 0.2f) };
@@ -23,7 +25,7 @@ public class Sword : Item, ICloseMelee {
     }
 
     public void CloseMeleeLightAttack() {
-        SetupAttack(AddAttackScript<CloseMeleeLightAttackScript>("Attack"), LightAttackList);
+        SetupAttack(AddAttackScript<CloseMeleeLightAttackScript>("Attack"), LightAttackList, power);
     }
 
     public void CloseMeleeHeavyAttack() {
@@ -42,6 +44,26 @@ public class Sword : Item, ICloseMelee {
 
     public void CloseMeleeParry() {
         SetupAttack(AddAttackScript<CloseMeleeParryScript>("Attack"), ParryList);
+    }
+
+    public override void PlayerInput(MouseState _state) {
+        Debug.Log("State = leftUp:" + _state.leftUp + ";");
+        Debug.Log("Heavy Time: " + heavyTime);
+
+        if (_state.leftUp && _state.rightHold == 0f && _state.leftHold <= heavyTime) {
+            Debug.Log("heavyTime: " + heavyTime + " ; _state.leftHold: " + _state.leftHold + " ; power: " + heavyTime / _state.leftHold);
+            if (_state.leftHold == 0f)
+                power = 0.1f;
+            else
+                power = heavyTime / _state.leftHold;
+            CloseMeleeLightAttack();
+            Debug.Log("Light Attack! Power: " + power);
+        }
+        else if (_state.leftUp && _state.rightHold == 0f && _state.leftHold > heavyTime) {
+            Debug.Log("Heavy Attack!");
+            CloseMeleeHeavyAttack();
+        }
+        power = 1f;
     }
 }
 

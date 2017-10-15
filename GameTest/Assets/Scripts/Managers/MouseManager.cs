@@ -5,11 +5,10 @@ using UnityEngine;
 public struct MouseState {
     public bool rightUp;
     public bool rightDown;
+    public float rightHold;
 
     public bool leftUp;
     public bool leftDown;
-
-    public float rightHold;
     public float leftHold;
 }
 
@@ -20,6 +19,9 @@ public class MouseManager : MonoBehaviour {
 
     bool sendit = false;
     public bool ShouldSend { get { return sendit; } }
+
+    bool clearLeft = false;
+    bool clearRight = false;
 
 	// Use this for initialization
 	void Start () {
@@ -36,29 +38,29 @@ public class MouseManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         Clear();
-		if (Input.GetMouseButtonUp(1)) {
+		if (Input.GetMouseButtonUp(0)) {
             current.leftUp = true;
-            current.leftHold = 0f;
             sendit = true;
+            clearLeft = true;
         }
-        else if (Input.GetMouseButtonDown(1)) {
+        else if (Input.GetMouseButtonDown(0)) {
             current.leftDown = true;
             sendit = true;
         }
-        else if (Input.GetMouseButton(1)) {
+        else if (Input.GetMouseButton(0)) {
             current.leftHold += Time.deltaTime;
         }
 
-        if (Input.GetMouseButtonUp(2)) {
+        if (Input.GetMouseButtonUp(1)) {
             current.rightUp = true;
-            current.rightHold = 0f;
             sendit = true;
+            clearRight = true;
         }
-        else if (Input.GetMouseButtonDown(2)) {
+        else if (Input.GetMouseButtonDown(1)) {
             current.rightDown = true;
             sendit = true;
         }
-        else if (Input.GetMouseButton(2)) {
+        else if (Input.GetMouseButton(1)) {
             current.rightHold += Time.deltaTime;
         }
 	}
@@ -71,5 +73,14 @@ public class MouseManager : MonoBehaviour {
 
         current.leftUp = false;
         current.leftDown = false;
+
+        if (clearLeft) {
+            current.leftHold = 0f;
+            clearLeft = false;
+        }
+        if (clearRight) {
+            current.rightHold = 0f;
+            clearRight = false;
+        }
     }
 }

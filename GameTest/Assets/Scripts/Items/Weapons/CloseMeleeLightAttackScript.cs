@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CloseMeleeLightAttackScript : Attack {
-    public override void AttackConstructor(Body _genitor, int _speed) {
+    public override void AttackConstructor(Body _genitor, int _speed, float _power=1f) {
         base.AttackConstructor(_genitor, _speed);
         rate *= 3;
         actScheme = genitor.Weapon.LightScheme;

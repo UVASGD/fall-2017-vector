@@ -94,7 +94,7 @@ public class ItemPackage : Body, Interactable {
     }
 
     public void OnMouseOver() {
-        outline.OnEnable();
+        // outline.OnEnable();
         /*
         if (interacting) {
             rend.material.shader = highlighted;
@@ -105,7 +105,7 @@ public class ItemPackage : Body, Interactable {
     }
 
     public void OnMouseExit() {
-        outline.OnDisable();
+        // outline.OnDisable();
     }
 
     public void OnMouseDown() {
