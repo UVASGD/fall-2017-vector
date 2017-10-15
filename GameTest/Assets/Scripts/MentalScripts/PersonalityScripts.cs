@@ -18,30 +18,34 @@ public class Association {
     public float Interest { get { return interest; } }
 
     float accesses;
-    public float Accesses { set { accesses = value; } get { return accesses; } } 
+    public float Accesses { set { accesses = value; } get { return accesses; } }
 
+    bool permanent;
+    public bool Permanent { get { return permanent; } }
 
+    bool deletable;
+    public bool Deletable { get { return deletable; } }
 
     public Dictionary<Association, Interaction> associations; //The assocs this is connected to [0] being polarity, [1] being strength
     public Dictionary<string, Interaction> addToMarks; //This is a temporary list of strings to association values
     public Dictionary<Association, Interaction> marks; //The associations to which this association is 'perma' connected to, [2] being exhaustion multiplier
 
-    public Association(string _name, string _id, Dictionary<string, Interaction> _marks = null) {
+    public Association(string _name, string _id, Dictionary<string, Interaction> _marks = null, bool _perm = false, bool _delet = false) {
         name = _name;
         id = _id;
         addToMarks = _marks;
+        permanent = _perm;
+        deletable = _delet;
         accesses = 0;
     }
 
     public Interaction CheckAssoc(Association obj, Interaction interaction) {
-        float[] thresholds  =new float[]{ 0.3f, 0.5f, 0.7f, 0.9f };
+        float[] thresholds = new float[] { 0.3f, 0.5f, 0.7f, 0.9f };
         Interaction retInt = new Interaction(interaction.Polarity, 0);
-        for (int i = thresholds.Length; i > 0; i--)
-        {
+        for (int i = thresholds.Length; i > 0; i--) {
             bool pastMark = associations[obj].Strength <= thresholds[i];
-            float tempAdd = Mathf.Clamp(associations[obj].Strength + interaction.Strength,0,1);
-            if(pastMark && tempAdd > thresholds[i])
-            {
+            float tempAdd = Mathf.Clamp(associations[obj].Strength + interaction.Strength, 0, 1);
+            if (pastMark && tempAdd > thresholds[i]) {
                 retInt.Apply(strengthDelt: (tempAdd / 4));
                 break;
             }
@@ -79,12 +83,13 @@ public class Association {
         foreach (Association mark in obj.marks.Keys) {
             Interaction interact = obj.marks[mark];
             if (mark.GetType() == typeof(MoodAssoc) || mark.GetType() == typeof(ConceptAssoc)) {
-                if (subj.marks.ContainsKey(mark)) {
+
+                /*if (subj.marks.ContainsKey(mark)) {
                     subj.marks[mark].Apply(polarityDelt: markInteract.Polarity, strengthDelt: interact.Strength * markInteract.Strength);
                     subj.interest += interact.Strength * markInteract.Strength;
                 }
                 else
-                    subj.AddMark(subj, mark, new Interaction(markInteract.Polarity, interact.Strength * markInteract.Strength));
+                    subj.AddMark(subj, mark, new Interaction(markInteract.Polarity, interact.Strength * markInteract.Strength));*/
             }
             GetMarks(subj, mark, branch, subj.marks[mark], acc);
         }
@@ -92,9 +97,11 @@ public class Association {
         branch.RemoveAt(acc);
     }
 
-    public void AddMark(Association subj, Association newMark, Interaction newInt) {
-        subj.marks.Add(newMark, newInt);
-        subj.interest += newInt.Strength / 2;
+    public void AddMark(Association subj, Association newMark, float intPolarity, float intStrength) {
+        if (subj.marks.ContainsKey(newMark))
+            subj.marks[newMark].Apply(polarityDelt: intPolarity, strengthDelt: intStrength);    
+        subj.marks.Add(newMark, new Interaction(intPolarity, intStrength));
+        subj.interest += intStrength / 2;
     }
 }
 
@@ -162,6 +169,12 @@ public class ItemAssoc : Association {
     }
 }
 
+public class PanAssoc : Association {
+    public PanAssoc(string _name, string _id, Dictionary<string, Interaction> _marks = null) :
+                     base(_name, _id, _marks) {
+    }
+}
+
 public struct Interaction {
     float capacity;
     public float Capacity { get { return capacity; } set { capacity = value; } }
@@ -214,10 +227,14 @@ public struct EventInfo {
     int accesses;
     public int Accesses { get { return accesses; } }
 
-    public EventInfo(float _interest, float _polarity, float _strength, int _accesses = 1) {
+    Context[] contexts;
+    public Context[] Contexts { get { return contexts; } }
+
+    public EventInfo(float _interest, float _polarity, float _strength, Context[] _contexts, int _accesses = 1) {
         polarity = _polarity;
         strength = _strength;
         interest = _interest;
+        contexts = _contexts;
         accesses = _accesses;
     }
 
@@ -241,6 +258,7 @@ public class Personality {
     Dictionary<string[], EventInfo> seenEvents; //interest[0], interaction polarity [1], interaction [2], # times [3]
     Identity identity;
     MoodHandler moodHandler;
+    List<Context> activeContexts;
 
     float markThreshold;
     float objMarkThreshold;
@@ -262,7 +280,13 @@ public class Personality {
                         a.marks.Add(aOther, a.addToMarks[s]);
     }
 
-    public void Perceive(string[] info, Interaction interaction) {
+    public void ApplyContext(Context context) {
+        
+    }
+
+    public void RemoveContext(Context context) { }
+
+    public void Perceive(string[] info, Interaction interaction, Context[] contexts) {
 
         Association subj = null;
         VerbAssoc vb = null;
@@ -294,7 +318,7 @@ public class Personality {
             }
             else {
                 totalInterest += subj.Interest + vb.Interest + ((obj != null) ? obj.Interest : 0);
-                seenEvents.Add(info, new EventInfo(totalInterest, interaction.Polarity, interaction.Strength));
+                seenEvents.Add(info, new EventInfo(totalInterest, interaction.Polarity, interaction.Strength, contexts));
                 div = (totalInterest > interestThreshold) ? 1 : 0.25f;
             }
             totalInterest *= div;
@@ -306,11 +330,11 @@ public class Personality {
             interaction.Set(polaritySet: (interaction.Polarity * div), strengthSet: (interaction.Strength * div));
             interaction.CalibrateStrength();
 
-            Feel(subj, obj, vb, totalInterest, interaction, div);
+            Feel(subj, obj, vb, totalInterest, interaction, div, contexts);
         }
     }
 
-    public string Feel(Association subj, Association obj, Association vb, float interest, Interaction interaction, float div, bool opine = false)
+    public string Feel(Association subj, Association obj, Association vb, float interest, Interaction interaction, float div, Context[] contexts = null, bool opine = false)
     {
         Dictionary<MoodAssoc, float> feels = new Dictionary<MoodAssoc, float>(); //Apply this to the perceiver's moods
         List<Association> branch = new List<Association>();
