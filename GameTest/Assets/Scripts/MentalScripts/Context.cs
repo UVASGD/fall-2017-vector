@@ -7,34 +7,28 @@ public class Context {
     string name;
     public string Name { get { return name; } }
 
-    AssocAffecter[] assocAffecters;
-    ActiveAssocAffecter[] activeAssocAffecters;
-}
+    bool active;
+    public bool Active { get { return active; } set { active = value; } }
 
-public class ActiveAssocAffecter {
-    Association targetAssoc;
-    float interestDelta;
-    Association[] markAddList;
-    Association[] markDelList;
+    public AssocAffecter[] assocAffecters;
 
-    public ActiveAssocAffecter(Association _targetAssoc, float _interestDelta = 0, Association[] _markAddList = null, Association[] _markDelList = null) {
-        targetAssoc = _targetAssoc;
-        interestDelta = _interestDelta;
-        markAddList = _markAddList ?? new Association[] { };
-        markDelList = _markDelList ?? new Association[] { };
-    }
+    public Context(string _name, AssocAffecter[] _assocAffecters) {
+        name = _name;
+        assocAffecters = _assocAffecters;    }
 }
 
 public class AssocAffecter {
-    string targetAssoc;
-    float interestDelta;
-    string[] markAddList;
-    string[] markDelList;
+    public Association targetAssoc;
+    float interestDelt;
+    public float InterestDelt { get { return interestDelt; } }
+    public Dictionary<Association, Interaction> markAddList;
+    public Dictionary<Association, Interaction> markDelList;
 
-    public AssocAffecter(string _targetAssoc, float _interestDelta = 0, string[] _markAddList = null, string[] _markDelList = null) {
+    public AssocAffecter(Association _targetAssoc, float _interestDelt = 0, 
+        Dictionary<Association, Interaction> _markAddList = null, Dictionary<Association, Interaction> _markDelList = null) {
         targetAssoc = _targetAssoc;
-        interestDelta = _interestDelta;
-        markAddList = _markAddList ?? new string[] { };
-        markDelList = _markDelList ?? new string[] { };
+        interestDelt = _interestDelt;
+        markAddList = _markAddList ?? new Dictionary<Association, Interaction> { };
+        markDelList = _markDelList ?? new Dictionary<Association, Interaction> { };
     }
 }
