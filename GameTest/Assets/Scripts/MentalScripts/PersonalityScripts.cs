@@ -6,6 +6,7 @@ public class Personality {
     List<Association> associator;
     List<Association> activeAssocs;
     Dictionary<string[], EventInfo> seenEvents; //interest[0], interaction polarity [1], interaction [2], # times [3]
+    Dictionary<string[], EventInfo> unseenEvents;
     Identity identity;
     MoodHandler moodHandler;
     List<Context> allContexts;
@@ -23,6 +24,7 @@ public class Personality {
         identity = _identity;
         moodHandler = _moodHandler;
         seenEvents = new Dictionary<string[], EventInfo>();
+        unseenEvents = new Dictionary<string[], EventInfo>();
         foreach (Association a in associator)
             foreach (string s in a.addToMarks.Keys)
                 foreach (Association aOther in associator)
@@ -31,6 +33,8 @@ public class Personality {
     }
 
     public void CoolDown() {
+        //Calm moods
+        //Reduce obligation to people
         for (int i = 0; i < activeAssocs.Count; i++) {
             Association a = activeAssocs[i];
             a.Checks++;
