@@ -29,7 +29,7 @@ public class Personality {
             foreach (string s in associator[i].addToMarks.Keys)
                 for(int other = 0; other < associator.Count; other++)
                     if (associator[other].Id.Equals(s))
-                        a.marks.Add(aOther, a.addToMarks[s]);
+                        associator[i].marks.Add(associator[other], associator[i].addToMarks[s]);
     }
 
     public void CoolDown() {
