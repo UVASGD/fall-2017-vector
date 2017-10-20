@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class MoodHandler {
-    List<Mood> moodList;
+    public List<Mood> moodList;
 
     public MoodHandler(List<Mood> _moodList) {
         moodList = _moodList;

@@ -33,14 +33,19 @@ public class Personality {
     }
 
     public void CoolDown() {
-        //Calm moods
         //Reduce obligation to people
+        foreach (Mood mood in moodHandler.moodList) {
+            if (mood.Polarity > 10) mood.ApplyPolarity(-0.01f);
+            else if (mood.Polarity < -10) mood.ApplyPolarity(0.01f);
+        }
         for (int i = 0; i < activeAssocs.Count; i++) {
             Association a = activeAssocs[i];
             a.Checks++;
             if (a.Checks > 50) {
+                if (a.GetType() == typeof(PersonAssoc))
+                    ((PersonAssoc)a).ApplyObl(-0.05f);
                 foreach (Association mark in a.marks.Keys)
-                    a.DelMark(a, mark, -2, -2);
+                    a.DelMark(a, mark, -0.5f, -0.5f);
                 a.Accesses--;
                 if (a.Accesses < 0) {
                     a.Accesses = 0;
