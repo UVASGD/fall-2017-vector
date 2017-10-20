@@ -25,10 +25,10 @@ public class Personality {
         moodHandler = _moodHandler;
         seenEvents = new Dictionary<string[], EventInfo>();
         unseenEvents = new Dictionary<string[], EventInfo>();
-        foreach (Association a in associator)
-            foreach (string s in a.addToMarks.Keys)
-                foreach (Association aOther in associator)
-                    if (aOther.Id.Equals(s))
+        for(int i = 0; i < associator.Count; i++)
+            foreach (string s in associator[i].addToMarks.Keys)
+                for(int other = 0; other < associator.Count; other++)
+                    if (associator[other].Id.Equals(s))
                         a.marks.Add(aOther, a.addToMarks[s]);
     }
 
