@@ -16,6 +16,7 @@ public class Affecter {
 
     protected bool layered; //Whether this affecter can be layered over/under another layered affecter
 
+    protected float baseVitality; // The minimum vitality at power of 0
     protected float turnVitality; //The vitality with which other affecters interact
     protected float vitality; //The strength/time left/'life' of the affecter
     protected float fullVitality;
@@ -40,6 +41,7 @@ public class Affecter {
         fullVitality = 100f;
         naturalVitality = _vitality;
         turnVitality = _vitality;
+        baseVitality = _vitality / 4;  // TODO: Stupid magic number, needs reconsideration
         combinable = false;
         spreadable = false;
         spreadMod = _spreadMod;
@@ -207,6 +209,13 @@ public class Affecter {
         }
         else { affecterClone.vitality = naturalVitality; affecterClone.turnVitality = affecterClone.vitality; }
         return affecterClone;
+    }
+
+    public void SetPower(float _power) {   // Should only be called before activation
+        float newVitality = baseVitality + ((vitality - baseVitality) * _power);
+        vitality = newVitality;
+        naturalVitality = newVitality;
+        turnVitality = newVitality;
     }
 
     public void SetVitality(float _vitality) {

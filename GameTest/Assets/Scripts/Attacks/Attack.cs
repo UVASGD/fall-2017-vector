@@ -14,6 +14,8 @@ public class Attack : MonoBehaviour {
     protected int currFrame = 0;
     protected int rate;
 
+    protected float power=1f;
+
     public int Rate { get { return rate; } }
     protected int duration;
     public int Duration { get { return duration; } }
@@ -39,7 +41,7 @@ public class Attack : MonoBehaviour {
         }
     }
 
-    public virtual void AttackConstructor(Body _genitor, int _speed) {
+    public virtual void AttackConstructor(Body _genitor, int _speed, float _power=1f) {
         distance = new Vector3();
         distance.x = (2 * ((int)_genitor.face));
         time = (TimeManager)FindObjectOfType(typeof(TimeManager));
@@ -50,6 +52,7 @@ public class Attack : MonoBehaviour {
         targetTags = genitor.TargetTags;
         alreadyHit.Add(genitor.gameObject);
         rate = ((5-_speed) + (10 - _genitor.Athletics)) / 2;
+        power = _power;
     }
 
     public void setTargetTags(List<string> _targetTags) {
@@ -135,6 +138,7 @@ public class Attack : MonoBehaviour {
             Attack attack = other.gameObject.GetComponent<Attack>();
             if (body != null) {
                 foreach (Affecter eff in effects) {
+                    eff.SetPower(power);
                     body.AddAffecter(eff.GetAffecterClone(eff));
                 }
                 alreadyHit.Add(other.gameObject);

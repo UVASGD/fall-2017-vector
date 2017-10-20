@@ -58,8 +58,8 @@ public class Item {
         return attackScript;
     }
 
-    protected void SetupAttack(Attack _attack, List<Affecter> _effects) {
-        _attack.AttackConstructor(holder, speed);
+    protected void SetupAttack(Attack _attack, List<Affecter> _effects, float _power=1f) {
+        _attack.AttackConstructor(holder, speed, _power);
         _attack.effects = _effects;
         for (int i = 0; i < _effects.Count; i++) {
             Affecter effect = _effects[i];
@@ -67,6 +67,10 @@ public class Item {
             _effects[i] = effect.GetAffecterClone(effect);
         }
         holder.SetCurrAct(new Recovery("Recovery", _attack.Rate * _attack.Duration, holder));
+    }
+
+    public virtual void PlayerInput(MouseState _state) {
+
     }
 }
 

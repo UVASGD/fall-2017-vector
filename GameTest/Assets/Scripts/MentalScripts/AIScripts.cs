@@ -42,11 +42,15 @@ public class PlayerAI : AI {
 
     public override void Start() {
         //dashTime = 0.05f;
+        mouse = (MouseManager)MonoBehaviour.FindObjectOfType(typeof(MouseManager));
     }
 
     public override void Update() {
         GetMoveInput();
-
+        Debug.Log(mouse);
+        if (body != null && body.Weapon != null && mouse != null) {
+            body.Weapon.PlayerInput(mouse.State);
+        }
     }
 
     public override void Tick() {

@@ -61,6 +61,7 @@ public class PersonCreator { //This class exists just to spawn in a person. Not 
 
         if (mindNum == AINum.player) {
             personBody.BodyConstructor(size, Direction.Left, new List<string> { "Hostile" }, new PlayerAI(new Personality(), personBody));
+            personBody.Mind.Start();
             personBodyObject.AddTag("Player");
 
             Sword sword = new Sword(personBody, 1);
