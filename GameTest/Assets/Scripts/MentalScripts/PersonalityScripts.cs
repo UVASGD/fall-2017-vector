@@ -13,7 +13,7 @@ public class Personality {
 
     float markThreshold;
     float objMarkThreshold;
-    float interestThreshold;
+    float interestThreshold = 60;
 
     float div = 1;
 
