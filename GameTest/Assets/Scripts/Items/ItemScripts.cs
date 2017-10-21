@@ -66,7 +66,9 @@ public class Item {
         return attackScript;
     }
 
-    protected void SetupAttack(Attack _attack, List<Affecter> _effects, float _power=1f) {
+    protected void SetupAttack(Attack _attack, List<Affecter> _effects, GameObject _sprite=null, float _power=1f) {
+        if (_sprite != null)
+            _sprite.transform.parent = _attack.transform;
         _attack.AttackConstructor(holder, speed, _power);
         _attack.effects = _effects;
         for (int i = 0; i < _effects.Count; i++) {
