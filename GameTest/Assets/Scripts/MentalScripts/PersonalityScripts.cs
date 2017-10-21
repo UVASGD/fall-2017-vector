@@ -5,8 +5,8 @@ using UnityEngine;
 public class Personality {
     List<Association> associator;
     List<Association> activeAssocs;
-    Dictionary<string[], EventInfo> seenEvents; //interest[0], interaction polarity [1], interaction [2], # times [3]
-    Dictionary<string[], EventInfo> unseenEvents;
+    public Dictionary<string[], EventInfo> seenEvents; //interest[0], interaction polarity [1], interaction [2], # times [3]
+    public Dictionary<string[], EventInfo> unseenEvents;
     Identity identity;
     MoodHandler moodHandler;
     List<Context> allContexts;
@@ -92,8 +92,10 @@ public class Personality {
             return;
 
         string infoSentence = string.Join(" ", info);
+        infoSentence = infoSentence.ToLower();
         foreach (string[] sentenceList in eventsList.Keys) {
             string sentence = string.Join(" ", sentenceList);
+            sentence = sentence.ToLower();
             if (sentence.Equals(infoSentence)) {
                 div = 0.25f;
                 eventsList[sentenceList].Apply(interestDelt: vb.Interest);
