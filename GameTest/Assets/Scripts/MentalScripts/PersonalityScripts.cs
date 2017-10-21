@@ -85,7 +85,8 @@ public class Personality {
             }
         }
 
-        //Logic in here to detect whether subj, vb, or obj are still null!
+        if (subj == null || vb == null || (info.Length == 3 && obj == null))
+            return;
 
         string infoSentence = string.Join(" ", info);
         foreach (string[] sentenceList in eventsList.Keys) {
