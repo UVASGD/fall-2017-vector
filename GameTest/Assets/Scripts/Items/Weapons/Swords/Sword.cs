@@ -7,10 +7,12 @@ public class Sword : Item, ICloseMelee {
 
     Resistance blockPower;
     float heavyTime = 2f;
+    bool heavy = false;
     float power = 1f;
 
     GameObject dot;
     GameObject newAttack;
+    SpriteRenderer attackRender;
     List<GameObject> attacks = new List<GameObject>();
 
     public Sword(Body _holder, int _size) : base(_holder, _size) {
@@ -68,6 +70,8 @@ public class Sword : Item, ICloseMelee {
         else if (_state.leftUp && _state.rightHold == 0f && _state.leftHold > heavyTime) {
             // Debug.Log("Heavy Attack!");
             CloseMeleeHeavyAttack();
+            heavy = false;
+            holder.Impediment = ImpedimentLevel.unimpeded;
             Object.Destroy((Object)newAttack);
         }
         else if (_state.rightDown) {
@@ -85,6 +89,8 @@ public class Sword : Item, ICloseMelee {
         else if (_state.leftHold > 0f && newAttack != null) {
             if (_state.leftHold < heavyTime)
                 newAttack.transform.localScale = new Vector3(1f, 13 * (_state.leftHold / heavyTime), 1f);
+            else if (_state.leftHold > heavyTime && !heavy)
+                HeavyEngage();
             UpdateAttackFace();
         }
         power = 1f;
@@ -93,8 +99,11 @@ public class Sword : Item, ICloseMelee {
     public void StartAttack() {
         newAttack = Object.Instantiate(dot, holder.transform.position, holder.transform.rotation) as GameObject;
         newAttack.transform.parent = holder.transform;
-        SpriteRenderer render = newAttack.GetComponent<SpriteRenderer>();
-        render.sortingLayerName = "0";
+        attackRender = newAttack.GetComponent<SpriteRenderer>();
+        attackRender.sortingLayerName = "0";
+
+        attackRender.color = Color.grey;
+
         UpdateAttackFace();
     }
 
@@ -107,6 +116,12 @@ public class Sword : Item, ICloseMelee {
             thePos.x += 1;
 
         newAttack.transform.position = thePos;
+    }
+
+    public void HeavyEngage() {
+        heavy = true;
+        attackRender.color = Color.red;
+        holder.Impediment = ImpedimentLevel.noMove;
     }
 }
 
