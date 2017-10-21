@@ -14,6 +14,8 @@ public class Attack : MonoBehaviour {
     protected int currFrame = 0;
     protected int rate;
 
+    protected GameObject sprite;
+
     protected float power=1f;
 
     public int Rate { get { return rate; } }
@@ -30,7 +32,7 @@ public class Attack : MonoBehaviour {
     protected Body genitor;
 
     protected bool done = false;
-
+    
     void Update() {
         if (time.clock) {
             Tick();
@@ -45,6 +47,7 @@ public class Attack : MonoBehaviour {
         distance = new Vector3();
         distance.x = (2 * ((int)_genitor.face));
         time = (TimeManager)FindObjectOfType(typeof(TimeManager));
+
         gameObject.GetComponent<SpriteRenderer>().sortingLayerName = "0";
         genitor = _genitor;
         dir = genitor.GetFace();
@@ -55,6 +58,11 @@ public class Attack : MonoBehaviour {
         alreadyHit.Add(genitor.gameObject);
         rate = ((5-_speed) + (10 - _genitor.Athletics)) / 2;
         power = _power;
+    }
+
+    public void setSprite(GameObject _sprite) {
+        _sprite.transform.parent = transform;
+        sprite = _sprite;
     }
 
     public void setTargetTags(List<string> _targetTags) {
