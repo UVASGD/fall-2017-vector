@@ -135,6 +135,35 @@ public class TurretAI : AI {
     }
 }
 
+public class DogAI : AI {
+    int coolTime = 20;
+    int coolCount = 20;
+
+
+
+    public DogAI(Personality _personality, Body _body) : base(_personality, _body) {
+    }
+
+    public override void Start() { }
+
+    public override void Update() {
+
+    }
+
+    public override void Tick() {
+        coolCount--;
+
+        if (coolCount == 0) {
+            ReleaseAttack();
+            coolCount = coolTime;
+        }
+    }
+
+    public void ReleaseAttack() {
+        ((ICloseMelee)body.Weapon).CloseMeleeLightAttack();
+    }
+}
+
 public class Inanimate : AI {
     public Inanimate(Personality _personality, Body _body) : base(_personality, _body) { }
 }

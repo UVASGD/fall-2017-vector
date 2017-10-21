@@ -34,11 +34,11 @@ public class Sword : Item, ICloseMelee {
     }
 
     public void CloseMeleeLightAttack() {
-        SetupAttack(AddAttackScript<CloseMeleeLightAttackScript>("Attack", newAttack), LightAttackList, newAttack, power);
+        SetupAttack(AddAttackScript<CloseMeleeLightAttackScript>("Attack", newAttack), LightAttackList, power);
     }
 
     public void CloseMeleeHeavyAttack() {
-        SetupAttack(AddAttackScript<CloseMeleeHeavyAttackScript>("Chest", newAttack), HeavyAttackList, newAttack);
+        SetupAttack(AddAttackScript<CloseMeleeHeavyAttackScript>("Chest", newAttack), HeavyAttackList);
     }
 
     public void CloseMeleeBlockEnact() {
