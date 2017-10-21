@@ -50,6 +50,7 @@ public class Body : MonoBehaviour {
     protected List<Affecter> layerList = new List<Affecter>();
 
     protected List<Item> inventory = new List<Item>();
+    public List<Item> Inventory { get { return inventory; } set { inventory = value; } }
 
     Item weapon;
     public Item Weapon { get { return weapon; } set { weapon = value; } }
@@ -62,6 +63,8 @@ public class Body : MonoBehaviour {
     public DialogueStage DiaStage { get { return diaStage; } set { diaStage = value; } }
 
     public Vector3 Position { get { return transform.position; } }
+
+    private InventoryInteraction inventoryUI;
 
     void Start() {
         time = (TimeManager)FindObjectOfType(typeof(TimeManager)); //Set Time manager
@@ -77,6 +80,8 @@ public class Body : MonoBehaviour {
         currMoveAct = new HaltAction("Halt", 0, this);
         currAct = new Action("Open", 0, this);
         AddAffecter(new ResistanceAggregate(this, 0f));
+
+
     }
 
     void Update() {
@@ -96,6 +101,8 @@ public class Body : MonoBehaviour {
             TalkBox = GameObject.Find("Talk");
             TalkInput = GameObject.Find("OptText").GetComponent<TextInput>();
             TalkInput.SetBodyRef(this);
+            Debug.Log(GameObject.Find("Inventory").transform.GetChild(1).GetComponent<InventoryInteraction>());
+            inventoryUI = GameObject.Find("Inventory").transform.GetChild(1).GetComponent<InventoryInteraction>();
         }
     }
 
@@ -235,8 +242,27 @@ public class Body : MonoBehaviour {
             Debug.Log(string.Format("{0},", item.Name));
         }
         Debug.Log("}");
+        foreach (Item i in inventory)
+        {
+            Debug.Log("Item: " + i.Name);
+        }
+        if (Mind.GetType() == typeof(PlayerAI))
+        {
+            Debug.Log("Wew lad");
+            inventoryUI.UpdateUI();
+        }
         
     }
+
+    public void addItem(Item i)
+    {
+        inventory.Add(i);
+        if(Mind.GetType() == typeof(PlayerAI))
+        {
+            
+        }
+    }
+
 
     //SET ACTION
     public void SetCurrAct(Action _currAct) {
