@@ -11,13 +11,13 @@ public class TextInput : MonoBehaviour {
 
 	void Start () {
         input = gameObject.GetComponent<InputField>();
-	}
-
-    public void SetBodyRef(Body _bodyRef) {
-        bodyReference = _bodyRef;
         se = new InputField.SubmitEvent();
         se.AddListener(SubmitInput);
         input.onEndEdit = se;
+    }
+
+    public void SetBodyRef(Body _bodyRef) {
+        bodyReference = _bodyRef;
     }
 
     public void SubmitInput(string args) {

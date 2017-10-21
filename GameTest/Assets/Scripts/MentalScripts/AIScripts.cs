@@ -57,7 +57,7 @@ public class PlayerAI : AI {
             if (talkReady == false && inventoryReady == false) {
                 body.Weapon.PlayerInput(mouse.State);
             }
-            else if (talkReady) {
+            else if (talkReady && !talking) {
                 Talk();
             }
         }

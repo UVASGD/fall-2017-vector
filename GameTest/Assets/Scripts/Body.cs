@@ -94,7 +94,7 @@ public class Body : MonoBehaviour {
         mind.Start();
         if (mind.GetType() == typeof(PlayerAI)) {
             TalkBox = GameObject.Find("Talk");
-            TalkInput = TalkBox.transform.Find("OptText").GetComponent<TextInput>();
+            TalkInput = GameObject.Find("OptText").GetComponent<TextInput>();
             TalkInput.SetBodyRef(this);
         }
     }
