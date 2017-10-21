@@ -60,12 +60,56 @@ public class PersonCreator { //This class exists just to spawn in a person. Not 
         personBodyObject.name = objectName;
 
         if (mindNum == AINum.player) {
-            personBody.BodyConstructor(size, Direction.Left, new List<string> { "Hostile" }, new PlayerAI(new Personality(), personBody));
+            personBody.BodyConstructor(size, Direction.Left, new List<string> { "Hostile" }, new PlayerAI(null, personBody));
             personBody.Mind.Start();
             personBodyObject.AddTag("Player");
 
             Sword sword = new Sword(personBody, 1);
             personBody.Weapon = sword;
+        }
+        else if (mindNum == AINum.soldier) {
+
+            //ASSOCIATOR DEFINITION HERE
+            List<Association> associator = new List<Association>() {
+                new MoodAssoc("Charm", "charm", CoreMood.CharmAxis, 0.10f, 0.10f, new Dictionary<string, Interaction>() { }),
+                new MoodAssoc("Disgust", "disgust", CoreMood.CharmAxis, -0.45f, 0.20f, new Dictionary<string, Interaction>() { }),
+                new MoodAssoc("Amusement", "amusement", CoreMood.AmuseAxis, 0.05f, 0.05f, new Dictionary<string, Interaction>() { }),
+                new MoodAssoc("Anger", "anger", CoreMood.AmuseAxis, -0.60f, 0.50f, new Dictionary<string, Interaction>() { }),
+                new MoodAssoc("Happiness", "happiness", CoreMood.HappyAxis, 0.10f, 0.05f, new Dictionary<string, Interaction>() { }),
+                new MoodAssoc("Sadness", "sadness", CoreMood.HappyAxis, -0.10f, 0.10f, new Dictionary<string, Interaction>() { }),
+                new MoodAssoc("Inspiration", "inspiration", CoreMood.InspireAxis, 0.10f, 0.10f, new Dictionary<string, Interaction>() { }),
+                new MoodAssoc("Intimidation", "intimidation", CoreMood.InspireAxis, -0.70f, 0.70f, new Dictionary<string, Interaction>() { }),
+
+                new VerbAssoc("foils", "foils", "foiling", -0.70f, 0.70f, new Dictionary<string, Interaction>() {
+                    {"anger", new Interaction(1, .65f)}}),
+                new VerbAssoc("helps", "helps", "helping", 0.15f, 0.15f, new Dictionary<string, Interaction>() {
+                    {"charm", new Interaction(1, 0.25f)},
+                    {"happiness", new Interaction(1, 0.20f)},
+                    {"inspiration", new Interaction(1, 0.10f)}}),
+                new VerbAssoc("swings their weapon", "swings weapon", "swinging a weapon", -0.25f, 0.70f, new Dictionary<string, Interaction>() {
+                 {"intimidation", new Interaction(1, 0.60f)}}),
+                new VerbAssoc("kills", "kills", "killing", -0.95f, 1, new Dictionary<string, Interaction>() {
+                 {"inspiration", new Interaction(1, 0.90f)},
+                 {"happiness", new Interaction(1, 0.80f)}}),
+                new VerbAssoc("brawls", "brawls", "starting a fight", -0.70f, 0.90f, new Dictionary<string, Interaction>() {
+                {"charm", new Interaction(1, 0.25f)},
+                {"amusement", new Interaction(1, 0.10f)},
+                {"anger", new Interaction(-1, 0.80f)}}),
+                new VerbAssoc("gives", "gives", "giving", 0.35f, 0.75f, new Dictionary<string, Interaction>() {
+                 {"charm", new Interaction(1, 0.25f)},
+                 {"amusement", new Interaction(1, 0.50f)}}),
+
+                 new PersonAssoc("Player", "player", 0, 0.50f, new Dictionary<string, Interaction>() { }),
+                 new PersonAssoc("Soldier", "soldier", 0.80f, 0.70f, new Dictionary<string, Interaction>() { })};
+            MoodHandler moodHandler = new MoodHandler(new List<Mood>() {
+            new Mood("charmed", "disgusted", 0, CoreMood.CharmAxis),
+            new Mood("amused", "angered", 0, CoreMood.AmuseAxis),
+            new Mood("happy", "sad", 0, CoreMood.HappyAxis),
+            new Mood("inspired", "frightened", 0, CoreMood.InspireAxis)});
+
+            personBody.BodyConstructor(size, Direction.Left, new List<string> { "Hostile" }, new AI(new Personality(personBody, associator, new Identity(),
+                moodHandler, "Welcome to Middleburg. Don't break anything."), personBody));
+            personBodyObject.AddTag("Hostile");
         }
         else if (mindNum == AINum.dummy) {
             personBody.BodyConstructor(size, Direction.Left, new List<string> { "Hostile" }, new AI(new Personality(), personBody));

@@ -137,20 +137,23 @@ public class Body : MonoBehaviour {
     public void BeginTalk(Personality _interactee) {
         interactee = _interactee;
         Text Title = TalkBox.transform.GetChild(0).GetComponent<Text>();
+        Debug.Log(interactee.GetBody == null);
         Title.text = interactee.GetBody.name;
         DialogueBox = TalkBox.transform.GetChild(1).transform.GetChild(0).GetComponent<Text>();
+        DialogueBox.text = interactee.GetBody.name + " is feeling " + interactee.moodHandler.GetDominantMood() + ". \n\n";
         DialogueBox.text = interactee.OpeningText;
         talking = true;
         diaStage = DialogueStage.Greeting;
     }
 
     public void Talk() {
-        DialogueBox.text = interactee.OpeningText;
+        DialogueBox.text = interactee.GetBody.name + " is feeling " + interactee.moodHandler.GetDominantMood() + ".";
         diaStage = DialogueStage.Greeting;
     }
 
     public void Enquire() {
         //Iterate all of the interactee's events
+        Debug.Log("EEEEEE");
         foreach (string[] info in interactee.seenEvents.Keys) {
             string sentence = string.Join(" ", info);
             DialogueBox.text +=  sentence + "\n";

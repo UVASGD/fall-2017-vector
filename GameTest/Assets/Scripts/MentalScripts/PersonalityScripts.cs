@@ -8,7 +8,7 @@ public class Personality {
     public Dictionary<string[], EventInfo> seenEvents; //interest[0], interaction polarity [1], interaction [2], # times [3]
     public Dictionary<string[], EventInfo> unseenEvents;
     Identity identity;
-    MoodHandler moodHandler;
+    public MoodHandler moodHandler;
     List<Context> allContexts;
     Body body;
     public Body GetBody { get { return body; } }
@@ -18,7 +18,7 @@ public class Personality {
 
     float markThreshold;
     float objMarkThreshold;
-    float interestThreshold = 60;
+    float interestThreshold = .60f;
 
     float div = 1;
 
@@ -30,16 +30,18 @@ public class Personality {
     public Personality(Body _body, List<Association> _associator, Identity _identity, MoodHandler _moodHandler, string _openingText) {
         body = _body;
         associator = _associator;
+        Debug.Log(associator[0].marks == null);
         activeAssocs = new List<Association>();
         identity = _identity;
         moodHandler = _moodHandler;
         seenEvents = new Dictionary<string[], EventInfo>();
         unseenEvents = new Dictionary<string[], EventInfo>();
-        for(int i = 0; i < associator.Count; i++)
+        for (int i = 0; i < associator.Count; i++)
             foreach (string s in associator[i].addToMarks.Keys)
-                for(int other = 0; other < associator.Count; other++)
+                for (int other = 0; other < associator.Count; other++) {
                     if (associator[other].Id.Equals(s))
                         associator[i].marks.Add(associator[other], associator[i].addToMarks[s]);
+                }
         openingText = _openingText;
     }
 

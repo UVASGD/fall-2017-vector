@@ -57,4 +57,12 @@ public class Mood {
     public void ApplyPolarity(float _polarity) {
         polarity += _polarity;
     }
+
+    public override string ToString() {
+        string returnString = "";
+        if (polarity > 0)
+            returnString = positive;
+        else returnString = negative;
+        return returnString;
+    }
 }

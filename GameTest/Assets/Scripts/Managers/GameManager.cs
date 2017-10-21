@@ -5,7 +5,7 @@ using UnityEngine;
 public enum Direction { Left = -1, None = 0, Right = 1 };
 //public enum Reaction { Dampening, Oiling, Watering, Dirtying, Drying, Burning, Fueling, Hindering, Freeing, Harming, Healing, Crushing, Slashing, Piercing};
 
-public enum AINum { player, dummy, turret};
+public enum AINum { player, soldier, dummy, turret};
 
 /*public enum Mood {
     Charm, Amuse, Inspire, Happy,
@@ -38,7 +38,7 @@ Disgust, Anger, Intimidate, Sad
         Body playerBody = (Body)FindObjectOfType(typeof(Body));
         //playerBody.AddAffecter(new Fire(playerBody, 40f));
         //playerBody.AddAffecter(new Fire(playerBody, 20f));
-        PersonCreator innkeeper = new PersonCreator("RInnkeeper", "Innkeeper", "Innkeeper", -6.5f, 1, AINum.turret);
+        PersonCreator innkeeper = new PersonCreator("RInnkeeper", "Innkeeper", "Innkeeper", -6.5f, 1, AINum.soldier);
 
         //List<Item> items = new List<Item> { };
 

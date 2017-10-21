@@ -41,8 +41,7 @@ public class PlayerAI : AI {
     bool inventoryReady = false;
     bool talking = false;
 
-    public PlayerAI(Personality _personality, Body _body) : base(_personality, _body) {
-        
+    public PlayerAI(Personality _personality, Body _body) : base(_personality, _body) {   
     }
 
     public override void Start() {

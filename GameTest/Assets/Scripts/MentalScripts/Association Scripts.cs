@@ -32,6 +32,7 @@ public class Association {
         id = _id;
         interest = _interest;
         addToMarks = _marks;
+        marks = new Dictionary<Association, Interaction>() { };
         permanent = _perm;
         deletable = _delet;
         accesses = 0;
