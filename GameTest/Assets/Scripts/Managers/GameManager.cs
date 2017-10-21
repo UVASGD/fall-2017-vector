@@ -34,7 +34,7 @@ Disgust, Anger, Intimidate, Sad
             Destroy(gameObject);
         }
 
-        PersonCreator player = new PersonCreator("Main Character", "Player", "Player", 0.5f, 1, AINum.player);
+        PersonCreator player = new PersonCreator("RPlayer", "Player", "Player", 0.5f, 1, AINum.player);
         Body playerBody = (Body)FindObjectOfType(typeof(Body));
         //playerBody.AddAffecter(new Fire(playerBody, 40f));
         //playerBody.AddAffecter(new Fire(playerBody, 20f));
