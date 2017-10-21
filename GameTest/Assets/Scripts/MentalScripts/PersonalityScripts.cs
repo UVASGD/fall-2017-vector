@@ -10,6 +10,11 @@ public class Personality {
     Identity identity;
     MoodHandler moodHandler;
     List<Context> allContexts;
+    Body body;
+    public Body GetBody { get { return body; } }
+
+    string openingText;
+    public string OpeningText { get { return openingText; } }
 
     float markThreshold;
     float objMarkThreshold;
@@ -19,8 +24,10 @@ public class Personality {
 
     public Personality() { }
 
-    public Personality(List<Association> _associator, Identity _identity, MoodHandler _moodHandler, bool t = false) {
+    public Personality(Body _body, List<Association> _associator, Identity _identity, MoodHandler _moodHandler, string _openingText) {
+        body = _body;
         associator = _associator;
+        activeAssocs = new List<Association>();
         identity = _identity;
         moodHandler = _moodHandler;
         seenEvents = new Dictionary<string[], EventInfo>();
@@ -30,10 +37,10 @@ public class Personality {
                 for(int other = 0; other < associator.Count; other++)
                     if (associator[other].Id.Equals(s))
                         associator[i].marks.Add(associator[other], associator[i].addToMarks[s]);
+        openingText = _openingText;
     }
 
     public void CoolDown() {
-        //Reduce obligation to people
         foreach (Mood mood in moodHandler.moodList) {
             if (mood.Polarity > 10) mood.ApplyPolarity(-0.01f);
             else if (mood.Polarity < -10) mood.ApplyPolarity(0.01f);

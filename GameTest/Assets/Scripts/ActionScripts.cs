@@ -69,10 +69,17 @@ public class TalkAction : Action {
         base(_name, _speedFactor, _genitor) {
         timeLeft = 100;
         nextAction = this;
+        genitor.Talk(_otherPerson);
     }
 
     protected override void Dewit() {
         timeLeft = 100;
+    }
+}
+
+public class EndTalkAction : Action {
+    public EndTalkAction(string _name, int _speedFactor, Body _genitor) :
+        base(_name, _speedFactor, _genitor) {
     }
 }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Body : MonoBehaviour {
 
@@ -52,6 +53,7 @@ public class Body : MonoBehaviour {
     public Item Weapon { get { return weapon; } set { weapon = value; } }
 
     Personality interactee;
+    GameObject TalkBox;
 
     public Vector3 Position { get { return transform.position; } }
 
@@ -84,6 +86,8 @@ public class Body : MonoBehaviour {
         targetTags = _targetTags;
         mind = _mind;
         mind.Start();
+        if (mind.GetType() == typeof(PlayerAI))
+            TalkBox = GameObject.Find("Talk");
     }
 
     //TICK FUNCTION
@@ -111,6 +115,13 @@ public class Body : MonoBehaviour {
 
     public void Hinder(float delt) {
         hinderQuant += delt;
+    }
+
+    public void Talk(Personality _interactee) {
+        interactee = _interactee;
+        Text Title = TalkBox.transform.GetChild(0).GetComponent<Text>();
+        Title.text = interactee.GetBody.name;
+        Text DialogueBox = TalkBox.transform.GetChild(1).transform.GetChild(0).GetComponent<Text>();
     }
 
     //ABILITY TO MOVE

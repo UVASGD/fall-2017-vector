@@ -37,6 +37,10 @@ public class PlayerAI : AI {
 
     MouseManager mouse;
 
+    bool talkReady = false;
+    bool inventoryReady = false;
+    bool talking = false;
+
     public PlayerAI(Personality _personality, Body _body) : base(_personality, _body) {
         
     }
@@ -47,10 +51,17 @@ public class PlayerAI : AI {
     }
 
     public override void Update() {
+        if (talking)
+            return;
         GetMoveInput();
         // Debug.Log(mouse);
         if (body != null && body.Weapon != null && mouse != null) {
-            body.Weapon.PlayerInput(mouse.State);
+            if (talkReady == false && inventoryReady == false) {
+                body.Weapon.PlayerInput(mouse.State);
+            }
+            else if (talkReady) {
+                Talk();
+            }
         }
     }
 
@@ -60,10 +71,46 @@ public class PlayerAI : AI {
         InteractableSearch();
     }
 
+    public void Talk() {
+        if (Input.GetMouseButtonDown(0)) {
+            Debug.Log("Pressed left click, casting ray.");
+
+            RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector3.back);
+            if (hit.collider != null) {
+                Debug.Log("Hit object: " + hit.collider.gameObject.name);
+                Body bodhit = hit.collider.gameObject.GetComponent<Body>();
+                if (bodhit == null || bodhit.GetPersonality() == null)
+                    return;
+                Personality otherPersonality = bodhit.GetPersonality();
+                body.SetCurrAct(new TalkAction("Talk", 1, body, otherPersonality));
+            }
+        }
+    }
+
     void GetMoveInput() {
         if (body.Impediment == ImpedimentLevel.noMove)
             return;
         if (Input.anyKeyDown) {
+            if (Input.GetKeyDown("k")) {
+                if (!talkReady) {
+                    talkReady = true;
+                    inventoryReady = false;
+                }
+                else {
+                    if (talking) {
+                        talking = false;
+                        body.SetCurrAct(new EndTalkAction("EndTalk", 1, body));
+                    }
+                    talkReady = false;
+                }
+            }
+            if (Input.GetKeyDown("i") && !talking) {
+                if (!inventoryReady) {
+                    inventoryReady = true;
+                    talkReady = false;
+                }
+                else inventoryReady = false;
+            }
             //DASH CONTROLS
             int moveKey = (int)Input.GetAxisRaw("Horizontal");
             if (dashTimer > 0) {
