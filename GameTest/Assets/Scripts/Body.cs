@@ -4,6 +4,8 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
+public enum DialogueStage {Greeting, Enquiring, Discussing, Nil}
+
 public class Body : MonoBehaviour {
 
     protected int brawn = 5;
@@ -54,6 +56,10 @@ public class Body : MonoBehaviour {
 
     Personality interactee;
     GameObject TalkBox;
+    TextInput TalkInput;
+    bool talking = false;
+    DialogueStage diaStage = DialogueStage.Nil;
+    public DialogueStage DiaStage { get { return diaStage; } set { diaStage = value; } }
 
     public Vector3 Position { get { return transform.position; } }
 
@@ -86,8 +92,11 @@ public class Body : MonoBehaviour {
         targetTags = _targetTags;
         mind = _mind;
         mind.Start();
-        if (mind.GetType() == typeof(PlayerAI))
+        if (mind.GetType() == typeof(PlayerAI)) {
             TalkBox = GameObject.Find("Talk");
+            TalkInput = TalkBox.transform.Find("OptText").GetComponent<TextInput>();
+            TalkInput.SetBodyRef(this);
+        }
     }
 
     //TICK FUNCTION
@@ -123,6 +132,20 @@ public class Body : MonoBehaviour {
         Title.text = interactee.GetBody.name;
         Text DialogueBox = TalkBox.transform.GetChild(1).transform.GetChild(0).GetComponent<Text>();
         DialogueBox.text = interactee.OpeningText;
+        talking = true;
+        diaStage = DialogueStage.Greeting;
+    }
+
+    public void Enquire() {
+        //Iterate all of the interactee's events
+        //Print them out with their respective number
+        //Set DialogueStage to Enquiring
+    }
+
+    public void Discuss() {
+        //Perform Perceive or whatever on the selected event
+        //Print out response
+        //Set DialogueStage to Discussing
     }
 
     public void EndTalk() {
@@ -131,6 +154,8 @@ public class Body : MonoBehaviour {
         Title.text = "";
         Text DialogueBox = TalkBox.transform.GetChild(1).transform.GetChild(0).GetComponent<Text>();
         DialogueBox.text = "";
+        talking = false;
+        diaStage = DialogueStage.Nil;
     }
 
     //ABILITY TO MOVE
