@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TagFrenzy;
 
 public class AI {
     protected Personality personality;
@@ -139,28 +140,60 @@ public class DogAI : AI {
     int coolTime = 20;
     int coolCount = 20;
 
+    Direction desiredDirect;
+    Direction playerDirect;
 
+    GameObject player;
 
     public DogAI(Personality _personality, Body _body) : base(_personality, _body) {
     }
 
-    public override void Start() { }
+    public override void Start() {
+        List<GameObject> results = MultiTag.FindGameObjectsWithTags(Tags.Player);
+        player = results[0];
+    }
 
     public override void Update() {
+        if (player != null) {
+            FindPlayer();
+            DetermineDireciton();
+            body.SetFace(playerDirect);
+        }
+        else
+            desiredDirect = Direction.None;
+
 
     }
 
     public override void Tick() {
         coolCount--;
 
-        if (coolCount == 0) {
+        if (desiredDirect == Direction.None && coolCount == 0) {
             ReleaseAttack();
+            coolCount = coolTime;
+        }
+        else if (desiredDirect != Direction.None && coolCount < 17) {
+            body.Move(desiredDirect);
             coolCount = coolTime;
         }
     }
 
     public void ReleaseAttack() {
         ((ICloseMelee)body.Weapon).CloseMeleeLightAttack();
+    }
+
+    public void FindPlayer() {
+        if (player.transform.position.x > body.transform.position.x)
+            playerDirect = Direction.Right;
+        else
+            playerDirect = Direction.Left;
+    }
+
+    public void DetermineDireciton() {
+        if (Mathf.Abs(player.transform.position.x - body.transform.position.x) <= 5)
+            desiredDirect = Direction.None;
+        else
+            desiredDirect = playerDirect;
     }
 }
 

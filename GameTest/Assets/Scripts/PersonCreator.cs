@@ -72,7 +72,7 @@ public class PersonCreator { //This class exists just to spawn in a person. Not 
             personBodyObject.AddTag("Hostile");
         }
         else if (mindNum == AINum.turret) {
-            personBody.BodyConstructor(size, Direction.Right, new List<string> { "Hostile", "Player" }, new TurretAI(new Personality(), personBody));
+            personBody.BodyConstructor(size, Direction.Right, new List<string> { "Hostile", "Player" }, new DogAI(new Personality(), personBody));
             personBodyObject.AddTag("Hostile");
             Sword sword = new Sword(personBody, 1);
             personBody.Weapon = sword;
