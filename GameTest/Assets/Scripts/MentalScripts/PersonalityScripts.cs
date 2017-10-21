@@ -56,7 +56,10 @@ public class Personality {
         }
     }
 
-    public void Perceive(string[] info, Interaction interaction, string[] contextNames) {
+    public void Perceive(string[] info, Interaction interaction, string[] contextNames, bool seen = true) {
+        Dictionary<string[], EventInfo> eventsList;
+        eventsList = (seen) ? seenEvents : unseenEvents;
+
         Association subj = null;
         VerbAssoc vb = null;
         Association obj = null;
@@ -78,16 +81,16 @@ public class Personality {
         //Logic in here to detect whether subj, vb, or obj are still null!
 
         string infoSentence = string.Join(" ", info);
-        foreach (string[] sentenceList in seenEvents.Keys) {
+        foreach (string[] sentenceList in eventsList.Keys) {
             string sentence = string.Join(" ", sentenceList);
             if (sentence.Equals(infoSentence)) {
                 div = 0.25f;
-                seenEvents[sentenceList].Apply(interestDelt: vb.Interest);
+                eventsList[sentenceList].Apply(interestDelt: vb.Interest);
                 totalInterest += vb.Interest;
             }
             else {
                 totalInterest += subj.Interest + vb.Interest + ((obj != null) ? obj.Interest : 0);
-                seenEvents.Add(info, new EventInfo(totalInterest, interaction.Polarity, interaction.Strength, contextNames));
+                eventsList.Add(info, new EventInfo(totalInterest, interaction.Polarity, interaction.Strength, contextNames));
                 div = (totalInterest > interestThreshold) ? 1 : 0.25f;
             }
             totalInterest *= div;
@@ -98,10 +101,13 @@ public class Personality {
             else { interaction.Set(strengthSet: ((interaction.Strength + totalInterest) / 2)); }
             interaction.Set(polaritySet: (interaction.Polarity * div), strengthSet: (interaction.Strength * div));
             interaction.CalibrateStrength();
-            List<string> feelContexts = new List<string>();
-            foreach (string s in contextNames)
-                feelContexts.Add(s);
-            Feel(subj, obj, vb, totalInterest, interaction, div, feelContexts);
+
+            if (seen) {
+                List<string> feelContexts = new List<string>();
+                foreach (string s in contextNames)
+                    feelContexts.Add(s);
+                Feel(subj, obj, vb, totalInterest, interaction, div, feelContexts);
+            }
         }
     }
 

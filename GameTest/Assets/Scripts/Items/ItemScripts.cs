@@ -50,8 +50,13 @@ public class Item {
         natural = _natural;
     }
 
-    protected T AddAttackScript<T>(string resource) where T : Component {
-        GameObject attackObj = (GameObject)Resources.Load(resource);
+    protected T AddAttackScript<T>(string resource, GameObject _sprite=null) where T : Component {
+        GameObject attackObj;
+        if (_sprite != null)
+            attackObj = _sprite;
+        else
+            attackObj = (GameObject)Resources.Load(resource);
+        //_sprite.transform.parent = attackObj.transform;
         Vector3 pos = new Vector3(holder.transform.position.x + (2 * ((int)holder.face)), 0, 0);
         var newAttackObject = Object.Instantiate(attackObj, pos, Quaternion.identity) as GameObject;
 
