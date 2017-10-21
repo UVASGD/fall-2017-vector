@@ -57,6 +57,11 @@ public class ItemPackage : Body, Interactable {
         //mind.Update();
         if (time.clock)
             Tick();
+
+        float yScale = (inventory.Count / 15f * 2f);
+        //The size caps at 15 items.
+        if (yScale > 2)
+            yScale = 2;
     }
 
     public void CreateItemPackage(List<Item> _inventory, string _renderName, float _loc, int size = 1) {
@@ -113,9 +118,9 @@ public class ItemPackage : Body, Interactable {
         if (interactor != null) {
             Debug.Log("Interactor is not null");
             interactor.TakeItemPackage(this);
-            Destroy(transform.parent.gameObject);
         }
     }
+
 
     public void AddItem(Item i)
     {

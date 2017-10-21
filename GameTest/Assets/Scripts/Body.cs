@@ -66,6 +66,7 @@ public class Body : MonoBehaviour {
     public Vector3 Position { get { return transform.position; } }
 
     private InventoryInteraction inventoryUI;
+    private NearbyInteraction nearbyUI;
 
     void Start() {
         time = (TimeManager)FindObjectOfType(typeof(TimeManager)); //Set Time manager
@@ -102,8 +103,8 @@ public class Body : MonoBehaviour {
             TalkBox = GameObject.Find("Talk");
             TalkInput = GameObject.Find("OptText").GetComponent<TextInput>();
             TalkInput.SetBodyRef(this);
-            Debug.Log(GameObject.Find("Inventory").transform.GetChild(1).GetComponent<InventoryInteraction>());
             inventoryUI = GameObject.Find("Inventory").transform.GetChild(1).GetComponent<InventoryInteraction>();
+            nearbyUI = GameObject.Find("Inventory").transform.GetChild(3).GetComponent<NearbyInteraction>();
         }
     }
 
@@ -212,6 +213,11 @@ public class Body : MonoBehaviour {
             Debug.Log("EEEEEEEE");
             Spread(otherBody);
             bodyCollisions++;
+            if(otherBody.GetType() == typeof(ItemPackage) && mind.GetType() == typeof(PlayerAI))
+            {
+                nearbyUI.currentInventory = otherBody as ItemPackage;
+                nearbyUI.UpdateUI();
+            }
         }
     }
 
@@ -243,6 +249,11 @@ public class Body : MonoBehaviour {
         if (otherBody != null) {
             bodyCollisions--;
             bodyRenderTransform.position = gameObject.transform.position;
+            if (otherBody.GetType() == typeof(ItemPackage) && mind.GetType() == typeof(PlayerAI))
+            {
+                nearbyUI.currentInventory = null;
+                nearbyUI.UpdateUI();
+            }
         }
     }
 
@@ -253,6 +264,10 @@ public class Body : MonoBehaviour {
             inventory.Add(item);
             Debug.Log(string.Format("{0},", item.Name));
         }
+        while(package.inventory.Count > 0)
+        {
+            package.RemoveItem(package.inventory[0]);
+        }
         Debug.Log("}");
         foreach (Item i in inventory)
         {
@@ -260,7 +275,6 @@ public class Body : MonoBehaviour {
         }
         if (Mind.GetType() == typeof(PlayerAI))
         {
-            Debug.Log("Wew lad");
             inventoryUI.UpdateUI();
         }
         
