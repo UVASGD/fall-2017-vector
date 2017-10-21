@@ -6,9 +6,11 @@ using UnityEngine;
 public class Sword : Item, ICloseMelee {
 
     Resistance blockPower;
-    float heavyTime = 2f;
+    float heavyTime = 0.5f;
     bool heavy = false;
     float power = 1f;
+
+    int attackLim = 1;
 
     GameObject dot;
     GameObject newAttack;
@@ -32,11 +34,11 @@ public class Sword : Item, ICloseMelee {
     }
 
     public void CloseMeleeLightAttack() {
-        SetupAttack(AddAttackScript<CloseMeleeLightAttackScript>("Attack", newAttack), LightAttackList, power);
+        SetupAttack(AddAttackScript<CloseMeleeLightAttackScript>("Attack", newAttack), LightAttackList, newAttack, power);
     }
 
     public void CloseMeleeHeavyAttack() {
-        SetupAttack(AddAttackScript<CloseMeleeHeavyAttackScript>("Chest", newAttack), HeavyAttackList);
+        SetupAttack(AddAttackScript<CloseMeleeHeavyAttackScript>("Chest", newAttack), HeavyAttackList, newAttack);
     }
 
     public void CloseMeleeBlockEnact() {
