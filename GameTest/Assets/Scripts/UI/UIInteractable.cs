@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class UIInteractable : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHandler, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler {
 
@@ -16,7 +17,6 @@ public class UIInteractable : MonoBehaviour, IBeginDragHandler, IEndDragHandler,
     private bool isDragging = false;
     private bool verbose = false;
 
-    [HideInInspector]
     public Item item;
 
     void Awake()
@@ -56,6 +56,7 @@ public class UIInteractable : MonoBehaviour, IBeginDragHandler, IEndDragHandler,
     {
         if (isDragging) return;
         verbose = false;
+        hoverhud.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = item.Name;
        // hoverhud.SetActive(true);
         hoverhud.transform.position = (transform.position + (Vector3)offset);
     }
