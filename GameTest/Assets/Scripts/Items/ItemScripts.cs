@@ -8,6 +8,8 @@ public class Item {
     protected int speed;
     protected Affecter material;
 
+    protected bool natural;
+
     protected string name = "Generic Item";
     public string Name { get { return name; } }
 
@@ -41,10 +43,11 @@ public class Item {
 
     protected List<Affecter> ThrowList;
 
-    public Item(Body _holder, int _size) {
+    public Item(Body _holder, int _size, bool _natural=false) {
         holder = _holder;
         size = _size;
         speed = 5;
+        natural = _natural;
     }
 
     protected T AddAttackScript<T>(string resource) where T : Component {

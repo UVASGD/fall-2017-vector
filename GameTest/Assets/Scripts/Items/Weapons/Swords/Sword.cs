@@ -1,13 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
+// using System;
 
 public class Sword : Item, ICloseMelee {
 
     Resistance blockPower;
     float heavyTime = 2f;
     float power = 1f;
+
+    GameObject dot;
+    GameObject newAttack;
+    List<GameObject> attacks = new List<GameObject>();
 
     public Sword(Body _holder, int _size) : base(_holder, _size) {
         LightAttackList = new List<Affecter> { new Wound(holder, 0.2f) };
@@ -22,6 +26,7 @@ public class Sword : Item, ICloseMelee {
         blockPower = new Resistance(_holder, 1f);
 
         name = "Sword";
+        dot = Resources.Load("Bead", typeof(GameObject)) as GameObject;
     }
 
     public void CloseMeleeLightAttack() {
@@ -47,23 +52,61 @@ public class Sword : Item, ICloseMelee {
     }
 
     public override void PlayerInput(MouseState _state) {
-        Debug.Log("State = leftUp:" + _state.leftUp + ";");
-        Debug.Log("Heavy Time: " + heavyTime);
+        // Debug.Log("State = leftUp:" + _state.leftUp + ";");
+        // Debug.Log("Heavy Time: " + heavyTime);
 
         if (_state.leftUp && _state.rightHold == 0f && _state.leftHold <= heavyTime) {
-            Debug.Log("heavyTime: " + heavyTime + " ; _state.leftHold: " + _state.leftHold + " ; power: " + heavyTime / _state.leftHold);
+            // Debug.Log("heavyTime: " + heavyTime + " ; _state.leftHold: " + _state.leftHold + " ; power: " + heavyTime / _state.leftHold);
             if (_state.leftHold == 0f)
                 power = 0.1f;
             else
                 power = heavyTime / _state.leftHold;
             CloseMeleeLightAttack();
-            Debug.Log("Light Attack! Power: " + power);
+            Object.Destroy((Object)newAttack);
+            // Debug.Log("Light Attack! Power: " + power);
         }
         else if (_state.leftUp && _state.rightHold == 0f && _state.leftHold > heavyTime) {
-            Debug.Log("Heavy Attack!");
+            // Debug.Log("Heavy Attack!");
             CloseMeleeHeavyAttack();
+            Object.Destroy((Object)newAttack);
+        }
+        else if (_state.rightDown) {
+            CloseMeleeBlockEnact();
+        }
+        else if (_state.rightUp) {
+            CloseMeleeBlockDeact();
+        }
+        else if (_state.rightHold != 0f && _state.leftDown) {
+            CloseMeleeParry();
+        }
+        else if (_state.leftDown) {
+            StartAttack();
+        }
+        else if (_state.leftHold > 0f && newAttack != null) {
+            if (_state.leftHold < heavyTime)
+                newAttack.transform.localScale = new Vector3(1f, 13 * (_state.leftHold / heavyTime), 1f);
+            UpdateAttackFace();
         }
         power = 1f;
+    }
+
+    public void StartAttack() {
+        newAttack = Object.Instantiate(dot, holder.transform.position, holder.transform.rotation) as GameObject;
+        newAttack.transform.parent = holder.transform;
+        SpriteRenderer render = newAttack.GetComponent<SpriteRenderer>();
+        render.sortingLayerName = "0";
+        UpdateAttackFace();
+    }
+
+    public void UpdateAttackFace() {
+        Vector3 thePos = holder.transform.position;
+
+        if (holder.face == Direction.Left)
+            thePos.x -= 1;
+        else if (holder.face == Direction.Right)
+            thePos.x += 1;
+
+        newAttack.transform.position = thePos;
     }
 }
 

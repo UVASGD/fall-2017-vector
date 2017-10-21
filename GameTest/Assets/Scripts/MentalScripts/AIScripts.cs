@@ -47,7 +47,7 @@ public class PlayerAI : AI {
 
     public override void Update() {
         GetMoveInput();
-        Debug.Log(mouse);
+        // Debug.Log(mouse);
         if (body != null && body.Weapon != null && mouse != null) {
             body.Weapon.PlayerInput(mouse.State);
         }

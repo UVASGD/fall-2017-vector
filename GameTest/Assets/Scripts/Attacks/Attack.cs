@@ -49,7 +49,9 @@ public class Attack : MonoBehaviour {
         genitor = _genitor;
         dir = genitor.GetFace();
         gameObject.AddTag("Attack");
-        targetTags = genitor.TargetTags;
+
+        targetTags = new List<string>(genitor.TargetTags);
+
         alreadyHit.Add(genitor.gameObject);
         rate = ((5-_speed) + (10 - _genitor.Athletics)) / 2;
         power = _power;

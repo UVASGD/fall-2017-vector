@@ -120,9 +120,24 @@ public class Resistance : Affecter {
         combinable = false;
         spreadable = false;
         layered = false;
-}
+    }
+
     public override void Deact() {
         base.Deact();
+    }
+}
+
+public class Block : Resistance {
+    public Block(Body _targetBody, float _vitality, float _vRate = 0f) : base(_targetBody, _vitality, _vRate) {
+        reactorList = new List<Reactor> { new ResistanceAdder(this, _vitality, Mathf.Infinity, false, true) };
+
+        combinable = false;
+        spreadable = false;
+        layered = false;
+    }
+
+    public override bool Enact(Body _targetBody) {
+        return base.Enact(_targetBody);
     }
 }
 
