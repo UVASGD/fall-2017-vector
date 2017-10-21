@@ -64,6 +64,18 @@ public class HaltAction : Action {
     }
 }
 
+public class TalkAction : Action {
+    public TalkAction(string _name, int _speedFactor, Body _genitor, Personality _otherPerson) :
+        base(_name, _speedFactor, _genitor) {
+        timeLeft = 100;
+        nextAction = this;
+    }
+
+    protected override void Dewit() {
+        timeLeft = 100;
+    }
+}
+
 public class AttackAction : Action {
 
     GameObject attack;

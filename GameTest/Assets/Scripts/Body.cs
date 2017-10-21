@@ -51,6 +51,8 @@ public class Body : MonoBehaviour {
     Item weapon;
     public Item Weapon { get { return weapon; } set { weapon = value; } }
 
+    Personality interactee;
+
     public Vector3 Position { get { return transform.position; } }
 
     void Start() {
