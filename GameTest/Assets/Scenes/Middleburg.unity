@@ -432,6 +432,7 @@ SpriteRenderer:
   m_Size: {x: 0.125, y: 0.125}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 0
 --- !u!1 &379173009
 GameObject:
   m_ObjectHideFlags: 0
@@ -1054,6 +1055,7 @@ SpriteRenderer:
   m_Size: {x: 59.0625, y: 12.1875}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
 --- !u!4 &711462238
 Transform:
   m_ObjectHideFlags: 0
@@ -1966,6 +1968,7 @@ SpriteRenderer:
   m_Size: {x: 3, y: 6}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
 --- !u!1 &1146972328
 GameObject:
   m_ObjectHideFlags: 0
@@ -2623,6 +2626,7 @@ GameObject:
   - component: {fileID: 1461532987}
   - component: {fileID: 1461532986}
   - component: {fileID: 1461532988}
+  - component: {fileID: 1461532989}
   m_Layer: 5
   m_Name: OptText
   m_TagString: Untagged
@@ -2750,6 +2754,18 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: CONSOLE
+--- !u!114 &1461532989
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1461532984}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf045f8feb877384a8bbd16cee03a972, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  output: {fileID: 0}
 --- !u!1 &1461711405 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 1151319683464732, guid: 21411b829a7af3043978c914eb7eaa6d,
@@ -3587,6 +3603,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
 --- !u!4 &1907630977
 Transform:
   m_ObjectHideFlags: 0
@@ -3703,6 +3720,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
 --- !u!4 &1992153431
 Transform:
   m_ObjectHideFlags: 0
