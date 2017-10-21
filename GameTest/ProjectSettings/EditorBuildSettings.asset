@@ -6,11 +6,11 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Putin.unity
-    guid: 7ec71d25f66c15244b942abf763eb664
-  - enabled: 1
     path: Assets/Scenes/Menu.unity
     guid: 0625a206ee19dda4e8ce7fcfd2192d4a
   - enabled: 1
     path: Assets/Scenes/Middleburg.unity
     guid: 35d5a808a78970e40a63a880e1514593
+  - enabled: 1
+    path: Assets/Scenes/Putin.unity
+    guid: 7ec71d25f66c15244b942abf763eb664
