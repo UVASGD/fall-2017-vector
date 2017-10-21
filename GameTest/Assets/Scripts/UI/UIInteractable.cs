@@ -9,10 +9,12 @@ public class UIInteractable : MonoBehaviour, IBeginDragHandler, IEndDragHandler,
     public Vector2 offset = new Vector2(32, 32);
     public Vector2 sendoff = new Vector2(-100, -100);
 
-    private static GameObject draggedItem;
+    public static GameObject draggedItem;
+    public static GameObject origin;
     private static GameObject hoverhud;
-    private GameObject bucket;
-    private GameObject origin;
+    private  static GameObject bucket;
+
+    
 
     private bool isDragging = false;
     private bool verbose = false;
@@ -22,10 +24,11 @@ public class UIInteractable : MonoBehaviour, IBeginDragHandler, IEndDragHandler,
     void Awake()
     {
         draggedItem = null;
-        hoverhud = GameObject.Find("hoverhud");
+        if(hoverhud == null) 
+            hoverhud = GameObject.Find("hoverhud");
         Debug.Log(hoverhud);
-        bucket = GameObject.Find("bucket");
-        origin = transform.parent.gameObject;
+        if(bucket == null)
+            bucket = GameObject.Find("bucket");
         //hoverhud.SetActive(false);
     }
 
@@ -33,22 +36,24 @@ public class UIInteractable : MonoBehaviour, IBeginDragHandler, IEndDragHandler,
     public void OnBeginDrag(PointerEventData eventData)
     {
         isDragging = true;
+        origin = transform.parent.gameObject;
+        Debug.Log(origin.GetInstanceID());
         hoverhud.transform.position = sendoff;
         draggedItem = gameObject;
-        Debug.Log("Pop off");
+        draggedItem.GetComponent<Image>().raycastTarget = false;
         transform.SetParent(bucket.transform);
+        
     }
 
     public void OnDrag(PointerEventData eventData) {
-        Debug.Log("Dragging");
         transform.position = Input.mousePosition;
         }
 
     public void OnEndDrag(PointerEventData eventData)
     {
         isDragging = false;
+        draggedItem.GetComponent<Image>().raycastTarget = true;
         draggedItem = null;
-        Debug.Log("Revert");
         transform.SetParent(origin.transform);
     }
 
@@ -56,8 +61,8 @@ public class UIInteractable : MonoBehaviour, IBeginDragHandler, IEndDragHandler,
     {
         if (isDragging) return;
         verbose = false;
-        hoverhud.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = item.Name;
-       // hoverhud.SetActive(true);
+
+        // hoverhud.SetActive(true);
         hoverhud.transform.position = (transform.position + (Vector3)offset);
     }
 
@@ -75,14 +80,19 @@ public class UIInteractable : MonoBehaviour, IBeginDragHandler, IEndDragHandler,
         if(!verbose)
         {
             verbose = !verbose;
+
             hoverhud.transform.GetChild(0).gameObject.SetActive(true);
             hoverhud.transform.GetChild(1).gameObject.SetActive(false);
+            hoverhud.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = item.Name;
         }
         else
         {
             verbose = !verbose;
+
             hoverhud.transform.GetChild(1).gameObject.SetActive(true);
             hoverhud.transform.GetChild(0).gameObject.SetActive(false);
+            hoverhud.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = item.Name;
+            hoverhud.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = "waluigi";
         }
     }
 
