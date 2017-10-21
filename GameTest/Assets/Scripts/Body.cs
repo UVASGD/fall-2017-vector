@@ -122,6 +122,15 @@ public class Body : MonoBehaviour {
         Text Title = TalkBox.transform.GetChild(0).GetComponent<Text>();
         Title.text = interactee.GetBody.name;
         Text DialogueBox = TalkBox.transform.GetChild(1).transform.GetChild(0).GetComponent<Text>();
+        DialogueBox.text = interactee.OpeningText;
+    }
+
+    public void EndTalk() {
+        interactee = null;
+        Text Title = TalkBox.transform.GetChild(0).GetComponent<Text>();
+        Title.text = "";
+        Text DialogueBox = TalkBox.transform.GetChild(1).transform.GetChild(0).GetComponent<Text>();
+        DialogueBox.text = "";
     }
 
     //ABILITY TO MOVE

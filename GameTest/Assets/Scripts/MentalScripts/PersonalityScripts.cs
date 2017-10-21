@@ -22,7 +22,10 @@ public class Personality {
 
     float div = 1;
 
-    public Personality() { }
+    public Personality(Body _body = null) {
+        body = _body;
+        openingText = "AAA A RIDICULOUS FOOL";
+    }
 
     public Personality(Body _body, List<Association> _associator, Identity _identity, MoodHandler _moodHandler, string _openingText) {
         body = _body;

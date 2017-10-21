@@ -51,8 +51,6 @@ public class PlayerAI : AI {
     }
 
     public override void Update() {
-        if (talking)
-            return;
         GetMoveInput();
         // Debug.Log(mouse);
         if (body != null && body.Weapon != null && mouse != null) {
@@ -82,6 +80,7 @@ public class PlayerAI : AI {
                 if (bodhit == null || bodhit.GetPersonality() == null)
                     return;
                 Personality otherPersonality = bodhit.GetPersonality();
+                talking = true;
                 body.SetCurrAct(new TalkAction("Talk", 1, body, otherPersonality));
             }
         }

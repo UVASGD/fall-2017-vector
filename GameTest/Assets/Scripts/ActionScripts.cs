@@ -80,6 +80,7 @@ public class TalkAction : Action {
 public class EndTalkAction : Action {
     public EndTalkAction(string _name, int _speedFactor, Body _genitor) :
         base(_name, _speedFactor, _genitor) {
+        genitor.EndTalk();
     }
 }
 
