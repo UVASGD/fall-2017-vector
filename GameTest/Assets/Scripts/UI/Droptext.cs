@@ -16,12 +16,6 @@ public class Droptext : MonoBehaviour, IDropHandler {
         return path;
     }
 
-
-    void LateUpdate()
-    {
-        Debug.Log(gameObject.transform.GetChild(0).gameObject.GetInstanceID());
-    }
-
     public void OnDrop(PointerEventData eventData)
     {
         GameObject moved = UIInteractable.draggedItem;
