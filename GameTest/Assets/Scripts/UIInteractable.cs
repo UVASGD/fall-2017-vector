@@ -55,6 +55,7 @@ public class UIInteractable : MonoBehaviour, IBeginDragHandler, IEndDragHandler,
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (isDragging) return;
+        verbose = false;
        // hoverhud.SetActive(true);
         hoverhud.transform.position = (transform.position + (Vector3)offset);
     }
@@ -73,14 +74,14 @@ public class UIInteractable : MonoBehaviour, IBeginDragHandler, IEndDragHandler,
         if(!verbose)
         {
             verbose = !verbose;
-            hoverhud.transform.GetChild(1).gameObject.SetActive(true);
-            hoverhud.transform.GetChild(0).gameObject.SetActive(false);
+            hoverhud.transform.GetChild(0).gameObject.SetActive(true);
+            hoverhud.transform.GetChild(1).gameObject.SetActive(false);
         }
         else
         {
             verbose = !verbose;
-            hoverhud.transform.GetChild(0).gameObject.SetActive(true);
-            hoverhud.transform.GetChild(1).gameObject.SetActive(false);
+            hoverhud.transform.GetChild(1).gameObject.SetActive(true);
+            hoverhud.transform.GetChild(0).gameObject.SetActive(false);
         }
     }
 
