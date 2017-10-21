@@ -27,6 +27,17 @@ public class TextInput : MonoBehaviour {
             if (args.Equals("e"))
                 bodyReference.Enquire();
         }
+        else if (bodyReference.DiaStage == DialogueStage.Enquiring) {
+            int eventPicker = 0;
+            if (System.Int32.TryParse(args, out eventPicker)) {
+                bodyReference.Discuss(eventPicker);
+            }
+        }
+        else if (bodyReference.DiaStage == DialogueStage.Discussing) {
+            if (args.Equals("e")) {
+                bodyReference.Talk();
+            }
+        }
     }
 	
 }

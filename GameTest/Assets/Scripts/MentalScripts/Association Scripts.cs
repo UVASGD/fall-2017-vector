@@ -27,9 +27,10 @@ public class Association {
     public Dictionary<string, Interaction> addToMarks; //This is a temporary list of strings to association values
     public Dictionary<Association, Interaction> marks; //The associations to which this association is 'perma' connected to, [2] being exhaustion multiplier
 
-    public Association(string _name, string _id, Dictionary<string, Interaction> _marks = null, bool _perm = false, short _delet = 0) {
+    public Association(string _name, string _id, float _interest, Dictionary<string, Interaction> _marks = null, bool _perm = false, short _delet = 0) {
         name = _name;
         id = _id;
+        interest = _interest;
         addToMarks = _marks;
         permanent = _perm;
         deletable = _delet;
@@ -120,8 +121,8 @@ public class VerbAssoc : Association {
     float polarity; //Kindness of the interaction
     public float Polarity { get { return polarity; } }
 
-    public VerbAssoc(string _name, string _id, string _gerund, float _polarity, Dictionary<string, Interaction> _marks = null) :
-                     base(_name, _id, _marks) {
+    public VerbAssoc(string _name, string _id, string _gerund, float _polarity, float _interest, Dictionary<string, Interaction> _marks = null) :
+                     base(_name, _id, _interest, _marks) {
         gerund = _gerund;
         polarity = _polarity;
     }
@@ -139,15 +140,16 @@ public class MoodAssoc : Association {
     CoreMood cMood;
     public CoreMood CMood { get { return cMood; } }
 
-    public MoodAssoc(string _name, string _id, float _obl, Dictionary<string, Interaction> _marks = null) :
-                     base(_name, _id, _marks) {
+    public MoodAssoc(string _name, string _id, CoreMood _cMood, float _obl, float _interest, Dictionary<string, Interaction> _marks = null) :
+                     base(_name, _id, _interest, _marks) {
         obl = _obl;
+        cMood = _cMood;
     }
 }
 
 public class ConceptAssoc : Association {
-    public ConceptAssoc(string _name, string _id, Dictionary<string, Interaction> _marks = null) :
-                       base(_name, _id, _marks) {
+    public ConceptAssoc(string _name, string _id, float _interest, Dictionary<string, Interaction> _marks = null) :
+                       base(_name, _id, _interest, _marks) {
     }
 }
 
@@ -155,8 +157,8 @@ public class ConceptAssoc : Association {
 public class PersonAssoc : Association {
     float obligation;
 
-    public PersonAssoc(string _name, string _id, float _obligation, Dictionary<string, Interaction> _marks = null) :
-                       base(_name, _id, _marks) {
+    public PersonAssoc(string _name, string _id, float _obligation, float _interest, Dictionary<string, Interaction> _marks = null) :
+                       base(_name, _id, _interest, _marks) {
         obligation = _obligation;
     }
 
@@ -166,14 +168,14 @@ public class PersonAssoc : Association {
 }
 
 public class PlaceAssoc : Association {
-    public PlaceAssoc(string _name, string _id, Dictionary<string, Interaction> _marks = null) :
-                      base(_name, _id, _marks) {
+    public PlaceAssoc(string _name, string _id, float _interest, Dictionary<string, Interaction> _marks = null) :
+                      base(_name, _id, _interest, _marks) {
     }
 }
 
 public class ItemAssoc : Association {
-    public ItemAssoc(string _name, string _id, Dictionary<string, Interaction> _marks = null) :
-                     base(_name, _id, _marks) {
+    public ItemAssoc(string _name, string _id, float _interest, Dictionary<string, Interaction> _marks = null) :
+                     base(_name, _id, _interest, _marks) {
     }
 }
 
@@ -181,8 +183,8 @@ public class PanAssoc : Association {
     float delt;
     public float Delt { get { return delt; } }
 
-    public PanAssoc(string _name, string _id, float _delt, Dictionary<string, Interaction> _marks = null) :
-                     base(_name, _id, _marks) {
+    public PanAssoc(string _name, string _id, float _delt, float _interest, Dictionary<string, Interaction> _marks = null) :
+                     base(_name, _id, _interest, _marks) {
         delt = _delt;
     }
 }

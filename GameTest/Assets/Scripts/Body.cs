@@ -57,6 +57,7 @@ public class Body : MonoBehaviour {
 
     Personality interactee;
     GameObject TalkBox;
+    Text DialogueBox;
     TextInput TalkInput;
     bool talking = false;
     DialogueStage diaStage = DialogueStage.Nil;
@@ -134,23 +135,31 @@ public class Body : MonoBehaviour {
         hinderQuant += delt;
     }
 
-    public void Talk(Personality _interactee) {
+    public void BeginTalk(Personality _interactee) {
         interactee = _interactee;
         Text Title = TalkBox.transform.GetChild(0).GetComponent<Text>();
         Title.text = interactee.GetBody.name;
-        Text DialogueBox = TalkBox.transform.GetChild(1).transform.GetChild(0).GetComponent<Text>();
+        DialogueBox = TalkBox.transform.GetChild(1).transform.GetChild(0).GetComponent<Text>();
         DialogueBox.text = interactee.OpeningText;
         talking = true;
         diaStage = DialogueStage.Greeting;
     }
 
-    public void Enquire() {
-        //Iterate all of the interactee's events
-        //Print them out with their respective number
-        //Set DialogueStage to Enquiring
+    public void Talk() {
+        DialogueBox.text = interactee.OpeningText;
+        diaStage = DialogueStage.Greeting;
     }
 
-    public void Discuss() {
+    public void Enquire() {
+        //Iterate all of the interactee's events
+        foreach (string[] info in interactee.seenEvents.Keys) {
+            string sentence = string.Join(" ", info);
+            DialogueBox.text +=  sentence + "\n";
+        }
+        diaStage = DialogueStage.Enquiring;
+    }
+
+    public void Discuss(int eventPicker) {
         //Perform Perceive or whatever on the selected event
         //Print out response
         //Set DialogueStage to Discussing
@@ -160,7 +169,6 @@ public class Body : MonoBehaviour {
         interactee = null;
         Text Title = TalkBox.transform.GetChild(0).GetComponent<Text>();
         Title.text = "";
-        Text DialogueBox = TalkBox.transform.GetChild(1).transform.GetChild(0).GetComponent<Text>();
         DialogueBox.text = "";
         talking = false;
         diaStage = DialogueStage.Nil;
@@ -199,6 +207,7 @@ public class Body : MonoBehaviour {
     private void OnTriggerEnter2D(Collider2D other) {
         Body otherBody = other.gameObject.GetComponent<Body>();
         if (otherBody != null) {
+            Debug.Log("EEEEEEEE");
             Spread(otherBody);
             bodyCollisions++;
             if(otherBody.GetType() == typeof(ItemPackage) && mind.GetType() == typeof(PlayerAI))
