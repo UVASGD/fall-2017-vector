@@ -57,7 +57,7 @@ public class Item {
         else
             attackObj = (GameObject)Resources.Load(resource);
         //_sprite.transform.parent = attackObj.transform;
-        Vector3 pos = new Vector3(holder.transform.position.x + (2 * ((int)holder.face)), 0, 0);
+        Vector3 pos = new Vector3(holder.transform.position.x + (2 * ((int)holder.face)), -3.5f, 0);
         var newAttackObject = Object.Instantiate(attackObj, pos, Quaternion.identity) as GameObject;
 
         newAttackObject.AddComponent<T>();

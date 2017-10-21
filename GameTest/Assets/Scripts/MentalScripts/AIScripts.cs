@@ -48,7 +48,7 @@ public class PlayerAI : AI {
     public override void Update() {
         GetMoveInput();
         // Debug.Log(mouse);
-        if (body != null && body.Weapon != null && mouse != null) {
+        if (body != null && body.Weapon != null && mouse != null && body.Impediment > 0 && mouse) {
             body.Weapon.PlayerInput(mouse.State);
         }
     }
@@ -56,6 +56,7 @@ public class PlayerAI : AI {
     public override void Tick() {
         float mousePos = (Camera.main.ScreenToViewportPoint(Input.mousePosition).x - 0.5f) * 55.2765f;
         body.face = (Direction)Mathf.Sign(mousePos - (body.gameObject.transform.position.x));
+        body.transform.localScale = new Vector3((int)body.face, 1, 1);
         InteractableSearch();
     }
 

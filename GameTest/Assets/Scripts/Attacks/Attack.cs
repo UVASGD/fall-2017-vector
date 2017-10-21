@@ -45,7 +45,7 @@ public class Attack : MonoBehaviour {
 
     public virtual void AttackConstructor(Body _genitor, int _speed, float _power=1f) {
         distance = new Vector3();
-        distance.x = (2 * ((int)_genitor.face));
+        distance.x = (Mathf.Abs(_genitor.gameObject.transform.localScale.x) * ((int)_genitor.face));
         time = (TimeManager)FindObjectOfType(typeof(TimeManager));
 
         gameObject.GetComponent<SpriteRenderer>().sortingLayerName = "0";
