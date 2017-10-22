@@ -34,11 +34,11 @@ Disgust, Anger, Intimidate, Sad
             Destroy(gameObject);
         }
 
-        PersonCreator player = new PersonCreator("RPlayer", "Player", "Player", 0.5f, 1, AINum.player);
+        PersonCreator player = new PersonCreator("RPlayer", "Player", "Player", "player", 0.5f, 1, AINum.player);
         Body playerBody = (Body)FindObjectOfType(typeof(Body));
         //playerBody.AddAffecter(new Fire(playerBody, 40f));
         //playerBody.AddAffecter(new Fire(playerBody, 20f));
-        PersonCreator innkeeper = new PersonCreator("RInnkeeper", "Innkeeper", "Innkeeper", -6.5f, 1, AINum.soldier);
+        PersonCreator innkeeper = new PersonCreator("RInnkeeper", "Soldier", "Innkeeper", "soldier", -6.5f, 1, AINum.soldier);
 
         //List<Item> items = new List<Item> { };
 

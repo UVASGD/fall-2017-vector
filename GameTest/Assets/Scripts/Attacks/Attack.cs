@@ -58,6 +58,11 @@ public class Attack : MonoBehaviour {
         alreadyHit.Add(genitor.gameObject);
         rate = ((5-_speed) + (10 - _genitor.Athletics)) / 2;
         power = _power;
+
+        if (!genitor.GetMind().GetPersonality().HasContext("Combat")) {
+            new EventSpawn(genitor.gameObject.transform.position, new Interaction(0, 0), 
+                genitor.GetMind().GetPersonality().GetActiveContexts(), genitor.Id, "swings weapon", "", genitor);
+        }
     }
 
     public void setSprite(GameObject _sprite) {

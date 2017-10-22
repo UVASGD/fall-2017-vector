@@ -33,17 +33,25 @@ public class Association {
         interest = _interest;
         addToMarks = _marks;
         marks = new Dictionary<Association, Interaction>() { };
+        associations = new Dictionary<Association, Interaction>() { };
         permanent = _perm;
         deletable = _delet;
         accesses = 0;
         checks = 0;
     }
 
+    public void AddAssociation(Association addedAssoc, float pol, float str) {
+        if (associations.ContainsKey(addedAssoc))
+            associations[addedAssoc].Apply(pol, str);
+        else
+            associations.Add(addedAssoc, new Interaction(pol, str));
+    }
+
     public Interaction CheckAssoc(Association obj, Interaction interaction) {
         float[] thresholds = new float[] { 0.3f, 0.5f, 0.7f, 0.9f };
         Interaction retInt = new Interaction(interaction.Polarity, 0);
-        for (int i = thresholds.Length; i > 0; i--) {
-            bool pastMark = associations[obj].Strength <= thresholds[i];
+        for (int i = thresholds.Length-1; i > 0; i--) {
+            bool pastMark = (associations[obj].Strength <= thresholds[i]);
             float tempAdd = Mathf.Clamp(associations[obj].Strength + interaction.Strength, 0, 1);
             if (pastMark && tempAdd > thresholds[i]) {
                 retInt.Apply(strengthDelt: (tempAdd / 4));
@@ -57,10 +65,11 @@ public class Association {
     public void GetMood(Dictionary<MoodAssoc, float> feels, List<Association> branch, float percent, float div, int acc) {
         accesses += div;
         acc++;
-        branch.Add(this);
         foreach (Association mark in marks.Keys) {
+
             if (branch.Contains(mark) || accesses > marks[mark].Capacity)
                 continue;
+            branch.Add(this);
             if (mark.GetType() == typeof(MoodAssoc)) {
                 if (!feels.ContainsKey((MoodAssoc)mark))
                     feels.Add((MoodAssoc)mark, percent * marks[mark].Strength * Mathf.Sign(marks[mark].Polarity));
@@ -73,7 +82,8 @@ public class Association {
             }
         }
         acc--;
-        branch.RemoveAt(acc);
+        if (branch.Contains(this))
+            branch.Remove(this);
     }
 
     public void GetMarks(Association subj, Association obj, List<Association> branch, Interaction markInteract, int acc = 0) {
@@ -92,7 +102,8 @@ public class Association {
     public void AddMark(Association subj, Association newMark, float intPolarity, float intStrength) {
         if (subj.marks.ContainsKey(newMark))
             subj.marks[newMark].Apply(polarityDelt: intPolarity, strengthDelt: intStrength);
-        subj.marks.Add(newMark, new Interaction(intPolarity, intStrength));
+        else
+            subj.marks.Add(newMark, new Interaction(intPolarity, intStrength));
         subj.interest += intStrength / 2;
     }
 
@@ -200,7 +211,7 @@ public struct Interaction {
     float strength;
     public float Strength { get { return strength; } }
 
-    public Interaction(float _polarity, float _strength, int _capacity = 0) {
+    public Interaction(float _polarity, float _strength, int _capacity = 20) {
         polarity = _polarity;
         strength = _strength;
         capacity = _capacity;

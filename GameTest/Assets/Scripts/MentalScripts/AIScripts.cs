@@ -19,6 +19,8 @@ public class AI {
     }
 
     public virtual void Tick() {
+        if (personality != null)
+            personality.Tick();
     }
 
     public Personality GetPersonality() {
@@ -37,9 +39,9 @@ public class PlayerAI : AI {
 
     MouseManager mouse;
 
-    bool talkReady = false;
-    bool inventoryReady = false;
-    bool talking = false;
+    public bool talkReady = false;
+    public bool inventoryReady = false;
+    public bool talking = false;
 
     public PlayerAI(Personality _personality, Body _body) : base(_personality, _body) {   
     }
@@ -63,6 +65,7 @@ public class PlayerAI : AI {
     }
 
     public override void Tick() {
+        base.Tick();
         float mousePos = (Camera.main.ScreenToViewportPoint(Input.mousePosition).x - 0.5f) * 55.2765f;
         body.face = (Direction)Mathf.Sign(mousePos - (body.gameObject.transform.position.x));
         InteractableSearch();
@@ -70,11 +73,8 @@ public class PlayerAI : AI {
 
     public void Talk() {
         if (Input.GetMouseButtonDown(0)) {
-            Debug.Log("Pressed left click, casting ray.");
-
             RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector3.back);
             if (hit.collider != null) {
-                Debug.Log("Hit object: " + hit.collider.gameObject.name);
                 Body bodhit = hit.collider.gameObject.GetComponent<Body>();
                 if (bodhit == null || bodhit.GetPersonality() == null)
                     return;
@@ -99,7 +99,7 @@ public class PlayerAI : AI {
                         talking = false;
                         body.SetCurrAct(new EndTalkAction("EndTalk", 1, body));
                     }
-                    talkReady = false;
+                    else talkReady = false;
                 }
             }
             if (Input.GetKeyDown("i") && !talking) {

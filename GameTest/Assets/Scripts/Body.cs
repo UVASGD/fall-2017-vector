@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum DialogueStage {Greeting, Enquiring, Discussing, Nil}
+public enum DialogueStage {Greeting, Enquiring, Revealing, Discussing, Nil}
 
 public class Body : MonoBehaviour {
 
@@ -55,6 +55,9 @@ public class Body : MonoBehaviour {
     Item weapon;
     public Item Weapon { get { return weapon; } set { weapon = value; } }
 
+    string id;
+    public string Id { get { return id; } }
+
     Personality interactee;
     GameObject TalkBox;
     Text DialogueBox;
@@ -93,7 +96,8 @@ public class Body : MonoBehaviour {
         }
     }
 
-    public void BodyConstructor(int _size, Direction _dir, List<string> _targetTags, AI _mind) {
+    public void BodyConstructor(string _id, int _size, Direction _dir, List<string> _targetTags, AI _mind) {
+        id = _id;
         size = _size;
         face = _dir;
         targetTags = _targetTags;
@@ -136,43 +140,77 @@ public class Body : MonoBehaviour {
     }
 
     public void BeginTalk(Personality _interactee) {
+        TalkInput.SetInteractable();
         interactee = _interactee;
         Text Title = TalkBox.transform.GetChild(0).GetComponent<Text>();
-        Debug.Log(interactee.GetBody == null);
         Title.text = interactee.GetBody.name;
         DialogueBox = TalkBox.transform.GetChild(1).transform.GetChild(0).GetComponent<Text>();
         DialogueBox.text = interactee.GetBody.name + " is feeling " + interactee.moodHandler.GetDominantMood() + ". \n\n";
-        DialogueBox.text = interactee.OpeningText;
+        DialogueBox.text += interactee.OpeningText + "\n\n";
+        DialogueBox.text += "[e]nquire, [r]eveal, [s]mall talk, [k] to leave ";
+        interactee.ShuffleOpening();
         talking = true;
         diaStage = DialogueStage.Greeting;
     }
 
     public void Talk() {
-        DialogueBox.text = interactee.GetBody.name + " is feeling " + interactee.moodHandler.GetDominantMood() + ".";
+        DialogueBox.text = interactee.GetBody.name + " is feeling " + interactee.moodHandler.GetDominantMood() + ". \n\n";
+        DialogueBox.text += interactee.OpeningText + "\n\n";
+        DialogueBox.text += "[e]nquire, [r]eveal, [s]mall talk, [k] to leave ";
+        interactee.ShuffleOpening();
         diaStage = DialogueStage.Greeting;
     }
 
-    public void Enquire() {
-        //Iterate all of the interactee's events
-        Debug.Log("EEEEEE");
-        foreach (string[] info in interactee.seenEvents.Keys) {
-            string sentence = string.Join(" ", info);
-            DialogueBox.text +=  sentence + "\n";
+    public List<string[]> Enquire() {
+        List<string[]> s = new List<string[]>() { };
+        if (interactee.seenEvents.Count == 0) {
+            DialogueBox.text = interactee.GetBody.name + " has nothing to discuss with you.\n\n";
+            DialogueBox.text += "[e] to continue...";
+            diaStage = DialogueStage.Discussing;
+            return s;
         }
         diaStage = DialogueStage.Enquiring;
+        foreach (string[] sentence in interactee.seenEvents.Keys) {
+            //if (interactee.seenEvents[sentence].Strength > 60) {
+                s.Add(sentence);
+            //}
+        }
+        return s;
     }
 
-    public void Discuss(int eventPicker) {
-        //Perform Perceive or whatever on the selected event
-        //Print out response
-        //Set DialogueStage to Discussing
+    public List<string[]> Reveal() {
+        List<string[]> s = new List<string[]>() { };
+        if (interactee.unseenEvents.Count == 0) {
+            DialogueBox.text = "You have nothing interesting to share.\n\n";
+            DialogueBox.text += "[e] to continue...";
+            diaStage = DialogueStage.Discussing;
+            return s;
+        }
+        diaStage = DialogueStage.Revealing;
+        foreach (string[] sentence in interactee.unseenEvents.Keys) {
+            //if (interactee.useenEvents[sentence].Strength > 60) {
+            s.Add(sentence);
+            //}
+        }
+        return s;
+    }
+
+    public void Discuss(string[] sentence, bool seen) {
+        string response = interactee.DiscussPerceive(sentence, seen);
+        if (response.Equals(""))
+            DialogueBox.text = "There is nothing to say about this.";
+        else
+            DialogueBox.text = interactee.GetBody.name + " says this makes them feel " + response + ".";
+        DialogueBox.text += "\n\n[e] to continue...";
+        diaStage = DialogueStage.Discussing;
     }
 
     public void EndTalk() {
         interactee = null;
         Text Title = TalkBox.transform.GetChild(0).GetComponent<Text>();
-        Title.text = "";
-        DialogueBox.text = "";
+        Title.text = "MIDDLEBURG";
+        DialogueBox.text = "You're in Middleburg.";
+        TalkInput.Deactivate();
         talking = false;
         diaStage = DialogueStage.Nil;
     }
@@ -210,7 +248,6 @@ public class Body : MonoBehaviour {
     private void OnTriggerEnter2D(Collider2D other) {
         Body otherBody = other.gameObject.GetComponent<Body>();
         if (otherBody != null) {
-            Debug.Log("EEEEEEEE");
             Spread(otherBody);
             bodyCollisions++;
             if(otherBody.GetType() == typeof(ItemPackage) && mind.GetType() == typeof(PlayerAI))

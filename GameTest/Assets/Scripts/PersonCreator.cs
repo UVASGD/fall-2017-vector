@@ -16,16 +16,18 @@ public class PersonCreator { //This class exists just to spawn in a person. Not 
 
     string renderName;
     string objectName;
+    string id;
     string prefab;
     float loc;
     int size;
 
     AINum mindNum;
 
-    public PersonCreator(string _renderName, string _objectName, string _prefab, float _loc, int _size, AINum _minNum) {
+    public PersonCreator(string _renderName, string _objectName, string _prefab, string _id, float _loc, int _size, AINum _minNum) {
         renderName = _renderName; //Name of the sprite rendering prefab found in Resources
         objectName = _objectName; //Name of the actual person game object once in play
         prefab = _prefab; //Name of the prefab of the actual person object found in Resources
+        id = _id; //The name other NPCs will use to identify your character in the associator
         loc = _loc; //Location of the object
         size = _size; //Size of the person. For now, please keep sizes from 0 through 6
         sortingLayerNum = size.ToString(); //Where the gameobject is placed in the sorting layer. This will only affect render order, so objects can still collide
@@ -60,7 +62,10 @@ public class PersonCreator { //This class exists just to spawn in a person. Not 
         personBodyObject.name = objectName;
 
         if (mindNum == AINum.player) {
-            personBody.BodyConstructor(size, Direction.Left, new List<string> { "Hostile" }, new PlayerAI(null, personBody));
+            List<Association> associator = new List<Association>();
+            MoodHandler moodHandler = new MoodHandler(new List<Mood>() { });
+            personBody.BodyConstructor(id, size, Direction.Left, new List<string> { "Hostile" }, new PlayerAI(new Personality(personBody, associator, 
+                new Identity(), moodHandler, "..."), personBody));
             personBody.Mind.Start();
             personBodyObject.AddTag("Player");
 
@@ -101,22 +106,23 @@ public class PersonCreator { //This class exists just to spawn in a person. Not 
 
                  new PersonAssoc("Player", "player", 0, 0.50f, new Dictionary<string, Interaction>() { }),
                  new PersonAssoc("Soldier", "soldier", 0.80f, 0.70f, new Dictionary<string, Interaction>() { })};
-            MoodHandler moodHandler = new MoodHandler(new List<Mood>() {
-            new Mood("charmed", "disgusted", 0, CoreMood.CharmAxis),
-            new Mood("amused", "angered", 0, CoreMood.AmuseAxis),
-            new Mood("happy", "sad", 0, CoreMood.HappyAxis),
-            new Mood("inspired", "frightened", 0, CoreMood.InspireAxis)});
 
-            personBody.BodyConstructor(size, Direction.Left, new List<string> { "Hostile" }, new AI(new Personality(personBody, associator, new Identity(),
+            MoodHandler moodHandler = new MoodHandler(new List<Mood>() {
+                new Mood("charmed", "disgusted", 0, CoreMood.CharmAxis),
+                new Mood("amused", "angered", -.40f, CoreMood.AmuseAxis),
+                new Mood("happy", "sad", 0, CoreMood.HappyAxis),
+                new Mood("inspired", "frightened", 0, CoreMood.InspireAxis)});
+
+            personBody.BodyConstructor(id, size, Direction.Left, new List<string> { "Hostile" }, new AI(new Personality(personBody, associator, new Identity(),
                 moodHandler, "Welcome to Middleburg. Don't break anything."), personBody));
             personBodyObject.AddTag("Hostile");
         }
         else if (mindNum == AINum.dummy) {
-            personBody.BodyConstructor(size, Direction.Left, new List<string> { "Hostile" }, new AI(new Personality(), personBody));
+            personBody.BodyConstructor(id, size, Direction.Left, new List<string> { "Hostile" }, new AI(new Personality(), personBody));
             personBodyObject.AddTag("Hostile");
         }
         else if (mindNum == AINum.turret) {
-            personBody.BodyConstructor(size, Direction.Right, new List<string> { "Hostile", "Player" }, new AI(new Personality(personBody), personBody));
+            personBody.BodyConstructor(id, size, Direction.Right, new List<string> { "Hostile", "Player" }, new AI(new Personality(personBody), personBody));
             personBodyObject.AddTag("Hostile");
             Sword sword = new Sword(personBody, 1);
             personBody.Weapon = sword;

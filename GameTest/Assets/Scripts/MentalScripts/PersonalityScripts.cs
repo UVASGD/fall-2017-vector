@@ -27,25 +27,32 @@ public class Personality {
         openingText = "AAA A RIDICULOUS FOOL";
     }
 
-    public Personality(Body _body, List<Association> _associator, Identity _identity, MoodHandler _moodHandler, string _openingText) {
+    public Personality(Body _body, List<Association> _associator, Identity _identity, MoodHandler _moodHandler, string _openingText, 
+        List<Context> _allContexts = null) {
         body = _body;
         associator = _associator;
-        Debug.Log(associator[0].marks == null);
-        activeAssocs = new List<Association>();
+        activeAssocs = new List<Association>() { };
         identity = _identity;
         moodHandler = _moodHandler;
-        seenEvents = new Dictionary<string[], EventInfo>();
-        unseenEvents = new Dictionary<string[], EventInfo>();
+        seenEvents = new Dictionary<string[], EventInfo>() { };
+        unseenEvents = new Dictionary<string[], EventInfo>() { };
+        allContexts = _allContexts ?? new List<Context>() { new Context("Middleburg", new AssocAffecter[] { }) };
         for (int i = 0; i < associator.Count; i++)
             foreach (string s in associator[i].addToMarks.Keys)
                 for (int other = 0; other < associator.Count; other++) {
-                    if (associator[other].Id.Equals(s))
+                    if (associator[other].Id.Equals(s)) {
                         associator[i].marks.Add(associator[other], associator[i].addToMarks[s]);
+                    }
                 }
         openingText = _openingText;
     }
 
-    public void CoolDown() {
+    public string ShuffleOpening() {
+        openingText = "You talk some more.";
+        return openingText;
+    }
+
+    public void Tick() {
         foreach (Mood mood in moodHandler.moodList) {
             if (mood.Polarity > 10) mood.ApplyPolarity(-0.01f);
             else if (mood.Polarity < -10) mood.ApplyPolarity(0.01f);
@@ -64,64 +71,6 @@ public class Personality {
                     activeAssocs.Remove(a);
                 }
                 a.Checks = 0;
-            }
-        }
-    }
-
-    public void Perceive(string[] info, Interaction interaction, string[] contextNames, bool seen = true) {
-        Dictionary<string[], EventInfo> eventsList;
-        eventsList = (seen) ? seenEvents : unseenEvents;
-
-        Association subj = null;
-        VerbAssoc vb = null;
-        Association obj = null;
-
-        float totalInterest = 0;
-
-        foreach (Association a in associator) { //Assign subject, verb, and object accordingly
-            if (info.Length == 3) {
-                if (a.Id.Equals(info[0])) subj = a;
-                else if (a.Id.Equals(info[1])) vb = (VerbAssoc)a;
-                else if (a.Id.Equals(info[2])) obj = a;
-            }
-            else if (info.Length == 2) {
-                if (a.Id.Equals(info[0])) subj = a;
-                else if (a.Id.Equals(info[1])) vb = (VerbAssoc)a;
-            }
-        }
-
-        if (subj == null || vb == null || (info.Length == 3 && obj == null))
-            return;
-
-        string infoSentence = string.Join(" ", info);
-        infoSentence = infoSentence.ToLower();
-        foreach (string[] sentenceList in eventsList.Keys) {
-            string sentence = string.Join(" ", sentenceList);
-            sentence = sentence.ToLower();
-            if (sentence.Equals(infoSentence)) {
-                div = 0.25f;
-                eventsList[sentenceList].Apply(interestDelt: vb.Interest);
-                totalInterest += vb.Interest;
-            }
-            else {
-                totalInterest += subj.Interest + vb.Interest + ((obj != null) ? obj.Interest : 0);
-                eventsList.Add(info, new EventInfo(totalInterest, interaction.Polarity, interaction.Strength, contextNames));
-                div = (totalInterest > interestThreshold) ? 1 : 0.25f;
-            }
-            totalInterest *= div;
-
-            if (interaction.Strength == 0) {
-                interaction.Apply(polarityDelt: vb.Polarity, strengthDelt: vb.Interest);
-            }
-            else { interaction.Set(strengthSet: ((interaction.Strength + totalInterest) / 2)); }
-            interaction.Set(polaritySet: (interaction.Polarity * div), strengthSet: (interaction.Strength * div));
-            interaction.CalibrateStrength();
-
-            if (seen) {
-                List<string> feelContexts = new List<string>();
-                foreach (string s in contextNames)
-                    feelContexts.Add(s);
-                Feel(subj, obj, vb, totalInterest, interaction, div, feelContexts);
             }
         }
     }
@@ -152,6 +101,124 @@ public class Personality {
         }
     }
 
+    public bool HasContext(string conName) { 
+        foreach (Context con in allContexts)
+            if (con.Active && con.Name.Equals(conName))
+                return true;
+        return false;
+    }
+
+    public string[] GetActiveContexts() {
+        List<string> activeContexts = new List<string>();
+        foreach (Context con in allContexts)
+            if (con.Active)
+                activeContexts.Add(con.Name);
+        return activeContexts.ToArray();
+    }
+
+    public string DiscussPerceive(string[] info, bool seen = true) {
+        Association subj = null;
+        VerbAssoc vb = null;
+        Association obj = null;
+
+        Dictionary<string[], EventInfo> eventsList;
+        eventsList = (seen) ? seenEvents : unseenEvents;
+
+        float totalInterest = 0;
+        foreach (Association a in associator) { //Assign subject, verb, and object accordingly
+            if (info.Length == 3) {
+                if (a.Id.Equals(info[0])) subj = a;
+                else if (a.Id.Equals(info[1])) vb = (VerbAssoc)a;
+                else if (a.Id.Equals(info[2])) obj = a;
+            }
+            else if (info.Length == 2) {
+                if (a.Id.Equals(info[0])) subj = a;
+                else if (a.Id.Equals(info[1])) vb = (VerbAssoc)a;
+            }
+        }
+
+        if (subj == null || vb == null || (info.Length == 3 && obj == null))
+            return "";
+
+        totalInterest += eventsList[info].Interest;
+
+        List<string> feelContexts = new List<string>(); //Initialize and declare list of contexts
+        foreach (string s in eventsList[info].Contexts) //For each context 
+            feelContexts.Add(s); //Add it to feelContexts
+        return Feel(subj, obj, vb, totalInterest, new Interaction(eventsList[info].Polarity, eventsList[info].Strength), 1, feelContexts, seen); //Feel the event!
+    }
+
+    public void Perceive(string[] info, Interaction interaction, string[] contextNames, bool seen = true) {
+        div = 1;
+        Dictionary<string[], EventInfo> eventsList;
+        eventsList = (seen) ? seenEvents : unseenEvents;
+
+        Association subj = null;
+        VerbAssoc vb = null;
+        Association obj = null;
+
+        float totalInterest = 0;
+
+        foreach (Association a in associator) { //Assign subject, verb, and object accordingly
+            if (info.Length == 3) {
+                if (a.Id.Equals(info[0])) subj = a;
+                else if (a.Id.Equals(info[1])) vb = (VerbAssoc)a;
+                else if (a.Id.Equals(info[2])) obj = a;
+            }
+            else if (info.Length == 2) {
+                if (a.Id.Equals(info[0])) subj = a;
+                else if (a.Id.Equals(info[1])) vb = (VerbAssoc)a;
+            }
+        }
+
+        if (subj == null || vb == null || (info.Length == 3 && obj == null))
+            return;
+
+        string infoSentence = string.Join(" ", info); //convert info so it can be compared to info
+        infoSentence = infoSentence.ToLower(); //convert info so it can be compared to info
+
+
+        //GET TOTALINTEREST AND DIV
+        bool alreadySeen = false; //Whether this event has already been seen
+        foreach (string[] sentenceList in eventsList.Keys) { //Iterate through each sentence
+            string sentence = string.Join(" ", sentenceList); //Convert sentence so it can be compared to info
+            sentence = sentence.ToLower(); //Convert sentence so it can be compared to info
+            if (sentence.Equals(infoSentence)) { //If sentence equals info
+                div = 0.25f; //Experience this event at a quarter capacity
+                eventsList[sentenceList].Apply(interestDelt: vb.Interest); //Increase the int of the already witnessed event by the int level of the verb
+                totalInterest += eventsList[sentenceList].Interest; //Increase the current interest by accumulative interest of the event
+                alreadySeen = true; //This event has already been witnessed
+                break; //Stop iterating
+            }
+        }
+        if (!alreadySeen) { //If this event has not already been witnessed
+            totalInterest += subj.Interest + vb.Interest + ((obj != null) ? obj.Interest : 0); //Add the interest levels of subj, vb, and obj to totalInt
+            eventsList.Add(info, new EventInfo(totalInterest, interaction.Polarity, interaction.Strength, contextNames)); //Add this event to seen events
+        }
+
+        div = (totalInterest > interestThreshold) ? 1 : 0.25f; //If the totalInterest surpasses the threshold,
+
+        totalInterest *= div; //Divide totalInterest by the appropriate amount
+
+        //GET INTERACTION CALIBRATED
+        if (interaction.Strength == 0) { //If strength is null, i.e. the object supplied no reaction to the verb
+            interaction.Apply(polarityDelt: vb.Polarity, strengthDelt: vb.Interest); //Apply the polarity and interest of the verb
+        }
+        else { interaction.Set(strengthSet: ((interaction.Strength + totalInterest) / 2)); } //Increase the strength by some portion of the interest
+        interaction.Set(polaritySet: (interaction.Polarity * div), strengthSet: (interaction.Strength * div)); //Divide the pol and str appropriately
+        interaction.CalibrateStrength(); //Set strength aright
+
+
+        //FEEL EVENT
+        if (seen && totalInterest > interestThreshold) { //If seen
+            //Debug.Log("Feel Arguments: " + subj.Id + " " + vb.Id + " " + totalInterest + " " + interaction.Polarity + " " + interaction.Strength + " " + div);
+            List<string> feelContexts = new List<string>(); //Initialize and declare list of contexts
+            foreach (string s in contextNames) //For each context 
+                feelContexts.Add(s); //Add it to feelContexts
+            Feel(subj, obj, vb, totalInterest, interaction, div, feelContexts); //Feel the event!
+        }
+    }
+
     public string Feel(Association subj, Association obj, Association vb, float interest, Interaction interaction, float div, 
         List<string> contextNames = null, bool opine = false) {
 
@@ -167,32 +234,23 @@ public class Personality {
                             activeContexts.Add(con);
                         }
                     }
-
         string returnSentence = "";
-        Dictionary<MoodAssoc, float> feels = new Dictionary<MoodAssoc, float>(); //Apply this to the perceiver's moods
-        List<Association> branch = new List<Association>();
+        Dictionary<MoodAssoc, float> feels = new Dictionary<MoodAssoc, float>() { }; //Apply this to the perceiver's moods
+        List<Association> branch = new List<Association>() { };
 
         subj.GetMood(feels, branch, interest, div, 0);
 
         vb.GetMood(feels, branch, interest, div, 0);
+        subj.AddAssociation(vb, 1, vb.Interest * interest);
 
-        if (obj != null)
+        if (obj != null) {
             obj.GetMood(feels, branch, interaction.Strength * Mathf.Sign(interaction.Polarity), div, 0);
-
-        if (opine) {
-            float topVal = 0;
-            MoodAssoc topMood = null;
-            foreach (MoodAssoc m in feels.Keys) {
-                if (Mathf.Abs(feels[m]) > Mathf.Abs(topVal)) {
-                    topVal = feels[m];
-                    topMood = m;
-                }
-            }
-            if (topMood != null)
-                returnSentence = moodHandler.GetName(topMood, topVal);
+            subj.AddAssociation(obj, interaction.Polarity*interest, interaction.Strength*interest);
         }
+
+
         //APPLY MOODS HERE
-        else {
+        if (!opine) {
             moodHandler.ApplyMood(feels);
             foreach (MoodAssoc moodAssoc in feels.Keys)
                 if (subj.GetType() == typeof(PersonAssoc))
@@ -205,6 +263,17 @@ public class Personality {
             if (!activeAssocs.Contains(subj))
                 activeAssocs.Add(subj);
         }
+
+        float topVal = 0;
+        MoodAssoc topMood = null;
+        foreach (MoodAssoc m in feels.Keys) {
+            if (Mathf.Abs(feels[m]) > Mathf.Abs(topVal)) {
+                topVal = feels[m];
+                topMood = m;
+            }
+        }
+        if (topMood != null)
+            returnSentence = moodHandler.GetName(topMood, topVal);
 
         foreach (Context con in activeContexts) {
             UnapplyContext(con);
