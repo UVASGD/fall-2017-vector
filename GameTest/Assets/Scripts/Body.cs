@@ -85,8 +85,6 @@ public class Body : MonoBehaviour {
         currMoveAct = new HaltAction("Halt", 0, this);
         currAct = new Action("Open", 0, this);
         AddAffecter(new ResistanceAggregate(this, 0f));
-
-
     }
 
     void Update() {

@@ -23,7 +23,9 @@ public class PersonCreator { //This class exists just to spawn in a person. Not 
 
     AINum mindNum;
 
-    public PersonCreator(string _renderName, string _objectName, string _prefab, string _id, float _loc, int _size, AINum _minNum) {
+    List<string> smallTalk;
+
+    public PersonCreator(string _renderName, string _objectName, string _prefab, string _id, float _loc, int _size, AINum _minNum, List<string> _smallTalk) {
         renderName = _renderName; //Name of the sprite rendering prefab found in Resources
         objectName = _objectName; //Name of the actual person game object once in play
         prefab = _prefab; //Name of the prefab of the actual person object found in Resources
@@ -32,6 +34,7 @@ public class PersonCreator { //This class exists just to spawn in a person. Not 
         size = _size; //Size of the person. For now, please keep sizes from 0 through 6
         sortingLayerNum = size.ToString(); //Where the gameobject is placed in the sorting layer. This will only affect render order, so objects can still collide
         mindNum = _minNum;
+        smallTalk = _smallTalk;
 
         SetObject(); //Establishes the actual game object with size and location and collider
 
@@ -65,7 +68,7 @@ public class PersonCreator { //This class exists just to spawn in a person. Not 
             List<Association> associator = new List<Association>();
             MoodHandler moodHandler = new MoodHandler(new List<Mood>() { });
             personBody.BodyConstructor(id, size, Direction.Left, new List<string> { "Hostile" }, new PlayerAI(new Personality(personBody, associator, 
-                new Identity(), moodHandler, "..."), personBody));
+                new Identity(), moodHandler, "...", smallTalk), personBody));
             personBody.Mind.Start();
             personBodyObject.AddTag("Player");
 
@@ -76,14 +79,14 @@ public class PersonCreator { //This class exists just to spawn in a person. Not 
 
             //ASSOCIATOR DEFINITION HERE
             List<Association> associator = new List<Association>() {
-                new MoodAssoc("Charm", "charm", CoreMood.CharmAxis, 0.10f, 0.10f, new Dictionary<string, Interaction>() { }),
-                new MoodAssoc("Disgust", "disgust", CoreMood.CharmAxis, -0.45f, 0.20f, new Dictionary<string, Interaction>() { }),
-                new MoodAssoc("Amusement", "amusement", CoreMood.AmuseAxis, 0.05f, 0.05f, new Dictionary<string, Interaction>() { }),
-                new MoodAssoc("Anger", "anger", CoreMood.AmuseAxis, -0.60f, 0.50f, new Dictionary<string, Interaction>() { }),
-                new MoodAssoc("Happiness", "happiness", CoreMood.HappyAxis, 0.10f, 0.05f, new Dictionary<string, Interaction>() { }),
-                new MoodAssoc("Sadness", "sadness", CoreMood.HappyAxis, -0.10f, 0.10f, new Dictionary<string, Interaction>() { }),
-                new MoodAssoc("Inspiration", "inspiration", CoreMood.InspireAxis, 0.10f, 0.10f, new Dictionary<string, Interaction>() { }),
-                new MoodAssoc("Intimidation", "intimidation", CoreMood.InspireAxis, -0.70f, 0.70f, new Dictionary<string, Interaction>() { }),
+                new MoodAssoc("Charm", "charm", CoreMood.CharmAxis, 0.10f, 0.10f, 1, new Dictionary<string, Interaction>() { }),
+                new MoodAssoc("Disgust", "disgust", CoreMood.CharmAxis, -0.45f, 0.20f, -1, new Dictionary<string, Interaction>() { }),
+                new MoodAssoc("Amusement", "amusement", CoreMood.AmuseAxis, 0.05f, 0.05f, 1, new Dictionary<string, Interaction>() { }),
+                new MoodAssoc("Anger", "anger", CoreMood.AmuseAxis, -0.60f, 0.50f, -1, new Dictionary<string, Interaction>() { }),
+                new MoodAssoc("Happiness", "happiness", CoreMood.HappyAxis, 0.10f, 0.05f, 1, new Dictionary<string, Interaction>() { }),
+                new MoodAssoc("Sadness", "sadness", CoreMood.HappyAxis, -0.10f, 0.10f, -1, new Dictionary<string, Interaction>() { }),
+                new MoodAssoc("Inspiration", "inspiration", CoreMood.InspireAxis, 0.10f, 0.10f, 1, new Dictionary<string, Interaction>() { }),
+                new MoodAssoc("Intimidation", "intimidation", CoreMood.InspireAxis, -0.70f, 0.70f, -1, new Dictionary<string, Interaction>() { }),
 
                 new VerbAssoc("foils", "foils", "foiling", -0.70f, 0.70f, new Dictionary<string, Interaction>() {
                     {"anger", new Interaction(1, .65f)}}),
@@ -114,7 +117,7 @@ public class PersonCreator { //This class exists just to spawn in a person. Not 
                 new Mood("inspired", "frightened", 0, CoreMood.InspireAxis)});
 
             personBody.BodyConstructor(id, size, Direction.Left, new List<string> { "Hostile" }, new AI(new Personality(personBody, associator, new Identity(),
-                moodHandler, "Welcome to Middleburg. Don't break anything."), personBody));
+                moodHandler, "Welcome to Middleburg. Don't break anything.", smallTalk), personBody));
             personBodyObject.AddTag("Hostile");
         }
         else if (mindNum == AINum.dummy) {

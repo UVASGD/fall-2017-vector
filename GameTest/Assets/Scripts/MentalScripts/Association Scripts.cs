@@ -72,8 +72,8 @@ public class Association {
             branch.Add(this);
             if (mark.GetType() == typeof(MoodAssoc)) {
                 if (!feels.ContainsKey((MoodAssoc)mark))
-                    feels.Add((MoodAssoc)mark, percent * marks[mark].Strength * Mathf.Sign(marks[mark].Polarity));
-                else { feels[(MoodAssoc)mark] += percent * Mathf.Sign(marks[mark].Polarity); }
+                    feels.Add((MoodAssoc)mark, percent * marks[mark].Strength * Mathf.Sign(marks[mark].Polarity) * ((MoodAssoc)mark).Sign);
+                else { feels[(MoodAssoc)mark] += percent * Mathf.Sign(marks[mark].Polarity * ((MoodAssoc)mark).Sign); }
             }
             if (acc < 5 && marks[mark].Strength > (acc * 5)) {
                 float newStr = marks[mark].CalibrateStrength();
@@ -152,10 +152,14 @@ public class MoodAssoc : Association {
     CoreMood cMood;
     public CoreMood CMood { get { return cMood; } }
 
-    public MoodAssoc(string _name, string _id, CoreMood _cMood, float _obl, float _interest, Dictionary<string, Interaction> _marks = null) :
+    int sign;
+    public int Sign { get { return sign; } }
+
+    public MoodAssoc(string _name, string _id, CoreMood _cMood, float _obl, float _interest, int _sign, Dictionary<string, Interaction> _marks = null) :
                      base(_name, _id, _interest, _marks) {
         obl = _obl;
         cMood = _cMood;
+        sign = _sign;
     }
 }
 

@@ -44,6 +44,10 @@ public class TextInput : MonoBehaviour {
                     i++;
                 }
             }
+            else if (args.Equals("s")) {
+                output.text = "";
+                bodyReference.Talk();
+            }
         }
         else if (bodyReference.DiaStage == DialogueStage.Enquiring) {
             int eventPicker = 0;

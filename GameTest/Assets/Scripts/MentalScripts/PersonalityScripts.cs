@@ -15,6 +15,8 @@ public class Personality {
 
     string openingText;
     public string OpeningText { get { return openingText; } }
+    List<string> smallTalk;
+    List<string> usedSpeech;
 
     float markThreshold;
     float objMarkThreshold;
@@ -27,7 +29,7 @@ public class Personality {
         openingText = "AAA A RIDICULOUS FOOL";
     }
 
-    public Personality(Body _body, List<Association> _associator, Identity _identity, MoodHandler _moodHandler, string _openingText, 
+    public Personality(Body _body, List<Association> _associator, Identity _identity, MoodHandler _moodHandler, string _openingText, List<string> _smallTalk,
         List<Context> _allContexts = null) {
         body = _body;
         associator = _associator;
@@ -45,10 +47,21 @@ public class Personality {
                     }
                 }
         openingText = _openingText;
+        smallTalk = _smallTalk ?? new List<string>() { "..." };
+        usedSpeech = new List<string>() { };
     }
 
     public string ShuffleOpening() {
-        openingText = "You talk some more.";
+        if (smallTalk.Count == 0) {
+            foreach (string s in usedSpeech) {
+                smallTalk.Add(s);
+            }
+            usedSpeech = new List<string>();
+        }
+        int rando = Random.Range(0, smallTalk.Count);
+        openingText = smallTalk[rando];
+        usedSpeech.Add(smallTalk[rando]);
+        smallTalk.RemoveAt(rando);
         return openingText;
     }
 
@@ -248,6 +261,9 @@ public class Personality {
             subj.AddAssociation(obj, interaction.Polarity*interest, interaction.Strength*interest);
         }
 
+        foreach (MoodAssoc m in feels.Keys) {
+            Debug.Log("Mood: " + m.Id + ", " + feels[m]);
+        }
 
         //APPLY MOODS HERE
         if (!opine) {
