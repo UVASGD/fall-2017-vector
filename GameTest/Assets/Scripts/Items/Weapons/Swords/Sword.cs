@@ -34,11 +34,11 @@ public class Sword : Item, ICloseMelee {
     }
 
     public void CloseMeleeLightAttack() {
-        SetupAttack(AddAttackScript<CloseMeleeLightAttackScript>("Attack", newAttack), LightAttackList, power);
+        SetupAttack(AddAttackScript<CloseMeleeLightAttackScript>("Bead", newAttack), LightAttackList, power);
     }
 
     public void CloseMeleeHeavyAttack() {
-        SetupAttack(AddAttackScript<CloseMeleeHeavyAttackScript>("Chest", newAttack), HeavyAttackList);
+        SetupAttack(AddAttackScript<CloseMeleeHeavyAttackScript>("Bead", newAttack), HeavyAttackList);
     }
 
     public void CloseMeleeBlockEnact() {
@@ -52,7 +52,7 @@ public class Sword : Item, ICloseMelee {
     }
 
     public void CloseMeleeParry() {
-        SetupAttack(AddAttackScript<CloseMeleeParryScript>("Attack"), ParryList);
+        SetupAttack(AddAttackScript<CloseMeleeParryScript>("Bead"), ParryList);
     }
 
     public override void PlayerInput(MouseState _state) {
@@ -90,7 +90,7 @@ public class Sword : Item, ICloseMelee {
         }
         else if (_state.leftHold > 0f && newAttack != null) {
             if (_state.leftHold < heavyTime)
-                newAttack.transform.localScale = new Vector3(1f, 13 * (_state.leftHold / heavyTime), 1f);
+                newAttack.transform.localScale = new Vector3(1f, 2 * (_state.leftHold / heavyTime), 1f); //ATTACK EXPANDS TO YOUR HEIGHT
             else if (_state.leftHold > heavyTime && !heavy)
                 HeavyEngage();
             UpdateAttackFace();
