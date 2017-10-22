@@ -64,10 +64,11 @@ public class ItemPackage : Body, Interactable {
             yScale = 2;
     }
 
-    public void CreateItemPackage(List<Item> _inventory, string _renderName, float _loc, int size = 1) {
+    public void CreateItemPackage(List<Item> _inventory, string _renderName, float _loc, int _size = 2) {
         inventory = _inventory;
         renderName = _renderName;
         loc = _loc;
+        size = _size;
 
         SetRender();
     }

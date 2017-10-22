@@ -32,7 +32,7 @@ public class Personality {
     public Personality(Body _body, List<Association> _associator, Identity _identity, MoodHandler _moodHandler, string _openingText, List<string> _smallTalk,
         List<Context> _allContexts = null) {
         body = _body;
-        associator = _associator;
+        associator = _associator ?? new List<Association>() { };
         activeAssocs = new List<Association>() { };
         identity = _identity;
         moodHandler = _moodHandler;
@@ -62,6 +62,11 @@ public class Personality {
         openingText = smallTalk[rando];
         usedSpeech.Add(smallTalk[rando]);
         smallTalk.RemoveAt(rando);
+        if (openingText.Equals("AHHH, A BEAR!")) {
+            PersonCreator Bear = new PersonCreator("RBear", "Bear", "Bear", "bear", -15.5f, 2, AINum.turret, null);
+            Debug.Log("OH NO A BEAR");
+            new EventSpawn(body.transform.position, new Interaction(), null, "bear", "brawls");
+        }
         return openingText;
     }
 
@@ -259,10 +264,6 @@ public class Personality {
         if (obj != null) {
             obj.GetMood(feels, branch, interaction.Strength * Mathf.Sign(interaction.Polarity), div, 0);
             subj.AddAssociation(obj, interaction.Polarity*interest, interaction.Strength*interest);
-        }
-
-        foreach (MoodAssoc m in feels.Keys) {
-            Debug.Log("Mood: " + m.Id + ", " + feels[m]);
         }
 
         //APPLY MOODS HERE

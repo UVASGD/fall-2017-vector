@@ -32,6 +32,7 @@ public class Body : MonoBehaviour {
     protected float hinderThreshold;
 
     protected int size; //Self-Explanatory *MUST BE SET
+    public int Size { get { return size; } }
     public Direction face; //Self-Explanatory *MUST BE SET
 
     protected Action currMoveAct; //Current movement action
@@ -215,6 +216,8 @@ public class Body : MonoBehaviour {
 
     //ABILITY TO MOVE
     public void Move(Direction _dir) {
+        if (mind.GetType() != typeof(PlayerAI))
+            transform.localScale = new Vector2((int)face, 1);
         switch (_dir) {
             case Direction.Left:
                 gameObject.transform.Translate(-1, 0, 0);

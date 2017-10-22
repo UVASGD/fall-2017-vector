@@ -31,7 +31,7 @@ public class TextInput : MonoBehaviour {
                 int i = 1;
                 foreach (string[] option in bodyReference.Enquire()) {
                     eventOptions.Add(i.ToString(), option);
-                    output.text += i + ": " + string.Join(" ", option);
+                    output.text += i + ": " + string.Join(" ", option) + "\n";
                     i++;
                 }
             }
@@ -40,7 +40,7 @@ public class TextInput : MonoBehaviour {
                 int i = 1;
                 foreach (string[] option in bodyReference.Reveal()) {
                     eventOptions.Add(i.ToString(), option);
-                    output.text += i + ": " + string.Join(" ", option);
+                    output.text += i + ": " + string.Join(" ", option) + "\n";
                     i++;
                 }
             }

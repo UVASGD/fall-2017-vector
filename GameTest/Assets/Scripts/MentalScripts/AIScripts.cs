@@ -201,7 +201,7 @@ public class DogAI : AI {
     public override void Update() {
         if (player != null) {
             FindPlayer();
-            DetermineDireciton();
+            DetermineDirection();
             body.SetFace(playerDirect);
         }
         else
@@ -234,8 +234,8 @@ public class DogAI : AI {
             playerDirect = Direction.Left;
     }
 
-    public void DetermineDireciton() {
-        if (Mathf.Abs(player.transform.position.x - body.transform.position.x) <= 5)
+    public void DetermineDirection() {
+        if (Mathf.Abs((player.transform.position.x - body.transform.position.x)-(player.GetComponent<Body>().Size + body.Size)) <= 1)
             desiredDirect = Direction.None;
         else
             desiredDirect = playerDirect;

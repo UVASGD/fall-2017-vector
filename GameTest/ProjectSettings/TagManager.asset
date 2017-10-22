@@ -8,6 +8,7 @@ TagManager:
   - CanvasTest
   - Renderer
   - Interactable
+  - TimerMark
   layers:
   - Default
   - TransparentFX
