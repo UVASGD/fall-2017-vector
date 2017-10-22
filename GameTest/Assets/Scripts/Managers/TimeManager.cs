@@ -14,7 +14,7 @@ public class TimeManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		
+        tickMarker = GameObject.FindGameObjectWithTag("TimerMark");
 	}
 	
 	// Update is called once per frame
