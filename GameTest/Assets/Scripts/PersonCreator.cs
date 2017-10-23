@@ -103,7 +103,7 @@ public class PersonCreator { //This class exists just to spawn in a person. Not 
                 new VerbAssoc("brawls", "brawls", "starting a fight", -0.70f, 0.90f, new Dictionary<string, Interaction>() {
                 {"charm", new Interaction(1, 0.25f)},
                 {"amusement", new Interaction(1, 0.10f)},
-                {"anger", new Interaction(-1, 0.80f)}}),
+                {"anger", new Interaction(1, 0.80f)}}),
                 new VerbAssoc("gives", "gives", "giving", 0.35f, 0.75f, new Dictionary<string, Interaction>() {
                  {"charm", new Interaction(1, 0.25f)},
                  {"amusement", new Interaction(1, 0.50f)}}),

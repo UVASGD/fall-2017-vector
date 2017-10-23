@@ -64,8 +64,8 @@ public class Personality {
         smallTalk.RemoveAt(rando);
         if (openingText.Equals("AHHH, A BEAR!")) {
             PersonCreator Bear = new PersonCreator("RBear", "Bear", "Bear", "bear", -15.5f, 2, AINum.turret, null);
-            Debug.Log("OH NO A BEAR");
-            new EventSpawn(body.transform.position, new Interaction(), null, "bear", "brawls");
+            Debug.Log("AAAAAA A BEAR!");
+            new EventSpawn(body.transform.position, new Interaction(0, 0), null, "bear", "brawls");
         }
         return openingText;
     }
@@ -209,27 +209,25 @@ public class Personality {
                 break; //Stop iterating
             }
         }
-        if (!alreadySeen) { //If this event has not already been witnessed
+        if (!alreadySeen) //If this event has not already been witnessed
             totalInterest += subj.Interest + vb.Interest + ((obj != null) ? obj.Interest : 0); //Add the interest levels of subj, vb, and obj to totalInt
-            eventsList.Add(info, new EventInfo(totalInterest, interaction.Polarity, interaction.Strength, contextNames)); //Add this event to seen events
-        }
 
         div = (totalInterest > interestThreshold) ? 1 : 0.25f; //If the totalInterest surpasses the threshold,
 
         totalInterest *= div; //Divide totalInterest by the appropriate amount
 
         //GET INTERACTION CALIBRATED
-        if (interaction.Strength == 0) { //If strength is null, i.e. the object supplied no reaction to the verb
+        if (interaction.Strength == 0) //If strength is null, i.e. the object supplied no reaction to the verb
             interaction.Apply(polarityDelt: vb.Polarity, strengthDelt: vb.Interest); //Apply the polarity and interest of the verb
-        }
         else { interaction.Set(strengthSet: ((interaction.Strength + totalInterest) / 2)); } //Increase the strength by some portion of the interest
         interaction.Set(polaritySet: (interaction.Polarity * div), strengthSet: (interaction.Strength * div)); //Divide the pol and str appropriately
         interaction.CalibrateStrength(); //Set strength aright
 
+        if (!alreadySeen)
+            eventsList.Add(info, new EventInfo(totalInterest, interaction.Polarity, interaction.Strength, contextNames)); //Add this event to seen events
 
         //FEEL EVENT
         if (seen && totalInterest > interestThreshold) { //If seen
-            //Debug.Log("Feel Arguments: " + subj.Id + " " + vb.Id + " " + totalInterest + " " + interaction.Polarity + " " + interaction.Strength + " " + div);
             List<string> feelContexts = new List<string>(); //Initialize and declare list of contexts
             foreach (string s in contextNames) //For each context 
                 feelContexts.Add(s); //Add it to feelContexts

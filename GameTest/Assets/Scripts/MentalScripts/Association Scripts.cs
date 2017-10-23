@@ -75,7 +75,7 @@ public class Association {
                     feels.Add((MoodAssoc)mark, percent * marks[mark].Strength * Mathf.Sign(marks[mark].Polarity) * ((MoodAssoc)mark).Sign);
                 else { feels[(MoodAssoc)mark] += percent * Mathf.Sign(marks[mark].Polarity * ((MoodAssoc)mark).Sign); }
             }
-            if (acc < 5 && marks[mark].Strength > (acc * 5)) {
+            if (acc < 5 && (marks[mark].Strength*100) > (acc * 5) && mark.marks.Count > 0) {
                 float newStr = marks[mark].CalibrateStrength();
                 newStr *= Mathf.Sign(marks[mark].Polarity);
                 mark.GetMood(feels, branch, newStr * percent, div, acc);
@@ -215,24 +215,32 @@ public struct Interaction {
     float strength;
     public float Strength { get { return strength; } }
 
-    public Interaction(float _polarity, float _strength, int _capacity = 20) {
+    public Interaction(float _polarity = 0, float _strength = 0, int _capacity = 20) {
         polarity = _polarity;
         strength = _strength;
         capacity = _capacity;
     }
 
     public void Apply(float polarityDelt = 0, float strengthDelt = 0, float capacityDelt = 0) {
-        float absPolarityDelt = Mathf.Abs(polarityDelt) * Mathf.Abs(polarity);
-        polarity += ((Mathf.Sign(polarity) + Mathf.Sign(polarityDelt) == 0)) ? -polarityDelt : polarity;
+        if (Mathf.Abs(polarity) > 0) {
+            float absPolarityDelt = Mathf.Abs(polarityDelt) * Mathf.Abs(polarity);
+            polarity += absPolarityDelt * Mathf.Sign(polarityDelt);
+        }
+        else polarity += polarityDelt / 4;
+        if (Mathf.Abs(polarity) > 1)
+            polarity = 1 * Mathf.Sign(polarity);
         strength += strengthDelt;
         strength = (strength < 0) ? 0 : strength;
         capacity += capacityDelt;
     }
 
     public void Set(float polaritySet = 0, float strengthSet = 0, float capacitySet = 0) {
-        polarity = polaritySet;
-        strength = strengthSet;
-        capacity = capacitySet;
+        if (polaritySet > 0)
+            polarity = polaritySet;
+        if (strengthSet > 0)
+            strength = strengthSet;
+        if (capacitySet > 0)
+            capacity = capacitySet;
     }
 
     public float CalibrateStrength() {
@@ -278,9 +286,15 @@ public struct EventInfo {
     }
 
     public void Set(float interestSet = 0, float polaritySet = 0, float strengthSet = 0, int accessesSet = 0) {
-        interest = interestSet;
-        polarity = polaritySet;
-        strength = strengthSet;
-        accesses = accessesSet;
+        if (interestSet > 0)
+            interest = interestSet;
+        if (polaritySet > 0)
+            polarity = polaritySet;
+        if (Mathf.Abs(polarity) > 1)
+            polarity = 1 * Mathf.Sign(polarity);
+        if (strengthSet > 0)
+            strength = strengthSet;
+        if (accessesSet > 0)
+            accesses = accessesSet;
     }
 }
