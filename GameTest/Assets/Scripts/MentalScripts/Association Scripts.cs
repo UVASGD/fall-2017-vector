@@ -169,6 +169,11 @@ public class ConceptAssoc : Association {
     }
 }
 
+public class RoleAssoc : Association {
+    public RoleAssoc(string _name, string _id, float _interest, Dictionary<string, Interaction> _marks = null) :
+                       base(_name, _id, _interest, _marks) {
+    }
+}
 
 public class PersonAssoc : Association {
     float obligation;

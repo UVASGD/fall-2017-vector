@@ -69,7 +69,7 @@ public class PersonCreator { //This class exists just to spawn in a person. Not 
 
         if (mindNum == AINum.player) {
             personBody.BodyConstructor(id, size, Direction.Left, new List<string> { "Hostile" }, new PlayerAI(new Personality(personBody, dummyAssociator, 
-                new Identity(), dummyMoodHandler, "...", smallTalk), personBody));
+                new Identity(personBodyObject), dummyMoodHandler, "...", smallTalk), personBody));
             personBody.Mind.Start();
             personBodyObject.AddTag("Player");
 
@@ -121,8 +121,8 @@ public class PersonCreator { //This class exists just to spawn in a person. Not 
                 new Mood("happy", "sad", 0, CoreMood.HappyAxis),
                 new Mood("inspired", "frightened", 0, CoreMood.InspireAxis)});
 
-            personBody.BodyConstructor(id, size, Direction.Left, new List<string> { "Hostile" }, new AI(new Personality(personBody, associator, new Identity(),
-                moodHandler, "Welcome to Middleburg. Don't break anything.", smallTalk), personBody));
+            personBody.BodyConstructor(id, size, Direction.Left, new List<string> { "Hostile" }, new AI(new Personality(personBody, associator, 
+                new Identity(personBodyObject), moodHandler, "Welcome to Middleburg. Don't break anything.", smallTalk), personBody));
             personBodyObject.AddTag("Hostile");
         }
         else if (mindNum == AINum.dummy) {
@@ -131,7 +131,7 @@ public class PersonCreator { //This class exists just to spawn in a person. Not 
         }
         else if (mindNum == AINum.turret) {
             personBody.BodyConstructor(id, size, Direction.Right, new List<string> { "Hostile", "Player" }, new DogAI(new Personality(personBody, dummyAssociator,
-                new Identity(), dummyMoodHandler, "...", smallTalk), personBody));
+                new Identity(personBodyObject), dummyMoodHandler, "...", smallTalk), personBody));
             personBodyObject.AddTag("Hostile");
             Sword sword = new Sword(personBody, 1);
             personBody.Weapon = sword;

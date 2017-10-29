@@ -10,8 +10,6 @@
  * Mild Bandits
  * Wild Bandits
  * Cultists
- * 
- * 
  * */
 
 
@@ -21,21 +19,21 @@ using UnityEngine;
 
 public class Identity {
 
-    List<Mark> marks;
-    public Mark[] Marks { get { return marks.ToArray(); } }
+    bool living;
+    GameObject objectReference;
+    string role;
+    string place;
+    //FactionAssoc faction;
 
-    
-
-    public void AddMark(Mark _mark) {
-        marks.Add(_mark);
+    public Identity(GameObject _objectReference, string _role = "", string _place = "") {
+        living = true;
+        objectReference = _objectReference;
+        role = _role;
+        place = _place;
     }
-
-    public bool RemoveMark(Mark _mark) {
-        return marks.Remove(_mark);     
-    }
-
 }
 
+/*
 public class PersonIdentity : Identity { }
 
 public class FactionIdentity : Identity { }
@@ -43,4 +41,5 @@ public class FactionIdentity : Identity { }
 public class PlaceIdentiy : Identity { }
 
 public class ItemIdentity : Identity { }
+*/
 
