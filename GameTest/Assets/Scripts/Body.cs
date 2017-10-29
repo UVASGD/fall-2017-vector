@@ -216,18 +216,11 @@ public class Body : MonoBehaviour {
 
     //ABILITY TO MOVE
     public void Move(Direction _dir) {
-        if (mind.GetType() != typeof(PlayerAI))
-            transform.localScale = new Vector2((int)face, 1);
-        switch (_dir) {
-            case Direction.Left:
-                gameObject.transform.Translate(-1, 0, 0);
-                //face = Direction.Left;
-                break;
-            case Direction.Right:
-                gameObject.transform.Translate(1, 0, 0);
-                //face = Direction.Right;
-                break;
-        }
+        if (mind.GetType() == typeof(PlayerAI))
+            Camera.main.transform.Translate((int)_dir, 0, 0);
+        else transform.localScale = new Vector2((int)face, 1);
+        
+        gameObject.transform.Translate((int)_dir, 0, 0);
     }
 
     public void SetCurrMoveAct(Action _currMoveAct) {
