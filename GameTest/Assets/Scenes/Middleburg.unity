@@ -358,6 +358,7 @@ SpriteRenderer:
   m_Size: {x: 0.125, y: 0.125}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 0
 --- !u!1 &379173009
 GameObject:
   m_ObjectHideFlags: 0
@@ -1017,6 +1018,7 @@ SpriteRenderer:
   m_Size: {x: 59.0625, y: 12.1875}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
 --- !u!4 &711462238
 Transform:
   m_ObjectHideFlags: 0
@@ -1948,6 +1950,7 @@ SpriteRenderer:
   m_Size: {x: 3, y: 6}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
 --- !u!1 &1146972328
 GameObject:
   m_ObjectHideFlags: 0
@@ -2946,7 +2949,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4777032182727846, guid: 45c81d3ea1945374593b9d8862657664, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 4.5
+      value: 20.5
       objectReference: {fileID: 0}
     - target: {fileID: 4777032182727846, guid: 45c81d3ea1945374593b9d8862657664, type: 2}
       propertyPath: m_LocalPosition.y
@@ -3285,6 +3288,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
 --- !u!4 &1907630977
 Transform:
   m_ObjectHideFlags: 0
@@ -3401,6 +3405,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
 --- !u!4 &1992153431
 Transform:
   m_ObjectHideFlags: 0

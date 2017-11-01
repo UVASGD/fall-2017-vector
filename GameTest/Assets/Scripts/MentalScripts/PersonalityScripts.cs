@@ -72,32 +72,41 @@ public class Personality {
 
     public void Tick() {
         foreach (Mood mood in moodHandler.moodList) {
-            if (mood.Polarity > 10) mood.ApplyPolarity(-0.01f);
-            else if (mood.Polarity < -10) mood.ApplyPolarity(0.01f);
+            if (mood.Polarity > .10) mood.ApplyPolarity(-0.001f);
+            else if (mood.Polarity < -.10) mood.ApplyPolarity(0.001f);
         }
+        TickAssocs();
+        TickEvents(seenEvents);
+        TickEvents(unseenEvents);
+    }
+
+    void TickAssocs() {
         for (int i = 0; i < activeAssocs.Count; i++) {
             Association a = activeAssocs[i];
             a.Checks++;
-            if (a.Checks > 50) {
-                if (a.GetType() == typeof(PersonAssoc))
-                    ((PersonAssoc)a).ApplyObl(-0.05f);
-                foreach (Association mark in a.marks.Keys)
-                    a.DelMark(a, mark, -0.5f, -0.5f);
-                a.Accesses--;
-                if (a.Accesses < 0) {
-                    a.Accesses = 0;
+            if (a.Checks > 20) {
+                if (a.CoolDown())
                     activeAssocs.Remove(a);
-                }
                 a.Checks = 0;
             }
         }
+    }
+
+    void TickEvents(Dictionary<string[], EventInfo> eventsList) {
+        List<string[]> removeList = new List<string[]>();
+        foreach (string[] sentence in eventsList.Keys) {
+            eventsList[sentence].Apply(interestDelt: -0.005f);
+            if (eventsList[sentence].Interest < 0)
+                removeList.Add(sentence);
+        }
+        foreach (string[] sentence in removeList)
+            eventsList.Remove(sentence);
     }
 
     public void ApplyContext(Context con) {
         con.Active = true;
         foreach (AssocAffecter aff in con.assocAffecters) {
             aff.targetAssoc.AdjustInterest(aff.InterestDelt);
-            aff.targetAssoc.deletable++;
             foreach (Association mark in aff.markAddList.Keys) {
                 if (mark.GetType() != typeof(PanAssoc))
                     aff.targetAssoc.AddMark(aff.targetAssoc, mark, aff.markAddList[mark].Polarity, aff.markAddList[mark].Strength);
@@ -110,7 +119,6 @@ public class Personality {
         con.Active = false;
         foreach (AssocAffecter aff in con.assocAffecters) {
             aff.targetAssoc.AdjustInterest(-aff.InterestDelt);
-            aff.targetAssoc.deletable--;
             foreach (Association mark in aff.markAddList.Keys) {
                 if (mark.GetType() != typeof(PanAssoc))
                     aff.targetAssoc.DelMark(aff.targetAssoc, mark, aff.markAddList[mark].Polarity, aff.markAddList[mark].Strength);
@@ -138,20 +146,22 @@ public class Personality {
         Association subj = null;
         VerbAssoc vb = null;
         Association obj = null;
+        Association sup = null;
+
+        div = 1;
 
         Dictionary<string[], EventInfo> eventsList;
         eventsList = (seen) ? seenEvents : unseenEvents;
 
         float totalInterest = 0;
         foreach (Association a in associator) { //Assign subject, verb, and object accordingly
-            if (info.Length == 3) {
-                if (a.Id.Equals(info[0])) subj = a;
-                else if (a.Id.Equals(info[1])) vb = (VerbAssoc)a;
-                else if (a.Id.Equals(info[2])) obj = a;
+            if (a.Id.Equals(info[0])) subj = a;
+            else if (a.Id.Equals(info[1])) vb = (VerbAssoc)a;
+            if (info.Length > 2) {
+                if (a.Id.Equals(info[2])) obj = a;
             }
-            else if (info.Length == 2) {
-                if (a.Id.Equals(info[0])) subj = a;
-                else if (a.Id.Equals(info[1])) vb = (VerbAssoc)a;
+            if (info.Length > 3) {
+                if (a.Id.Equals(info[4])) sup = a;
             }
         }
 
@@ -160,10 +170,40 @@ public class Personality {
 
         totalInterest += eventsList[info].Interest;
 
+        bool alreadySeen = false; //Whether this event has already been seen
+        string infoSentence = string.Join(" ", info); //convert info so it can be compared to info
+        infoSentence = infoSentence.ToLower(); //convert info so it can be compared to info
+        if (!seen) { //If we are reacting
+            foreach (string[] sentenceList in seenEvents.Keys) { //Iterate through each sentence
+                string sentence = string.Join(" ", sentenceList); //Convert sentence so it can be compared to info
+                sentence = sentence.ToLower(); //Convert sentence so it can be compared to info
+                if (sentence.Equals(infoSentence)) { //If sentence equals info
+                    div = 0.25f;
+                    seenEvents[sentenceList].Apply(interestDelt: vb.Interest * div); //Increase the int of the already witnessed event by the int level of the verb
+                    alreadySeen = true; //This event has already been witnessed
+                    break; //Stop iterating
+                }
+            }
+            if (!alreadySeen) //If this event has not already been witnessed
+                seenEvents.Add(info, eventsList[info]);
+        }
+
         List<string> feelContexts = new List<string>(); //Initialize and declare list of contexts
         foreach (string s in eventsList[info].Contexts) //For each context 
             feelContexts.Add(s); //Add it to feelContexts
-        return Feel(subj, obj, vb, totalInterest, new Interaction(eventsList[info].Polarity, eventsList[info].Strength), 1, feelContexts, seen); //Feel the event!
+
+        string returnString = Feel(subj, obj, vb, sup, totalInterest, new Interaction(eventsList[info].Polarity, 
+                                    eventsList[info].Strength), div, feelContexts, seen); //Feel the event!
+
+        if (!seen) //If we are reacting
+            eventsList.Remove(info); //Remove it from the unseenEvents
+
+        if (!alreadySeen) subj.Depreciate(div);
+        if (vb != null) vb.Depreciate(div);
+        if (obj != null && !alreadySeen) obj.Depreciate(div);
+        if (sup != null && !alreadySeen) sup.Depreciate(div);
+
+        return returnString;
     }
 
     public void Perceive(string[] info, Interaction interaction, string[] contextNames, bool seen = true) {
@@ -174,22 +214,22 @@ public class Personality {
         Association subj = null;
         VerbAssoc vb = null;
         Association obj = null;
+        Association sup = null;
 
         float totalInterest = 0;
 
         foreach (Association a in associator) { //Assign subject, verb, and object accordingly
-            if (info.Length == 3) {
-                if (a.Id.Equals(info[0])) subj = a;
-                else if (a.Id.Equals(info[1])) vb = (VerbAssoc)a;
-                else if (a.Id.Equals(info[2])) obj = a;
+            if (a.Id.Equals(info[0])) subj = a;
+            else if (a.Id.Equals(info[1])) vb = (VerbAssoc)a;
+            if (info.Length > 2) {
+                if (a.Id.Equals(info[2])) obj = a;
             }
-            else if (info.Length == 2) {
-                if (a.Id.Equals(info[0])) subj = a;
-                else if (a.Id.Equals(info[1])) vb = (VerbAssoc)a;
+            if (info.Length > 3) {
+                if (a.Id.Equals(info[4])) sup = a;
             }
         }
 
-        if (subj == null || vb == null || (info.Length == 3 && obj == null))
+        if (subj == null || vb == null || (info.Length > 2 && obj == null) || (info.Length > 3 && sup == null))
             return;
 
         string infoSentence = string.Join(" ", info); //convert info so it can be compared to info
@@ -203,14 +243,16 @@ public class Personality {
             sentence = sentence.ToLower(); //Convert sentence so it can be compared to info
             if (sentence.Equals(infoSentence)) { //If sentence equals info
                 div = 0.25f; //Experience this event at a quarter capacity
-                eventsList[sentenceList].Apply(interestDelt: vb.Interest); //Increase the int of the already witnessed event by the int level of the verb
-                totalInterest += eventsList[sentenceList].Interest; //Increase the current interest by accumulative interest of the event
+                eventsList[sentenceList].Apply(interestDelt: vb.Interest * div); //Increase the int of the already witnessed event by the int level of the verb
+                //Debug.Log("Event Interest After Adding Verb Interest: " + (eventsList[sentenceList].Interest));
+                totalInterest += vb.Interest * div; //Increase the current interest by the interest of the verb
                 alreadySeen = true; //This event has already been witnessed
                 break; //Stop iterating
             }
         }
         if (!alreadySeen) //If this event has not already been witnessed
-            totalInterest += subj.Interest + vb.Interest + ((obj != null) ? obj.Interest : 0); //Add the interest levels of subj, vb, and obj to totalInt
+            totalInterest += subj.Interest + vb.Interest + ((obj != null) ? obj.Interest : 0)
+            + ((sup != null) ? sup.Interest : 0); //Add the interest levels of subj, vb, and obj to totalInt
 
         div = (totalInterest > interestThreshold) ? 1 : 0.25f; //If the totalInterest surpasses the threshold,
 
@@ -231,11 +273,19 @@ public class Personality {
             List<string> feelContexts = new List<string>(); //Initialize and declare list of contexts
             foreach (string s in contextNames) //For each context 
                 feelContexts.Add(s); //Add it to feelContexts
-            Feel(subj, obj, vb, totalInterest, interaction, div, feelContexts); //Feel the event!
+            Feel(subj, obj, vb, sup, totalInterest, interaction, div, feelContexts); //Feel the event!
         }
+
+        if (!alreadySeen) subj.Depreciate(div);
+        if (vb != null) vb.Depreciate(div);
+        if (obj != null && !alreadySeen) obj.Depreciate(div);
+
+        //foreach (string[] sentence in seenEvents.Keys) {
+            //Debug.Log(string.Join(" ", sentence) + " " + seenEvents[sentence].Interest);
+        //}
     }
 
-    public string Feel(Association subj, Association obj, Association vb, float interest, Interaction interaction, float div, 
+    public string Feel(Association subj, Association obj, Association vb, Association sup, float interest, Interaction interaction, float div, 
         List<string> contextNames = null, bool opine = false) {
 
         List<Context> activeContexts = new List<Context>();
@@ -255,13 +305,17 @@ public class Personality {
         List<Association> branch = new List<Association>() { };
 
         subj.GetMood(feels, branch, interest, div, 0);
-
         vb.GetMood(feels, branch, interest, div, 0);
         subj.AddAssociation(vb, 1, vb.Interest * interest);
 
         if (obj != null) {
             obj.GetMood(feels, branch, interaction.Strength * Mathf.Sign(interaction.Polarity), div, 0);
             subj.AddAssociation(obj, interaction.Polarity*interest, interaction.Strength*interest);
+        }
+
+        if (sup != null) {
+            sup.GetMood(feels, branch, interaction.Strength, div, 0); //FIX THIS
+            subj.AddAssociation(sup, 1, interaction.Strength * interest); //FIX THIS
         }
 
         //APPLY MOODS HERE
@@ -274,9 +328,14 @@ public class Personality {
                 Interaction checkInt = subj.CheckAssoc(obj, interaction);
                 subj.GetMarks(subj, obj, branch, checkInt);
             }
+            if (obj != null) {
+                Interaction checkInt = subj.CheckAssoc(sup, new Interaction(1, interaction.Strength));
+                subj.GetMarks(subj, sup, branch, checkInt);
+            }
             subj.GetMarks(subj, vb, branch, subj.CheckAssoc(vb, new Interaction(1, vb.Interest)));
-            if (!activeAssocs.Contains(subj))
+            if (!activeAssocs.Contains(subj)) {
                 activeAssocs.Add(subj);
+            }
         }
 
         float topVal = 0;

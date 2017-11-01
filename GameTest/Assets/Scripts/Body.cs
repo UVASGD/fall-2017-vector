@@ -170,9 +170,9 @@ public class Body : MonoBehaviour {
         }
         diaStage = DialogueStage.Enquiring;
         foreach (string[] sentence in interactee.seenEvents.Keys) {
-            //if (interactee.seenEvents[sentence].Strength > 60) {
+            if (interactee.seenEvents[sentence].Interest > 0.60f) {
                 s.Add(sentence);
-            //}
+            }
         }
         return s;
     }

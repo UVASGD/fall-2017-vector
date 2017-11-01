@@ -7,6 +7,8 @@ public class AI {
     protected Personality personality;
     protected Body body;
 
+    protected int personalityChecker = 0;
+
     public AI(Personality _personality, Body _body) {
         personality = _personality;
         body = _body;
@@ -19,8 +21,10 @@ public class AI {
     }
 
     public virtual void Tick() {
-        if (personality != null)
+        if (personality != null && personalityChecker++ > 200) {
             personality.Tick();
+            personalityChecker = Random.Range(0, 50);
+        }
     }
 
     public Personality GetPersonality() {
@@ -64,7 +68,7 @@ public class PlayerAI : AI {
     }
 
     public override void Tick() {
-        base.Tick();
+        //base.Tick();
         float mousePos = (Camera.main.ScreenToViewportPoint(Input.mousePosition).x - 0.5f) * 55.2765f; //Get the mouse position SHOULD BE RELATIVE TO CAMERA
         body.face = (Direction)Mathf.Sign(mousePos - (body.gameObject.transform.position.x));
         body.transform.localScale = new Vector2((int)body.face, 1);
@@ -99,7 +103,7 @@ public class PlayerAI : AI {
                         talking = false;
                         body.SetCurrAct(new EndTalkAction("EndTalk", 1, body));
                     }
-                    else talkReady = false;
+                    talkReady = false;
                 }
             }
             if (Input.GetKeyDown("i") && !talking) {

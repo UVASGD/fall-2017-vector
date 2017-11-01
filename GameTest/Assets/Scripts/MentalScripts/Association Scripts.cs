@@ -12,13 +12,15 @@ public class Association {
     float interest;
     public float Interest { get { return interest; } }
 
+    float fullInterest;
+
     float accesses;
     public float Accesses { set { accesses = value; } get { return accesses; } }
 
     bool permanent;
     public bool Permanent { get { return permanent; } }
 
-    public short deletable;
+    public float leeway;
 
     float checks;
     public float Checks { get { return checks; } set { checks = value; } }
@@ -27,15 +29,16 @@ public class Association {
     public Dictionary<string, Interaction> addToMarks; //This is a temporary list of strings to association values
     public Dictionary<Association, Interaction> marks; //The associations to which this association is 'perma' connected to, [2] being exhaustion multiplier
 
-    public Association(string _name, string _id, float _interest, Dictionary<string, Interaction> _marks = null, bool _perm = false, short _delet = 0) {
+    public Association(string _name, string _id, float _interest, Dictionary<string, Interaction> _marks = null, bool _perm = false, float _leeway = 0) {
         name = _name;
         id = _id;
         interest = _interest;
+        fullInterest = _interest;
         addToMarks = _marks;
         marks = new Dictionary<Association, Interaction>() { };
         associations = new Dictionary<Association, Interaction>() { };
         permanent = _perm;
-        deletable = _delet;
+        leeway = _leeway;
         accesses = 0;
         checks = 0;
     }
@@ -45,6 +48,36 @@ public class Association {
             associations[addedAssoc].Apply(pol, str);
         else
             associations.Add(addedAssoc, new Interaction(pol, str));
+    }
+
+    public void Depreciate(float dep) {
+        if (accesses < 40)
+            accesses += dep;
+        float loss = (accesses > 1) ? accesses : 1;
+        interest = fullInterest / loss;
+    }
+
+    public bool CoolDown() {
+        if (GetType() == typeof(PersonAssoc))
+            if (Mathf.Abs(((PersonAssoc)this).Obligation) > 0.20f)
+                ((PersonAssoc)this).ApplyObl(-0.005f);
+
+        List<Association> removeList = new List<Association>();
+        foreach (Association mark in marks.Keys)
+            if (Mathf.Abs(marks[mark].Polarity) > 0.20f || marks[mark].Strength > 0.20f)
+                if (DelMark(this, mark, -0.005f, -0.005f, false))
+                    removeList.Add(mark);
+        foreach (Association mark in removeList)
+            marks.Remove(mark);
+        removeList.Clear();
+
+        Accesses -= 0.5f;
+        if (Accesses < 0) {
+            Debug.Log("AAAAA");
+            Accesses = 0;
+            return true;
+        }
+        return false;
     }
 
     public Interaction CheckAssoc(Association obj, Interaction interaction) {
@@ -63,7 +96,6 @@ public class Association {
     }
 
     public void GetMood(Dictionary<MoodAssoc, float> feels, List<Association> branch, float percent, float div, int acc) {
-        accesses += div;
         acc++;
         foreach (Association mark in marks.Keys) {
 
@@ -107,15 +139,24 @@ public class Association {
         subj.interest += intStrength / 2;
     }
 
-    public void DelMark(Association subj, Association targetMark, float polarityDelt, float strengthDelt) {
+    public bool DelMark(Association subj, Association targetMark, float polarityDelt, float strengthDelt, bool mutable = true) {
+        if (subj.permanent)
+            return false;
         if (subj.marks.ContainsKey(targetMark)) {
             subj.marks[targetMark].Apply(polarityDelt, strengthDelt);
+            if ((subj.marks[targetMark].Strength - targetMark.leeway) < 0) {
+                if (mutable)
+                    subj.marks.Remove(targetMark);
+                else return true;
+            }
         }
+        return false;
     }
 
     public void Sensitize(float delt) {
         foreach (Association a in marks.Keys) {
             marks[a].Apply(strengthDelt: delt);
+            a.leeway += delt;
         }
     }
 
@@ -177,6 +218,7 @@ public class RoleAssoc : Association {
 
 public class PersonAssoc : Association {
     float obligation;
+    public float Obligation { get { return obligation; } }
 
     public PersonAssoc(string _name, string _id, float _obligation, float _interest, Dictionary<string, Interaction> _marks = null) :
                        base(_name, _id, _interest, _marks) {
@@ -210,7 +252,7 @@ public class PanAssoc : Association {
     }
 }
 
-public struct Interaction {
+public class Interaction {
     float capacity;
     public float Capacity { get { return capacity; } set { capacity = value; } }
 
@@ -220,7 +262,7 @@ public struct Interaction {
     float strength;
     public float Strength { get { return strength; } }
 
-    public Interaction(float _polarity = 0, float _strength = 0, int _capacity = 20) {
+    public Interaction(float _polarity = 0, float _strength = 0, int _capacity = 5) {
         polarity = _polarity;
         strength = _strength;
         capacity = _capacity;
@@ -258,7 +300,7 @@ public struct Interaction {
     }
 }
 
-public struct EventInfo {
+public class EventInfo {
     float interest;
     public float Interest { get { return interest; } }
 

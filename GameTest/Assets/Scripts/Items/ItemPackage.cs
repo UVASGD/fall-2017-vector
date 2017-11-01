@@ -115,9 +115,9 @@ public class ItemPackage : Body, Interactable {
     }
 
     public void OnMouseDown() {
-        Debug.Log("CLICK==========");
+        //Debug.Log("CLICK==========");
         if (interactor != null) {
-            Debug.Log("Interactor is not null");
+            //Debug.Log("Interactor is not null");
             interactor.TakeItemPackage(this);
         }
     }

@@ -51,18 +51,28 @@ public class TextInput : MonoBehaviour {
         }
         else if (bodyReference.DiaStage == DialogueStage.Enquiring) {
             int eventPicker = 0;
-            if (System.Int32.TryParse(args, out eventPicker)) {
+            if (System.Int32.TryParse(args, out eventPicker) && eventPicker <= eventOptions.Count && eventPicker > 0) {
                 output.text = "";
                 bodyReference.Discuss(eventOptions[eventPicker.ToString()], true);
                 eventOptions = new Dictionary<string, string[]>() { };
             }
+            else {
+                output.text = "";
+                eventOptions = new Dictionary<string, string[]>() { };
+                bodyReference.Talk();
+            }
         }
         else if (bodyReference.DiaStage == DialogueStage.Revealing) {
             int eventPicker = 0;
-            if (System.Int32.TryParse(args, out eventPicker)) {
+            if (System.Int32.TryParse(args, out eventPicker) && eventPicker <= eventOptions.Count && eventPicker > 0) {
                 output.text = "";
                 bodyReference.Discuss(eventOptions[eventPicker.ToString()], false);
                 eventOptions = new Dictionary<string, string[]>() { };
+            }
+            else {
+                output.text = "";
+                eventOptions = new Dictionary<string, string[]>() { };
+                bodyReference.Talk();
             }
         }
         else if (bodyReference.DiaStage == DialogueStage.Discussing) {

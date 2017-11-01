@@ -10,12 +10,18 @@ public class EventSpawn {
     string[] contextNames;
     List<Body> alreadyHit;
 
-    public EventSpawn(Vector2 _origin, Interaction _interaction, string[] _contextNames, string _subj, string _vb, string _obj = "", Body subject = null) {
+    public EventSpawn(Vector2 _origin, Interaction _interaction, string[] _contextNames, string _subj, string _vb, string _obj = "", string _sup = "", 
+        Body subject = null) {
         origin = _origin;
         interaction = _interaction;
         contextNames = _contextNames ?? new string[] { "middleburg"};
         //contextNames = (_contextNames.Length == 0) ? new string[] {"middleburg"} : _contextNames;
         info = (_obj.Equals("")) ? new string[] { _subj, _vb } : new string[] { _subj, _vb, _obj };
+        if (_obj.Equals(""))
+            info = new string[] { _subj, _vb };
+        else if (_sup.Equals(""))
+            info = new string[] { _subj, _vb, _obj };
+        else info = new string[] { _subj, _vb, _obj, _sup};
         alreadyHit = new List<Body>();
         if (subject != null)
             alreadyHit.Add(subject);

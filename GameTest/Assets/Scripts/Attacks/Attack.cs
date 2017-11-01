@@ -61,7 +61,7 @@ public class Attack : MonoBehaviour {
 
         if (!genitor.GetMind().GetPersonality().HasContext("Combat")) {
             new EventSpawn(genitor.gameObject.transform.position, new Interaction(0, 0), 
-                genitor.GetMind().GetPersonality().GetActiveContexts(), genitor.Id, "swings weapon", "", genitor);
+                genitor.GetMind().GetPersonality().GetActiveContexts(), genitor.Id, "swings weapon", "", "", genitor);
         }
     }
 

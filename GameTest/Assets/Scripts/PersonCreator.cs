@@ -89,13 +89,13 @@ public class PersonCreator { //This class exists just to spawn in a person. Not 
                 new MoodAssoc("Inspiration", "inspiration", CoreMood.InspireAxis, 0.10f, 0.10f, 1, new Dictionary<string, Interaction>() { }),
                 new MoodAssoc("Intimidation", "intimidation", CoreMood.InspireAxis, -0.70f, 0.70f, -1, new Dictionary<string, Interaction>() { }),
 
-                new VerbAssoc("foils", "foils", "foiling", -0.70f, 0.70f, new Dictionary<string, Interaction>() {
+                new VerbAssoc("foils", "foils", "foiling", -0.70f, 0.50f, new Dictionary<string, Interaction>() {
                     {"anger", new Interaction(1, .65f)}}),
                 new VerbAssoc("helps", "helps", "helping", 0.15f, 0.15f, new Dictionary<string, Interaction>() {
                     {"charm", new Interaction(1, 0.25f)},
                     {"happiness", new Interaction(1, 0.20f)},
                     {"inspiration", new Interaction(1, 0.10f)}}),
-                new VerbAssoc("swings their weapon", "swings weapon", "swinging a weapon", -0.25f, 0.70f, new Dictionary<string, Interaction>() {
+                new VerbAssoc("swings their weapon", "swings weapon", "swinging a weapon", -0.25f, 0.25f, new Dictionary<string, Interaction>() {
                  {"intimidation", new Interaction(1, 0.60f)}}),
                 new VerbAssoc("kills", "kills", "killing", -0.95f, 1, new Dictionary<string, Interaction>() {
                  {"inspiration", new Interaction(1, 0.90f)},

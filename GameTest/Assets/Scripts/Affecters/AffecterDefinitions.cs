@@ -15,7 +15,7 @@ public class Fire : Affecter {
     }
 
     public override void Dewit() {
-        Debug.Log("Burn, baby, burn: " + vitality);
+        //Debug.Log("Burn, baby, burn: " + vitality);
         base.Dewit();
     }
 
