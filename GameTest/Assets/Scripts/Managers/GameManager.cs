@@ -13,7 +13,7 @@ public enum AINum { player, soldier, dummy, turret};
     None
 };*/
 
-public enum CoreMood { CharmAxis, AmuseAxis, InspireAxis, HappyAxis };
+public enum CoreMood { CharmAxis, AmuseAxis, InspireAxis, HappyAxis, IntrigueAxis, PityAxis};
 
 public class GameManager : MonoBehaviour {
     /*enum Mood

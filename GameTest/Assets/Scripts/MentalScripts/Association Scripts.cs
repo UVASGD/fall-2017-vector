@@ -237,8 +237,11 @@ public class PlaceAssoc : Association {
 }
 
 public class ItemAssoc : Association {
-    public ItemAssoc(string _name, string _id, float _interest, Dictionary<string, Interaction> _marks = null) :
+    bool generic;
+    public bool Generic { get { return generic; } set { generic = value; } }
+    public ItemAssoc(string _name, string _id, float _interest, bool _generic = true, Dictionary<string, Interaction> _marks = null) :
                      base(_name, _id, _interest, _marks) {
+        generic = _generic;
     }
 }
 
