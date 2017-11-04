@@ -11,7 +11,14 @@ public class Item {
     protected bool natural;
 
     protected string name = "Generic Item";
-    public string Name { get { return name; } }
+    public string Name { get { return name; } set { name = value; } }
+
+    protected string id = "generic item";
+    public string Id { get { return id; }}
+
+    protected bool generic = true;
+
+    Identity identity;
 
     protected List<Affecter> EquippedList;
     protected List<Affecter> HoldingList;
@@ -48,6 +55,7 @@ public class Item {
         size = _size;
         speed = 5;
         natural = _natural;
+        identity = new Identity(id, generic);
     }
 
     protected T AddAttackScript<T>(string resource, GameObject _sprite=null) where T : Component {

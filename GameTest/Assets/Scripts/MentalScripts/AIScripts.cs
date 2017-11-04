@@ -47,12 +47,12 @@ public class PlayerAI : AI {
     public bool inventoryReady = false;
     public bool talking = false;
 
-    public PlayerAI(Personality _personality, Body _body) : base(_personality, _body) {   
+    public PlayerAI(Personality _personality, Body _body) : base(_personality, _body) {
+        mouse = (MouseManager)MonoBehaviour.FindObjectOfType(typeof(MouseManager));
     }
 
     public override void Start() {
         //dashTime = 0.05f;
-        mouse = (MouseManager)MonoBehaviour.FindObjectOfType(typeof(MouseManager));
     }
 
     public override void Update() {

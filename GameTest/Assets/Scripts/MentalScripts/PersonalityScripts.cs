@@ -329,7 +329,7 @@ public class Personality {
                 subj.GetMarks(subj, obj, branch, checkInt);
             }
             if (obj != null) {
-                Interaction checkInt = subj.CheckAssoc(sup, new Interaction(1, interaction.Strength));
+                Interaction checkInt = subj.CheckAssoc(sup, new Interaction(1, vb.Interest));
                 subj.GetMarks(subj, sup, branch, checkInt);
             }
             subj.GetMarks(subj, vb, branch, subj.CheckAssoc(vb, new Interaction(1, vb.Interest)));

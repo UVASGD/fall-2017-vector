@@ -20,6 +20,7 @@ public class Body : MonoBehaviour {
     public ImpedimentLevel Impediment { get { return impediment; } set { impediment = value; } }
 
     protected TimeManager time; //Reference to time manager
+    protected GameManager gameManager;
 
     protected Transform bodyRenderTransform; //Reference to the body-renderer's transform
 
@@ -38,7 +39,7 @@ public class Body : MonoBehaviour {
     protected Action currMoveAct; //Current movement action
     protected Action currAct; //Current non-movement action
 
-    protected List<string> targetTags = new List<string>(); //List of tag-filters *MUST BE SET
+    protected List<string> targetTags = new List<string>(); //List of tag-filters that this NPC can strike*MUST BE SET
     public List<string> TargetTags { get { return targetTags;  } }
 
     protected AI mind; //The AI object that will generate actions *MUST BE SET
@@ -57,7 +58,7 @@ public class Body : MonoBehaviour {
     public Item Weapon { get { return weapon; } set { weapon = value; } }
 
     string id;
-    public string Id { get { return id; } }
+    public string Id { get { return id; }}
 
     Personality interactee;
     GameObject TalkBox;
@@ -74,6 +75,7 @@ public class Body : MonoBehaviour {
 
     void Start() {
         time = (TimeManager)FindObjectOfType(typeof(TimeManager)); //Set Time manager
+        gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
         foreach (Transform child in transform) if (child.CompareTag("Renderer")) { bodyRenderTransform = child; } 
         //Set bodyRender equal to the transform of the proper childObject
 

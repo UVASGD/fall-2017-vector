@@ -9,6 +9,7 @@ TagManager:
   - Renderer
   - Interactable
   - TimerMark
+  - GameManager
   layers:
   - Default
   - TransparentFX

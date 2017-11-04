@@ -23,6 +23,7 @@ Disgust, Anger, Intimidate, Sad
 };*/
 
     public GameObject timeManager;
+    public Know TheKnow = new Know();
 
     public static GameManager instance = null;
 	// Use this for initialization
