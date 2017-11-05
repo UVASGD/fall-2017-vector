@@ -51,6 +51,7 @@ public class UIInteractable : MonoBehaviour, IBeginDragHandler, IEndDragHandler,
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        Debug.Log("Revert");
         isDragging = false;
         draggedItem.GetComponent<Image>().raycastTarget = true;
         draggedItem = null;
@@ -61,7 +62,9 @@ public class UIInteractable : MonoBehaviour, IBeginDragHandler, IEndDragHandler,
     {
         if (isDragging) return;
         verbose = false;
-
+        hoverhud.transform.GetChild(0).gameObject.SetActive(true);
+        hoverhud.transform.GetChild(1).gameObject.SetActive(false);
+        hoverhud.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = item.Name;
         // hoverhud.SetActive(true);
         hoverhud.transform.position = (transform.position + (Vector3)offset);
     }

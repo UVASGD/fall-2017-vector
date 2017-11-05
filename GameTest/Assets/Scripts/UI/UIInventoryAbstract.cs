@@ -40,7 +40,7 @@ public class UIInventoryAbstract : MonoBehaviour{
 
     public virtual void removeElement(GameObject g)
     {
-        inventoryUISide.Find(x => x.GetInstanceID() == g.GetInstanceID());
+        //inventoryUISide.Find(x => x.GetInstanceID() == g.GetInstanceID());
         inventoryUISide.Remove(g);
     }
 

@@ -10,6 +10,7 @@ TagManager:
   - Interactable
   - TimerMark
   - GameManager
+  - EquipmentUI
   layers:
   - Default
   - TransparentFX

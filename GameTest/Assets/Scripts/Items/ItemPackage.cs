@@ -14,12 +14,15 @@ public class ItemPackage : Body, Interactable {
     SpriteRenderer bodyRender;
     int sortingLayer = 0;
 
+    static UIInventoryAbstract nearbyUI;
+
     bool interacting;
     Body interactor;
 
     // Use this for initialization
     void Start() {
         time = (TimeManager)FindObjectOfType(typeof(TimeManager)); //Set Time manager
+        nearbyUI = GameObject.Find("Nearby").GetComponent<NearbyInteraction>();
         foreach (Transform child in transform) if (child.CompareTag("Renderer")) { bodyRenderTransform = child; }
         //Set bodyRender equal to the transform of the proper childObject
 
@@ -120,6 +123,7 @@ public class ItemPackage : Body, Interactable {
             //Debug.Log("Interactor is not null");
             interactor.TakeItemPackage(this);
         }
+        nearbyUI.UpdateUI();
     }
 
 
