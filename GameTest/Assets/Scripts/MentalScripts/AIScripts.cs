@@ -69,10 +69,21 @@ public class PlayerAI : AI {
 
     public override void Tick() {
         //base.Tick();
-        float mousePos = (Camera.main.ScreenToViewportPoint(Input.mousePosition).x - 0.5f) * 55.2765f; //Get the mouse position SHOULD BE RELATIVE TO CAMERA
-        body.face = (Direction)Mathf.Sign(mousePos - (body.gameObject.transform.position.x));
-        body.transform.localScale = new Vector2((int)body.face, 1);
+        SpriteFace();
         InteractableSearch();
+    }
+
+    private void SpriteFace() {
+        Vector3 worldPoint = new Vector3();
+        Camera c = Camera.main;
+
+        // Get the mouse position from Event.
+        // Note that the y position from Event is inverted.
+
+        worldPoint = c.ScreenToWorldPoint(Input.mousePosition);
+
+        body.face = (Direction)Mathf.Sign(worldPoint.x - (body.gameObject.transform.position.x));
+        body.transform.localScale = new Vector2((int)body.face, 1);
     }
 
     public void Talk() {
