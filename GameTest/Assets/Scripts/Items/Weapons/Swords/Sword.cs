@@ -59,7 +59,12 @@ public class Sword : Item, ICloseMelee {
         // Debug.Log("State = leftUp:" + _state.leftUp + ";");
         // Debug.Log("Heavy Time: " + heavyTime);
 
-        if (_state.leftUp && _state.rightHold == 0f && _state.leftHold <= heavyTime) {
+        Debug.Log("cancel: " + _state.cancel.ToString());
+        if (_state.cancel) {
+            Debug.Log("Did the Cancel");
+            CancelAttack();
+        }
+        else if (_state.leftUp && _state.rightHold == 0f && _state.leftHold <= heavyTime) {
             // Debug.Log("heavyTime: " + heavyTime + " ; _state.leftHold: " + _state.leftHold + " ; power: " + heavyTime / _state.leftHold);
             if (_state.leftHold == 0f)
                 power = 0.1f;
@@ -107,6 +112,10 @@ public class Sword : Item, ICloseMelee {
         attackRender.color = Color.grey;
 
         UpdateAttackFace();
+    }
+
+    public void CancelAttack() {
+        Object.Destroy((Object)newAttack);
     }
 
     public void UpdateAttackFace() {
