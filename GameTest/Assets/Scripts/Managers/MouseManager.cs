@@ -37,8 +37,37 @@ public class MouseManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        if (Input.mousePosition.y > 280 && Input.mousePosition.y < 640)
+            GameMode();
+	}
+
+    void OnGUI() {
+        Vector3 p = new Vector3();
+        Camera c = Camera.main;
+        Event e = Event.current;
+        Vector2 mousePos = new Vector2();
+
+        // Get the mouse position from Event.
+        // Note that the y position from Event is inverted.
+        mousePos.x = e.mousePosition.x;
+        mousePos.y = c.pixelHeight - e.mousePosition.y;
+
+        p = c.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, c.nearClipPlane));
+
+        GUILayout.BeginArea(new Rect(20, 20, 250, 120));
+        GUILayout.Label("Screen pixels: " + c.pixelWidth + ":" + c.pixelHeight);
+        GUILayout.Label("Mouse position: " + mousePos);
+        GUILayout.Label("World position: " + p.ToString("F3"));
+        GUILayout.EndArea();
+    }
+
+    void UIMode() {
+
+    }
+
+    void GameMode() {
         Clear();
-		if (Input.GetMouseButtonUp(0)) {
+        if (Input.GetMouseButtonUp(0)) {
             current.leftUp = true;
             sendit = true;
             clearLeft = true;
@@ -63,7 +92,8 @@ public class MouseManager : MonoBehaviour {
         else if (Input.GetMouseButton(1)) {
             current.rightHold += Time.deltaTime;
         }
-	}
+        // Debug.Log(Input.mousePosition.ToString());  640 to 280
+    }
 
     void Clear() {
         sendit = false;
