@@ -1,4 +1,4 @@
-﻿
+﻿#if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
 
@@ -8,3 +8,4 @@ public class SpritePixelsPerUnitChanger : AssetPostprocessor {
         textureImporter.spritePixelsPerUnit = 32;
     }
 }
+#endif
