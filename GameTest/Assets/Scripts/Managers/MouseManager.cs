@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public struct MouseState {
     public bool rightUp;
@@ -10,6 +11,8 @@ public struct MouseState {
     public bool leftUp;
     public bool leftDown;
     public float leftHold;
+
+    public bool cancel;
 }
 
 public class MouseManager : MonoBehaviour {
@@ -33,13 +36,22 @@ public class MouseManager : MonoBehaviour {
         current.leftUp = false;
         current.leftDown = false;
         current.leftHold = 0f;
+
+        current.cancel = false;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        if (Input.mousePosition.y > 280 && Input.mousePosition.y < 640)
-            GameMode();
-	}
+        //if (Input.mousePosition.y > 280 && Input.mousePosition.y < 640)
+
+        // Check if the mouse was clicked over a UI element
+        GameMode();
+        if (EventSystem.current.IsPointerOverGameObject()) {
+            current.cancel = true;
+        }
+        else
+            current.cancel = false;
+    }
 
     void OnGUI() {
         Vector3 p = new Vector3();
@@ -97,6 +109,8 @@ public class MouseManager : MonoBehaviour {
 
     void Clear() {
         sendit = false;
+
+        current.cancel = false;
 
         current.rightUp = false;
         current.rightDown = false;

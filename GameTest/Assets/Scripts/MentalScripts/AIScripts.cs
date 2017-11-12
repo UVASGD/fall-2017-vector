@@ -117,7 +117,7 @@ public class PlayerAI : AI {
                     talkReady = false;
                 }
             }
-            if (Input.GetKeyDown("i") && !talking) {
+            if (Input.GetKeyDown("q") && !talking) {
                 if (!inventoryReady) {
                     inventoryReady = true;
                     talkReady = false;

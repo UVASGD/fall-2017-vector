@@ -45,7 +45,7 @@ public class ItemPackage : Body, Interactable {
         {
             AddItem(new Sword(this, 1));
         }
-        CreateItemPackage(inventory, "RChest", 5.5f);
+        CreateItemPackage(inventory, "Chest", 5.5f);
         //Item package scales y value based on the number of items in the package. 
         float yScale = (inventory.Count / 15f * 2f);
         //The size caps at 15 items.
