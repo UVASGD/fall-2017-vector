@@ -21,7 +21,7 @@ public class GameManager : MonoBehaviour {
 Charm, Amuse, Inspire, Happy,
 Disgust, Anger, Intimidate, Sad
 };*/
-
+    public GameObject thePlayer;
     public GameObject timeManager;
     public Know TheKnow = new Know();
 
@@ -80,6 +80,11 @@ Disgust, Anger, Intimidate, Sad
         //Sword sword2 = new Sword(innkeeperBody, 1);
 
         DontDestroyOnLoad(gameObject);
+    }
+
+    void OnEnable()
+    {
+        thePlayer = GameObject.Find("Player");
     }
 
 	// Update is called once per frame

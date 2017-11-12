@@ -9,7 +9,13 @@ public class NearbyInteraction : UIInventoryAbstract{
     [HideInInspector]
     public ItemPackage currentInventory;
 
+    private static GameObject itemPackageRes;
 
+    void OnEnable()
+    {
+        if (itemPackageRes == null)
+            itemPackageRes = Resources.Load("ItemPackage") as GameObject;
+    }
 
     public override void UpdateUI()
     {
@@ -36,7 +42,11 @@ public class NearbyInteraction : UIInventoryAbstract{
     {
         if (currentInventory == null)
         {
-            Destroy(g);
+            GameObject packObj = Instantiate(itemPackageRes, new Vector2(GameManager.instance.thePlayer.transform.position.x,-2.5f), Quaternion.identity) as GameObject;
+            Item itemq = g.GetComponent<UIInteractable>().item;
+            ItemPackage pack = packObj.GetComponent<ItemPackage>();
+            pack.CreateItemPackage(new List<Item>() { itemq }, "Chest", GameManager.instance.thePlayer.transform.position.x);
+            base.addElement(g);
             return;
         }
         var item = g.GetComponent<UIInteractable>().item;

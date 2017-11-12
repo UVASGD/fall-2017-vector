@@ -16,6 +16,10 @@ public class Item {
     protected string id = "generic item";
     public string Id { get { return id; }}
 
+    protected Color color = Color.grey;
+    public Color itemColor { get { return color; } }
+
+
     protected bool generic = true;
 
     Identity identity;
@@ -86,6 +90,7 @@ public class Item {
         }
         holder.SetCurrAct(new Recovery("Recovery", _attack.Rate * _attack.Duration, holder));
     }
+
 
     public virtual void PlayerInput(MouseState _state) {
 

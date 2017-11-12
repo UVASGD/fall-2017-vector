@@ -51,7 +51,6 @@ public class UIInteractable : MonoBehaviour, IBeginDragHandler, IEndDragHandler,
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        Debug.Log("Revert");
         isDragging = false;
         draggedItem.GetComponent<Image>().raycastTarget = true;
         draggedItem = null;

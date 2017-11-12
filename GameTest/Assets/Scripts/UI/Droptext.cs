@@ -30,50 +30,30 @@ public class Droptext : MonoBehaviour, IDropHandler {
     public void OnDrop(PointerEventData eventData)
     {
         GameObject moved = UIInteractable.draggedItem;
-        bool different;
-        if (transform.childCount > 0) { different = UIInteractable.origin.GetInstanceID() != transform.GetChild(0).gameObject.GetInstanceID(); }
-        else { different = UIInteractable.origin.GetInstanceID() != gameObject.GetInstanceID(); }
+        bool different = UIInteractable.origin.GetInstanceID() != transform.GetChild(0).gameObject.GetInstanceID(); 
 
         if (different)
         {
 
             var from = UIInteractable.origin.GetComponentInParent<UIInventoryAbstract>();
             var to = gameObject.GetComponent<UIInventoryAbstract>();
-            bool checkEquip = (UIInteractable.origin.tag == "EquipmentUI" || gameObject.tag == "EquipmentUI");
+
+            if(from == null) //Assume that it's coming from inventory.
+            {
+                var newFrom = UIInteractable.origin.GetComponent<EquipmentDroptest>();
+                if(newFrom != null)
+                {
+                    Debug.Log(newFrom);
+                    playerBody.addItem(moved.GetComponent<UIInteractable>().item);
+                    playerBody.Weapon = null; //TODO: Change this to default weapon.
+                    Debug.Log("Unequipping");
+                }
+            }
 
             if (to == null)
             {
                 to = gameObject.GetComponentInParent<UIInventoryAbstract>();
             }
-            if (checkEquip)
-            {
-                var newto = gameObject;
-                var newfrom = UIInteractable.origin;
-                if (newto.tag == "EquipmentUI") //Equipping
-                {
-                    Debug.Log("Equip " + moved.GetComponent<UIInteractable>().item);
-                    from.removeElement(moved);
-                    if (playerBody.Weapon != null)
-                    {
-                        playerBody.addItem(playerBody.Weapon);
-                        from.UpdateUI();
-                    }
-                    playerBody.Weapon = moved.GetComponent<UIInteractable>().item;
-                    Debug.Log(moved);
-
-                }
-                else if (newfrom.tag == "EquipmentUI") //Unequipping
-                {
-                    playerBody.addItem(playerBody.Weapon);
-                    playerBody.Weapon = null; //TODO: Change
-                    Debug.Log("Unequip");
-                }
-
-
-                UIInteractable.origin = transform.gameObject;
-                return;
-            }
-
 
             from.removeElement(UIInteractable.draggedItem);
             to.addElement(UIInteractable.draggedItem);

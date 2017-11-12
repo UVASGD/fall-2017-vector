@@ -24,7 +24,6 @@ public class InventoryInteraction : UIInventoryAbstract{
 
     public override void removeElement(GameObject g)
     {
-        Debug.Log(g);
         Player.Inventory.Remove(g.GetComponent<UIInteractable>().item);
         base.removeElement(g);
     }
