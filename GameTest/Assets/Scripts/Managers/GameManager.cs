@@ -35,12 +35,12 @@ Disgust, Anger, Intimidate, Sad
             Destroy(gameObject);
         }
 
-        PersonCreator player = new PersonCreator("MainCharacter", "Player", "Player", "player", 0.5f, 1, AINum.player, 
+        PersonCreator player = new PersonCreator("Player", "player", 0.5f, 1, AINum.player, 
             new List<string> { "Stop talking to yourself." });
         Body playerBody = (Body)FindObjectOfType(typeof(Body));
         //playerBody.AddAffecter(new Fire(playerBody, 40f));
         //playerBody.AddAffecter(new Fire(playerBody, 20f));
-        PersonCreator innkeeper = new PersonCreator("RSoldier", "Soldier", "Soldier", "soldier", -6.5f, 1, AINum.soldier, 
+        PersonCreator innkeeper = new PersonCreator("Soldier", "soldier", -6.5f, 1, AINum.soldier, 
             new List<string> { "You want me to open the gate? No.",
                 "This is Middleburg. Congrats on getting here.",
                 "Why do your feet look like that?",
@@ -75,7 +75,7 @@ Disgust, Anger, Intimidate, Sad
         //GameObject packObj = Instantiate(Resources.Load("ItemPackage"), new Vector3(5.5f, 0f), Quaternion.identity) as GameObject;
 
         //ItemPackage pack = packObj.GetComponent<ItemPackage>();
-        //pack.CreateItemPackage(items, "RChest", 5.5f, 2);
+        //pack.CreateItemPackage(items, "Chest", 5.5f, 2);
 
         //Sword sword2 = new Sword(innkeeperBody, 1);
 

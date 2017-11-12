@@ -25,10 +25,10 @@ public class PersonCreator { //This class exists just to spawn in a person. Not 
 
     List<string> smallTalk;
 
-    public PersonCreator(string _renderName, string _objectName, string _prefab, string _id, float _loc, int _size, AINum _minNum, List<string> _smallTalk) {
-        renderName = _renderName; //Name of the sprite rendering prefab found in Resources
+    public PersonCreator(string _objectName, string _id, float _loc, int _size, AINum _minNum, List<string> _smallTalk) {
         objectName = _objectName; //Name of the actual person game object once in play
-        prefab = _prefab; //Name of the prefab of the actual person object found in Resources
+        renderName = _objectName; //Name of the sprite rendering prefab found in Resources
+        prefab = "Body"; //Name of the prefab of the actual person object found in Resources
         id = _id; //The name other NPCs will use to identify your character in the associator
         loc = _loc; //Location of the object
         size = _size; //Size of the person. For now, please keep sizes from 0 through 6

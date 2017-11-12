@@ -12,6 +12,7 @@ public class Personality {
     List<Context> allContexts;
     Body body;
     public Body GetBody { get { return body; } }
+    FactChecker factChecker;
 
     string openingText;
     public string OpeningText { get { return openingText; } }
@@ -26,7 +27,7 @@ public class Personality {
 
     public Personality(Body _body = null) {
         body = _body;
-        openingText = "AAA A RIDICULOUS FOOL";
+        openingText = "AHHH, I AM A RIDICULOUS FOOL!";
     }
 
     public Personality(Body _body, List<Association> _associator, Identity _identity, MoodHandler _moodHandler, string _openingText, List<string> _smallTalk,
@@ -49,6 +50,7 @@ public class Personality {
         openingText = _openingText;
         smallTalk = _smallTalk ?? new List<string>() { "..." };
         usedSpeech = new List<string>() { };
+        factChecker = new FactChecker();
     }
 
     public string ShuffleOpening() {
@@ -63,7 +65,7 @@ public class Personality {
         usedSpeech.Add(smallTalk[rando]);
         smallTalk.RemoveAt(rando);
         if (openingText.Equals("AHHH, A BEAR!")) {
-            PersonCreator Bear = new PersonCreator("RBear", "Bear", "Bear", "bear", -15.5f, 2, AINum.turret, null);
+            PersonCreator Bear = new PersonCreator("Bear", "bear", -15.5f, 2, AINum.turret, null);
             Debug.Log("AAAAAA A BEAR!");
             new EventSpawn(body.transform.position, new Interaction(0, 0), null, "bear", "brawls");
         }
