@@ -74,8 +74,8 @@ public class Personality {
 
     public void Tick() {
         foreach (Mood mood in moodHandler.moodList) {
-            if (mood.Polarity > .10) mood.ApplyPolarity(-0.001f);
-            else if (mood.Polarity < -.10) mood.ApplyPolarity(0.001f);
+            if (mood.Polarity > .10f) mood.ApplyPolarity(-0.001f);
+            else if (mood.Polarity < -.10f) mood.ApplyPolarity(0.001f);
         }
         TickAssocs();
         TickEvents(seenEvents);

@@ -24,6 +24,9 @@ public class Body : MonoBehaviour {
 
     protected Transform bodyRenderTransform; //Reference to the body-renderer's transform
 
+    protected Place currPlace; //What place gameobject you're currently colliding with
+    public Place CurrPlace { get { return currPlace; } } //Yeah
+
     int bodyCollisions = 0;
 
     public float harmQuant; //Harm Variables
@@ -36,6 +39,8 @@ public class Body : MonoBehaviour {
     public int Size { get { return size; } }
     public Direction face; //Self-Explanatory *MUST BE SET
 
+    protected Quest currQuest; //Current quest
+    protected Quest currSubQuest; //Current component quest of the main quest
     protected Action currMoveAct; //Current movement action
     protected Action currAct; //Current non-movement action
 
