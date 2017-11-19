@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ItemPackage : Body, Interactable {
 
-    public List<Item> Inventory { get { return inventory; } }
+    public new List<Item> Inventory { get { return inventory; } }
     public int inventorySize = 0;
     string renderName;
     float loc = 0f;
@@ -39,18 +39,13 @@ public class ItemPackage : Body, Interactable {
         mind = new Inanimate(null, this);
         interacting = false;
         outline = GetComponent<SpriteOutline>();
-        inventory = new List<Item> {};
+        //inventory = new List<Item>();
         //Manually adding items to the item package. This will be done outside this script.
-        for(int i = 0; i < 5; i ++)
-        {
-            AddItem(new Sword(this, 1));
-        }
-        CreateItemPackage(inventory, "Chest", 5.5f);
+        //CreateItemPackage(inventory, "Chest", 5.5f);
         //Item package scales y value based on the number of items in the package. 
         float yScale = (inventory.Count / 15f * 2f);
         //The size caps at 15 items.
-        if (yScale > 2)
-            yScale = 2;
+        yScale = Mathf.Clamp(yScale, 0.5f, 2);
         transform.localScale = new Vector3(1, yScale, 1);
         inventorySize = inventory.Count;
     }
@@ -61,10 +56,6 @@ public class ItemPackage : Body, Interactable {
         if (time.clock)
             Tick();
 
-        float yScale = (inventory.Count / 15f * 2f);
-        //The size caps at 15 items.
-        if (yScale > 2)
-            yScale = 2;
     }
 
     public void CreateItemPackage(List<Item> _inventory, string _renderName, float _loc, int _size = 2) {
@@ -130,13 +121,30 @@ public class ItemPackage : Body, Interactable {
     public void AddItem(Item i)
     {
         inventory.Add(i);
+        reScale();
+        inventorySize = inventory.Count;
+        Debug.Log("Added an Item");
     }
     public void RemoveItem(Item i)
     {
         inventory.Remove(i);
+        reScale();
+        if(inventory.Count == 0)
+        {
+            Destroy(transform.parent.gameObject);
+            return;
+        }
+        inventorySize = inventory.Count;
     }
     public void ClearItems()
     {
         inventory.Clear();
+    }
+
+    void reScale()
+    {
+        float yScale = (inventory.Count / 15f * 2f);
+        yScale = Mathf.Clamp(yScale, 0.5f, 2);
+        transform.localScale = new Vector3(1, yScale, 1);
     }
 }

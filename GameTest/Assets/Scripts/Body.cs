@@ -283,6 +283,7 @@ public class Body : MonoBehaviour {
     }
 
     private void OnTriggerExit2D(Collider2D other) {
+        if (other == null) return;
         Body otherBody = other.gameObject.GetComponent<Body>();
         if (otherBody != null) {
             bodyCollisions--;
