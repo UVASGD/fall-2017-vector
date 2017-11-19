@@ -30,23 +30,24 @@ public class Droptext : MonoBehaviour, IDropHandler {
     public void OnDrop(PointerEventData eventData)
     {
         GameObject moved = UIInteractable.draggedItem;
-        bool different = UIInteractable.origin.GetInstanceID() != transform.GetChild(0).gameObject.GetInstanceID(); 
-
+        bool different = UIInteractable.origin.GetInstanceID() != transform.GetChild(0).gameObject.GetInstanceID();
         if (different)
         {
-
             var from = UIInteractable.origin.GetComponentInParent<UIInventoryAbstract>();
             var to = gameObject.GetComponent<UIInventoryAbstract>();
-
-            if(from == null) //Assume that it's coming from inventory.
+            Debug.Log("Test");
+            Debug.Log(from);
+            Debug.Log(GetGameObjectPath(from.gameObject));
+            if(UIInteractable.origin.tag == "EquipmentUI") //Assume that it's coming from inventory.
             {
                 var newFrom = UIInteractable.origin.GetComponent<EquipmentDroptest>();
-                if(newFrom != null)
+                Debug.Log(newFrom);
+                Debug.Log("Unequipping");
+                if (newFrom != null)
                 {
-                    Debug.Log(newFrom);
                     playerBody.addItem(moved.GetComponent<UIInteractable>().item);
-                    playerBody.Weapon = new Fists(playerBody, 1);
-                    Debug.Log("Unequipping");
+                    Fists fist = new Fists(playerBody, 1);
+                    fist.EquipTo(playerBody);
                 }
             }
 

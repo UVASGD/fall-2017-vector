@@ -70,12 +70,15 @@ Disgust, Anger, Intimidate, Sad
                 "I wish you could do more in this game.",
                 "AHHH, A BEAR!" });
 
-        //List<Item> items = new List<Item> { };
+        List<Item> items = new List<Item> { };
 
-        //GameObject packObj = Instantiate(Resources.Load("ItemPackage"), new Vector3(5.5f, 0f), Quaternion.identity) as GameObject;
+        GameObject packObj = Instantiate(Resources.Load("ItemPackage"), new Vector3(5.5f, -2.5f), Quaternion.identity) as GameObject;
 
-        //ItemPackage pack = packObj.GetComponent<ItemPackage>();
-        //pack.CreateItemPackage(items, "Chest", 5.5f, 2);
+        ItemPackage pack = packObj.transform.GetChild(0).GetComponent<ItemPackage>();
+        pack.CreateItemPackage(items, "Chest", -2.5f, 5);
+        for(int i = 0; i < 5; i++) {
+            pack.AddItem(new Sword(pack, 1));
+        }
 
         //Sword sword2 = new Sword(innkeeperBody, 1);
 

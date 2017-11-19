@@ -7,6 +7,8 @@ public class AI {
     protected Personality personality;
     protected Body body;
 
+    protected List<Watchzone> zones;
+
     protected int personalityChecker = 0;
 
     public AI(Personality _personality, Body _body) {

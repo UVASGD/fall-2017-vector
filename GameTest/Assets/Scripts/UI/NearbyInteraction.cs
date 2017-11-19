@@ -34,8 +34,8 @@ public class NearbyInteraction : UIInventoryAbstract{
     public override void removeElement(GameObject g)
     {
         var item = g.GetComponent<UIInteractable>().item;
-        currentInventory.RemoveItem(item);
         base.removeElement(g);
+        currentInventory.RemoveItem(item);
     }
 
     public override void addElement(GameObject g)
@@ -44,11 +44,10 @@ public class NearbyInteraction : UIInventoryAbstract{
         {
             GameObject packObj = Instantiate(itemPackageRes, new Vector2(GameManager.instance.thePlayer.transform.position.x,-2.5f), Quaternion.identity) as GameObject;
             Item itemq = g.GetComponent<UIInteractable>().item;
-            Debug.Log("Is itemq null?: " + itemq.ToString());
-            Debug.Log("What about player instance stuff?: " + GameManager.instance.thePlayer);
-            ItemPackage pack = packObj.GetComponent<ItemPackage>();
-            Debug.Log("What about pack?: " + pack.ToString());
-            pack.CreateItemPackage(new List<Item>() { itemq }, "Chest", GameManager.instance.thePlayer.transform.position.x);
+            ItemPackage pack = packObj.transform.GetChild(0).GetComponent<ItemPackage>();
+            pack.CreateItemPackage(new List<Item>(), "Chest", GameManager.instance.thePlayer.transform.position.x);
+            pack.AddItem(itemq);
+            currentInventory = pack;
             base.addElement(g);
             return;
         }
