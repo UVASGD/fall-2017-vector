@@ -72,8 +72,10 @@ public class PersonCreator { //This class exists just to spawn in a person. Not 
                 new Identity(id, false, "", "", personBodyObject), dummyMoodHandler, "...", smallTalk), personBody));
             personBodyObject.AddTag("Player");
 
-            Sword sword = new Sword(personBody, 1);
-            personBody.Weapon = sword;
+            // Sword sword = new Sword(personBody, 1);
+            // personBody.Weapon = sword;
+            Fists fists = new Fists(personBody, 1);
+            personBody.Weapon = fists;
         }
         else if (mindNum == AINum.soldier) {
 

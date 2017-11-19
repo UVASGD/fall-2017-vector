@@ -26,7 +26,7 @@ public class UIInteractable : MonoBehaviour, IBeginDragHandler, IEndDragHandler,
         draggedItem = null;
         if(hoverhud == null) 
             hoverhud = GameObject.Find("hoverhud");
-        Debug.Log(hoverhud);
+        // Debug.Log(hoverhud);
         if(bucket == null)
             bucket = GameObject.Find("bucket");
         //hoverhud.SetActive(false);

@@ -95,6 +95,11 @@ public class Item {
     public virtual void PlayerInput(MouseState _state) {
 
     }
+
+    public void EquipTo(Body _holder) {
+        holder = _holder;
+        _holder.Weapon = this;
+    }
 }
 
 public interface ICloseMelee {

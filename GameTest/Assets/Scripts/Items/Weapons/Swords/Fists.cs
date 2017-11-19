@@ -1,9 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-// using System;
 
-public class Sword : Item, ICloseMelee {
+public class Fists : Item, ICloseMelee {
 
     Resistance blockPower;
     float heavyTime = 0.5f;
@@ -17,7 +16,7 @@ public class Sword : Item, ICloseMelee {
     SpriteRenderer attackRender;
     List<GameObject> attacks = new List<GameObject>();
 
-    public Sword(Body _holder, int _size) : base(_holder, _size) {
+    public Fists(Body _holder, int _size) : base(_holder, _size) {
         LightAttackList = new List<Affecter> { new Wound(holder, 0.2f) };
         lightAttackActScheme.Add(new AttackAct(Attack.Push, 3, newAttack));
 
@@ -29,16 +28,16 @@ public class Sword : Item, ICloseMelee {
 
         blockPower = new Resistance(_holder, 1f);
 
-        name = "Sword";
+        name = "Fists";
         dot = Resources.Load("Bead", typeof(GameObject)) as GameObject;
     }
 
     public void CloseMeleeLightAttack() {
-        SetupAttack(AddAttackScript<CloseMeleeLightAttackScript>("Bead", newAttack), LightAttackList, power);
+        SetupAttack(AddAttackScript<Punch>("Bead", newAttack), LightAttackList, power);
     }
 
     public void CloseMeleeHeavyAttack() {
-        SetupAttack(AddAttackScript<CloseMeleeHeavyAttackScript>("Bead", newAttack), HeavyAttackList);
+        SetupAttack(AddAttackScript<HeavyPunch>("Bead", newAttack), HeavyAttackList);
     }
 
     public void CloseMeleeBlockEnact() {
@@ -107,7 +106,7 @@ public class Sword : Item, ICloseMelee {
         attackRender = newAttack.GetComponent<SpriteRenderer>();
         attackRender.sortingLayerName = "0";
 
-        attackRender.color = Color.grey;
+        attackRender.color = Color.white;
 
         UpdateAttackFace();
     }
@@ -132,9 +131,4 @@ public class Sword : Item, ICloseMelee {
         attackRender.color = Color.red;
         holder.Impediment = ImpedimentLevel.noMove;
     }
-}
-
-public class SwordMat : Affecter {
-
-    public SwordMat(Body _targetBody, float _vitality, float _vRate) : base(_targetBody, _vitality, _vRate) { }
 }
