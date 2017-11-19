@@ -42,7 +42,7 @@ public class NearbyInteraction : UIInventoryAbstract{
     {
         if (currentInventory == null)
         {
-            GameObject packObj = Instantiate(itemPackageRes, new Vector2(GameManager.instance.thePlayer.transform.position.x,-2.5f), Quaternion.identity) as GameObject;
+            GameObject packObj = Instantiate(itemPackageRes, new Vector2(GameManager.instance.thePlayer.transform.position.x,-2.75f), Quaternion.identity) as GameObject;
             Item itemq = g.GetComponent<UIInteractable>().item;
             ItemPackage pack = packObj.transform.GetChild(0).GetComponent<ItemPackage>();
             pack.CreateItemPackage(new List<Item>(), "Chest", GameManager.instance.thePlayer.transform.position.x);

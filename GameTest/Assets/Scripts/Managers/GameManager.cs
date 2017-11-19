@@ -72,10 +72,10 @@ Disgust, Anger, Intimidate, Sad
 
         List<Item> items = new List<Item> { };
 
-        GameObject packObj = Instantiate(Resources.Load("ItemPackage"), new Vector3(5.5f, -2.5f), Quaternion.identity) as GameObject;
+        GameObject packObj = Instantiate(Resources.Load("ItemPackage"), new Vector3(5.5f, -2.75f), Quaternion.identity) as GameObject;
 
         ItemPackage pack = packObj.transform.GetChild(0).GetComponent<ItemPackage>();
-        pack.CreateItemPackage(items, "Chest", -2.5f, 5);
+        pack.CreateItemPackage(items, "Chest", -2.75f, 5);
         for(int i = 0; i < 5; i++) {
             pack.AddItem(new Sword(pack, 1));
         }

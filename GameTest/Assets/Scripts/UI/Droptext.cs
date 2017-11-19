@@ -30,18 +30,16 @@ public class Droptext : MonoBehaviour, IDropHandler {
     public void OnDrop(PointerEventData eventData)
     {
         GameObject moved = UIInteractable.draggedItem;
+        if (moved == null) return;
         bool different = UIInteractable.origin.GetInstanceID() != transform.GetChild(0).gameObject.GetInstanceID();
         if (different)
         {
             var from = UIInteractable.origin.GetComponentInParent<UIInventoryAbstract>();
             var to = gameObject.GetComponent<UIInventoryAbstract>();
-            Debug.Log("Test");
-            Debug.Log(from);
             Debug.Log(GetGameObjectPath(from.gameObject));
             if(UIInteractable.origin.tag == "EquipmentUI") //Assume that it's coming from inventory.
             {
                 var newFrom = UIInteractable.origin.GetComponent<EquipmentDroptest>();
-                Debug.Log(newFrom);
                 Debug.Log("Unequipping");
                 if (newFrom != null)
                 {
