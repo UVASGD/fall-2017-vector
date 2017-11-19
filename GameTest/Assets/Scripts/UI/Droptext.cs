@@ -45,7 +45,7 @@ public class Droptext : MonoBehaviour, IDropHandler {
                 {
                     Debug.Log(newFrom);
                     playerBody.addItem(moved.GetComponent<UIInteractable>().item);
-                    playerBody.Weapon = null; //TODO: Change this to default weapon.
+                    playerBody.Weapon = new Fists(playerBody, 1);
                     Debug.Log("Unequipping");
                 }
             }
