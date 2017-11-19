@@ -47,6 +47,7 @@ public class NearbyInteraction : UIInventoryAbstract{
             ItemPackage pack = packObj.transform.GetChild(0).GetComponent<ItemPackage>();
             pack.CreateItemPackage(new List<Item>(), "Chest", GameManager.instance.thePlayer.transform.position.x);
             pack.AddItem(itemq);
+            currentInventory = pack;
             base.addElement(g);
             return;
         }
