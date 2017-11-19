@@ -53,6 +53,7 @@ public class MouseManager : MonoBehaviour {
             current.cancel = false;
     }
 
+    /*
     void OnGUI() {
         Vector3 p = new Vector3();
         Camera c = Camera.main;
@@ -72,6 +73,7 @@ public class MouseManager : MonoBehaviour {
         GUILayout.Label("World position: " + p.ToString("F3"));
         GUILayout.EndArea();
     }
+    */
 
     void UIMode() {
 

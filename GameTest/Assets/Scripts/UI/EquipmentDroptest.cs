@@ -31,8 +31,11 @@ public class EquipmentDroptest : MonoBehaviour, IDropHandler {
             playerBody.addItem(playerBody.Weapon);
             Debug.Log(UIInteractable.draggedItem);
         }
-        playerBody.Weapon = moved.GetComponent<UIInteractable>().item;
+        Item i = moved.GetComponent<UIInteractable>().item;
+        playerBody.Weapon = i;
+        i.EquipTo(playerBody);
         Debug.Log(moved);
+        Debug.Log("Is the item in moved null? " + moved.GetComponent<UIInteractable>().item.ToString());
 
         Debug.Log(UIInteractable.draggedItem);
         UIInteractable.origin = transform.gameObject;
