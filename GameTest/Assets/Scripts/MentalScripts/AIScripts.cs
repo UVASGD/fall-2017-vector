@@ -7,7 +7,7 @@ public class AI {
     protected Personality personality;
     protected Body body;
 
-    protected List<Watchzone> zones;
+    protected List<Watchzone> zones = new List<Watchzone>();
 
     protected int personalityChecker = 0;
 
@@ -26,6 +26,9 @@ public class AI {
         if (personality != null && personalityChecker++ > 200) {
             personality.Tick();
             personalityChecker = Random.Range(0, 50);
+        }
+        foreach (Watchzone zone in zones) {
+            Debug.Log("zone: " + zone.ToString());
         }
     }
 

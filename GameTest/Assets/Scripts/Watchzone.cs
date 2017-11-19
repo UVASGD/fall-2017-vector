@@ -4,13 +4,23 @@ using UnityEngine;
 
 public class Watchzone : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    List<Body> others;
+
+    private void OnTriggerEnter2D(Collider2D other) {
+        others.Add(GetColliderBody(other));
+        ShowContent();
+    }
+
+    private void OnTriggerExit2D(Collider2D other) {
+        others.Remove(GetColliderBody(other));
+        ShowContent();
+    }
+
+    private Body GetColliderBody(Collider2D other) {
+        return other.gameObject.GetComponent<Body>();
+    }
+
+    private void ShowContent() {
+        Debug.Log(others);
+    }
 }
