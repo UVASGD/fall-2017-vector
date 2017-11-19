@@ -43,11 +43,7 @@ public class ItemPackage : Body, Interactable {
         //Manually adding items to the item package. This will be done outside this script.
         //CreateItemPackage(inventory, "Chest", 5.5f);
         //Item package scales y value based on the number of items in the package. 
-        float yScale = (inventory.Count / 15f * 2f);
-        //The size caps at 15 items.
-        yScale = Mathf.Clamp(yScale, 0.5f, 2);
-        transform.localScale = new Vector3(1, yScale, 1);
-        inventorySize = inventory.Count;
+
     }
 
     // Update is called once per frame
@@ -121,14 +117,12 @@ public class ItemPackage : Body, Interactable {
     public void AddItem(Item i)
     {
         inventory.Add(i);
-        reScale();
         inventorySize = inventory.Count;
         Debug.Log("Added an Item");
     }
     public void RemoveItem(Item i)
     {
         inventory.Remove(i);
-        reScale();
         if(inventory.Count == 0)
         {
             Destroy(transform.parent.gameObject);
@@ -141,10 +135,4 @@ public class ItemPackage : Body, Interactable {
         inventory.Clear();
     }
 
-    void reScale()
-    {
-        float yScale = (inventory.Count / 15f * 2f);
-        yScale = Mathf.Clamp(yScale, 0.5f, 2);
-        transform.localScale = new Vector3(1, yScale, 1);
-    }
 }
