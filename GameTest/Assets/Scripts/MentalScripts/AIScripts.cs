@@ -9,6 +9,9 @@ public class AI {
     protected Body body;
     public Body GetBody { get { return body; } }
 
+    protected Place place;
+    public Place Place { get { return place; } set { place = value; } }
+
     protected List<Watchzone> zones = new List<Watchzone>();
 
     protected int personalityChecker = 0;
