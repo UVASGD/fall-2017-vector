@@ -173,8 +173,8 @@ public class Personality {
         totalInterest += eventsList[info].Interest;
 
         bool alreadySeen = false; //Whether this event has already been seen
-        string infoSentence = string.Join(" ", info); //convert info so it can be compared to info
-        infoSentence = infoSentence.ToLower(); //convert info so it can be compared to info
+        string infoSentence = string.Join(" ", info); //convert info so it can be compared to info in seenList
+        infoSentence = infoSentence.ToLower(); //convert info so it can be compared to info in seenList
         if (!seen) { //If we are reacting
             foreach (string[] sentenceList in seenEvents.Keys) { //Iterate through each sentence
                 string sentence = string.Join(" ", sentenceList); //Convert sentence so it can be compared to info
@@ -197,7 +197,7 @@ public class Personality {
         string returnString = Feel(subj, obj, vb, sup, totalInterest, new Interaction(eventsList[info].Polarity,
                                     eventsList[info].Strength), div, feelContexts, seen); //Feel the event!
 
-        if (!seen) //If we are reacting
+        if (!seen) //If we are reacting for the first time
             eventsList.Remove(info); //Remove it from the unseenEvents
 
         if (!alreadySeen) subj.Depreciate(div);
@@ -390,13 +390,14 @@ public class Personality {
             if (bodhit == null || bodhit.GetPersonality() == null || bodhit != body) {
                 foreach (Association a in associator)
                     if (a.Id.Equals(bodhit.Id)) {
-                        if (high)
+                        if (high) {
                             if (((PersonAssoc)a).Obligation > mostObl) {
                                 mostObl = ((PersonAssoc)a).Obligation;
                                 topPerson = bodhit.gameObject;
                             }
-                            else
-                                if (((PersonAssoc)a).Obligation < mostObl) {
+                        }
+                        else
+                           if (((PersonAssoc)a).Obligation < mostObl) {
                                 mostObl = ((PersonAssoc)a).Obligation;
                                 topPerson = bodhit.gameObject;
                             }
