@@ -12,5 +12,20 @@ public class Place : MonoBehaviour {
 	void Start () {
 		
 	}
-	
+
+    void OnTriggerEnter2D(Collider2D other) {
+        AI theMind = GetColliderAI(other);
+        theMind.Place = this;
+
+    }
+
+    void OnTriggerExit2D(Collider2D other) {
+        AI theMind = GetColliderAI(other);
+        theMind.Place = null;
+    }
+
+    AI GetColliderAI(Collider2D other) {
+        return other.gameObject.GetComponent<Body>().Mind;
+    }
+
 }

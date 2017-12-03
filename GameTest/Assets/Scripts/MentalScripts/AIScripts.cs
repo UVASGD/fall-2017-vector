@@ -9,6 +9,9 @@ public class AI {
     protected Body body;
     public Body GetBody { get { return body; } }
 
+    protected Place place;
+    public virtual Place Place { get { return place; } set { place = value; } }
+
     protected List<Watchzone> zones = new List<Watchzone>();
 
     protected int personalityChecker = 0;
@@ -44,6 +47,10 @@ public class PlayerAI : AI {
     float button2Timer = 0;
 
     MouseManager mouse;
+    PlayMusic music;
+
+    private bool changedPlace = false;
+    public override Place Place { get { return place; } set { place = value; changedPlace = true; } }
 
     public bool talkReady = false;
     public bool inventoryReady = false;
@@ -66,6 +73,12 @@ public class PlayerAI : AI {
             else if (talkReady && !talking) {
                 Talk();
             }
+        }
+
+        if (changedPlace) {   //  TODO: make this actually choose the right music based on the place
+            MusicChoice new_music = MusicChoice.Credits;
+            music.ChangePlace(new_music);
+            changedPlace = false;
         }
     }
 
