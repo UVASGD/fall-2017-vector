@@ -6,21 +6,26 @@ public class Watchzone : MonoBehaviour {
 
     List<Body> others;
 
-    private void OnTriggerEnter2D(Collider2D other) {
-        others.Add(GetColliderBody(other));
+    void OnTriggerEnter2D(Collider2D other) {
+        AddColliderBody(other);
         ShowContent();
     }
 
-    private void OnTriggerExit2D(Collider2D other) {
+    void OnTriggerExit2D(Collider2D other) {
         others.Remove(GetColliderBody(other));
         ShowContent();
     }
 
-    private Body GetColliderBody(Collider2D other) {
+    Body GetColliderBody(Collider2D other) {
         return other.gameObject.GetComponent<Body>();
     }
 
-    private void ShowContent() {
+    void AddColliderBody(Collider2D other) {
+        if (other.gameObject.GetComponent<Body>() != null)
+            others.Add(other.gameObject.GetComponent<Body>());
+    }
+
+    void ShowContent() {
         Debug.Log(others);
     }
 }

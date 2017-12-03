@@ -129,7 +129,7 @@ public class Personality {
         }
     }
 
-    public bool HasContext(string conName) { 
+    public bool HasContext(string conName) {
         foreach (Context con in allContexts)
             if (con.Active && con.Name.Equals(conName))
                 return true;
@@ -194,7 +194,7 @@ public class Personality {
         foreach (string s in eventsList[info].Contexts) //For each context 
             feelContexts.Add(s); //Add it to feelContexts
 
-        string returnString = Feel(subj, obj, vb, sup, totalInterest, new Interaction(eventsList[info].Polarity, 
+        string returnString = Feel(subj, obj, vb, sup, totalInterest, new Interaction(eventsList[info].Polarity,
                                     eventsList[info].Strength), div, feelContexts, seen); //Feel the event!
 
         if (!seen) //If we are reacting
@@ -283,11 +283,11 @@ public class Personality {
         if (obj != null && !alreadySeen) obj.Depreciate(div);
 
         //foreach (string[] sentence in seenEvents.Keys) {
-            //Debug.Log(string.Join(" ", sentence) + " " + seenEvents[sentence].Interest);
+        //Debug.Log(string.Join(" ", sentence) + " " + seenEvents[sentence].Interest);
         //}
     }
 
-    public string Feel(Association subj, Association obj, Association vb, Association sup, float interest, Interaction interaction, float div, 
+    public string Feel(Association subj, Association obj, Association vb, Association sup, float interest, Interaction interaction, float div,
         List<string> contextNames = null, bool opine = false) {
 
         List<Context> activeContexts = new List<Context>();
@@ -312,7 +312,7 @@ public class Personality {
 
         if (obj != null) {
             obj.GetMood(feels, branch, interaction.Strength * Mathf.Sign(interaction.Polarity), div, 0);
-            subj.AddAssociation(obj, interaction.Polarity*interest, interaction.Strength*interest);
+            subj.AddAssociation(obj, interaction.Polarity * interest, interaction.Strength * interest);
         }
 
         if (sup != null) {
@@ -359,5 +359,51 @@ public class Personality {
     }
 
     public void Feel(Association _concept) { }
+
+    public GameObject FindPerson(Association trait, int distance = 20) {
+        GameObject topPerson = null;
+        float topAssocStrength = 0;
+        RaycastHit2D[] perceivers = Physics2D.RaycastAll(new Vector2(body.gameObject.transform.position.x - distance, body.gameObject.transform.position.y),
+            Vector2.right, distance * 2);
+        foreach (RaycastHit2D hit in perceivers) {
+            Body bodhit = hit.collider.gameObject.GetComponent<Body>();
+            if (bodhit == null || bodhit.GetPersonality() == null || bodhit != body) {
+                foreach (Association a in associator)
+                    if (a.Id.Equals(bodhit.Id))
+                        if (a.marks.ContainsKey(trait))
+                            if (a.marks[trait].Strength > topAssocStrength) {
+                                topAssocStrength = a.marks[trait].Strength;
+                                topPerson = bodhit.gameObject;
+                            }
+            }
+        }
+        return topPerson;
+    }
+
+    public GameObject FindPerson(bool high, int distance = 20) {
+        GameObject topPerson = null;
+        float mostObl = 0;
+        RaycastHit2D[] perceivers = Physics2D.RaycastAll(new Vector2(body.gameObject.transform.position.x - distance, body.gameObject.transform.position.y),
+        Vector2.right, distance * 2);
+        foreach (RaycastHit2D hit in perceivers) {
+            Body bodhit = hit.collider.gameObject.GetComponent<Body>();
+            if (bodhit == null || bodhit.GetPersonality() == null || bodhit != body) {
+                foreach (Association a in associator)
+                    if (a.Id.Equals(bodhit.Id)) {
+                        if (high)
+                            if (((PersonAssoc)a).Obligation > mostObl) {
+                                mostObl = ((PersonAssoc)a).Obligation;
+                                topPerson = bodhit.gameObject;
+                            }
+                            else
+                                if (((PersonAssoc)a).Obligation < mostObl) {
+                                mostObl = ((PersonAssoc)a).Obligation;
+                                topPerson = bodhit.gameObject;
+                            }
+                    }
+            }
+        }
+        return topPerson;
+    }
 
 }

@@ -59,9 +59,9 @@ public class Attack : MonoBehaviour {
         rate = ((5-_speed) + (10 - _genitor.Athletics)) / 2;
         power = _power;
 
-        if (!genitor.GetMind().GetPersonality().HasContext("Combat")) {
+        if (!genitor.Mind.GetPersonality.HasContext("Combat")) {
             new EventSpawn(genitor.gameObject.transform.position, new Interaction(0, 0), 
-                genitor.GetMind().GetPersonality().GetActiveContexts(), genitor.Id, "swings weapon", "", "", genitor);
+                genitor.Mind.GetPersonality.GetActiveContexts(), genitor.Id, "swings weapon", "", "", genitor);
         }
     }
 
@@ -129,7 +129,7 @@ public class Attack : MonoBehaviour {
     }
 
     public static void Push(Attack a, int amount = 1) {
-        if (a.genitor.GetCurrMoveAct().name.Equals("Halt")) {
+        if (a.genitor.CurrMoveAct.Name.Equals("Open")) {
             //a.genitor.transform.Translate(amount * (int)a.dir, 0, 0);
         }
     }
@@ -159,7 +159,7 @@ public class Attack : MonoBehaviour {
                 alreadyHit.Add(other.gameObject);
             }
             else if (attack != null) {
-                attack.genitor.SetCurrAct(new Recovery("Recovery", 15, attack.genitor));
+                attack.genitor.SetCurrAct(new Recovery("Recovery", 50, attack.genitor));
                 Destroy(attack.gameObject);
             }
         }

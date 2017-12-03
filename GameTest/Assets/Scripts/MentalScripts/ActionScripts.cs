@@ -4,11 +4,14 @@ using UnityEngine;
 
 public class Action {
 
-    public string name;
+    protected string name;
+    public string Name { get { return name; } }
     protected Action nextAction;
     protected int timeLeft;
     protected Body genitor;
     protected float speedMod = 1f;
+    protected bool overridable = true;
+    public bool Overridable { get { return overridable; } }
 
     public Action(string _name, int _speedFactor, Body _genitor) {
         name = _name;
@@ -41,7 +44,7 @@ public class MoveAction : Action {
         if (iterLeft > 0)
             nextAction = new MoveAction(_name, _speedFactor, _genitor, _dir, _iterLeft - 1);
         else {
-            nextAction = new HaltAction("Halt", 0, _genitor);
+            nextAction = new Action("Open", 0, _genitor);
         }
     }
 
@@ -54,12 +57,11 @@ public class MoveAction : Action {
 public class HaltAction : Action {
     public HaltAction(string _name, int _speedFactor, Body _genitor) :
         base(_name, _speedFactor, _genitor) {
-        timeLeft = 100;
-        nextAction = this;
+        timeLeft = _speedFactor;
+        nextAction = new Action("Open", 0, genitor);
     }
 
     protected override void Dewit() {
-        timeLeft = 100;
         genitor.SetCurrMoveAct(nextAction);
     }
 }
@@ -69,7 +71,11 @@ public class TalkAction : Action {
         base(_name, _speedFactor, _genitor) {
         timeLeft = 100;
         nextAction = this;
-        genitor.BeginTalk(_otherPerson);
+        if (genitor.Mind.GetType() == typeof(PlayerAI))
+            genitor.BeginTalk(_otherPerson);
+        else if (_otherPerson.GetBody.Mind.GetType() == typeof(PlayerAI))
+            _otherPerson.GetBody.BeginTalk(genitor.GetPersonality());
+        else genitor.NPCTalk(_otherPerson);
     }
 
     protected override void Dewit() {
@@ -130,52 +136,19 @@ public class Recovery : Action {
     //Affecter noAttack;  //  = new AttackDenier  ??
 
     public Recovery(string _name, int _timeLeft, Body _genitor) : base(_name, _timeLeft, _genitor) {
+        overridable = false;
     }
 
     public override void Tick() {
-        if (timeLeft > 10 && curImpLevel == ImpedimentLevel.unimpeded)
+        if (timeLeft > 20 && curImpLevel == ImpedimentLevel.unimpeded)
             genitor.Impediment = ImpedimentLevel.noMove;
-        else if (timeLeft > 5)
+        else if (timeLeft > 10)
             genitor.Impediment = ImpedimentLevel.noAct;
-        else if (timeLeft > 3)
+        else if (timeLeft > 5)
             genitor.Impediment = ImpedimentLevel.noAttack;
         else if (timeLeft <= 0)
             genitor.Impediment = ImpedimentLevel.unimpeded;
 
         base.Tick();
     }
-
-    /*
-    public override void Tick() {
-        if (timeLeft > 20 && curImpLevel == ImpedimentLevel.unimpeded) {
-            ApplyImpediment(ImpedimentLevel.noMove);
-        }
-        else if (timeLeft > 10) {
-            ApplyImpediment(ImpedimentLevel.noAct);
-        }
-        else if (timeLeft > 0) {
-            ApplyImpediment(ImpedimentLevel.noAttack);
-        }
-
-        if (timeLeft <= 0) {
-            genitor.RemoveFromAffecterList(curImpediment);
-        }
-
-        base.Tick();
-    }
-
-    protected void ApplyImpediment(ImpedimentLevel level) {
-        if (curImpLevel != ImpedimentLevel.unimpeded) {
-            genitor.RemoveFromAffecterList(curImpediment);
-        }
-
-        switch (level) {
-            case ImpedimentLevel.noMove: curImpediment = noMove; break;
-            case ImpedimentLevel.noAct: curImpediment = noAct; break;
-            case ImpedimentLevel.noAttack: curImpediment = noAttack; break;
-        }
-
-        genitor.AddAffecter(curImpediment);
-    }
-    */
 }

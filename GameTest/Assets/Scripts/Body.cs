@@ -25,7 +25,7 @@ public class Body : MonoBehaviour {
     protected Transform bodyRenderTransform; //Reference to the body-renderer's transform
 
     protected Place currPlace; //What place gameobject you're currently colliding with
-    public Place CurrPlace { get { return currPlace; } } //Yeah
+    public Place CurrPlace { get { return currPlace; } set { currPlace = value; } } //Yeah
 
     int bodyCollisions = 0;
 
@@ -40,9 +40,14 @@ public class Body : MonoBehaviour {
     public Direction face; //Self-Explanatory *MUST BE SET
 
     protected Quest currQuest; //Current quest
+    public Quest CurrQuest { get { return currQuest; } }
     protected Quest currSubQuest; //Current component quest of the main quest
+    public Quest CurrSubQuest { get { return currSubQuest; } }
+    protected int subQuestNum = 0;
     protected Action currMoveAct; //Current movement action
+    public Action CurrMoveAct { get { return currMoveAct; } }
     protected Action currAct; //Current non-movement action
+    public Action CurrAct { get { return currAct; } }
 
     protected List<string> targetTags = new List<string>(); //List of tag-filters that this NPC can strike*MUST BE SET
     public List<string> TargetTags { get { return targetTags;  } }
@@ -90,7 +95,7 @@ public class Body : MonoBehaviour {
         hinderQuant = 0f;
         hinderThreshold = 1f;
 
-        currMoveAct = new HaltAction("Halt", 0, this);
+        currMoveAct = new HaltAction("Halt", 100, this);
         currAct = new Action("Open", 0, this);
         AddAffecter(new ResistanceAggregate(this, 0f));
     }
@@ -145,7 +150,13 @@ public class Body : MonoBehaviour {
         hinderQuant += delt;
     }
 
+    public void NPCTalk(Personality _interactee) {
+        //When two NPCs talk, just have them share information and randomly feel emotions
+    }
+
     public void BeginTalk(Personality _interactee) {
+        if (mind.GetType() != typeof(PlayerAI))
+            return;
         TalkInput.SetInteractable();
         interactee = _interactee;
         Text Title = TalkBox.transform.GetChild(0).GetComponent<Text>();
@@ -231,10 +242,8 @@ public class Body : MonoBehaviour {
     }
 
     public void SetCurrMoveAct(Action _currMoveAct) {
-        currMoveAct = _currMoveAct;
-    }
-    public Action GetCurrMoveAct() {
-        return currMoveAct;
+        if (currMoveAct.Overridable)
+            currMoveAct = _currMoveAct;
     }
 
     //GET/SET DIRECTION
@@ -324,30 +333,36 @@ public class Body : MonoBehaviour {
         inventory.Add(i);
         if(Mind.GetType() == typeof(PlayerAI))
         {
-            
+        //TODO: ???         
         }
+    }
+
+    //SET NEXT QUEST
+    public bool SetNextSubQuest() {
+        subQuestNum++;
+        if (subQuestNum < currQuest.SubQuests.Count) {
+            currSubQuest = currQuest.SubQuests[subQuestNum];
+            return true;
+        }
+        subQuestNum = 0;
+        return false;
     }
 
 
     //SET ACTION
     public void SetCurrAct(Action _currAct) {
-        currAct = _currAct;
-    }
-    public Action GetCurrAct() {
-        return currAct;
+        if (currAct.Overridable)
+            currAct = _currAct;
     }
 
     //SET/GET MIND
     public void SetMind(AI _mind) {
         mind = _mind;
     }
-    public AI GetMind() {
-        return mind;
-    }
 
     //GET PERSONALITY
     public Personality GetPersonality() {
-        return mind.GetPersonality();
+        return mind.GetPersonality;
     }
 
     //ADD/REMOVE TO/FROM APPROPRIATE AFFECTER LIST
@@ -417,6 +432,7 @@ public class Body : MonoBehaviour {
     }
 
     public int GetDashSpeed() {
-        return 11 - coordination;
+        //return 11 - coordination;
+        return 2;
     }
 }

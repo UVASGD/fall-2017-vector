@@ -5,7 +5,9 @@ using TagFrenzy;
 
 public class AI {
     protected Personality personality;
+    public Personality GetPersonality { get { return personality; } }
     protected Body body;
+    public Body GetBody { get { return body; } }
 
     protected List<Watchzone> zones = new List<Watchzone>();
 
@@ -31,11 +33,6 @@ public class AI {
             Debug.Log("zone: " + zone.ToString());
         }
     }
-
-    public Personality GetPersonality() {
-        return personality;
-    }
-
 }
 
 public class PlayerAI : AI {
@@ -135,19 +132,19 @@ public class PlayerAI : AI {
                 //Debug.Log(body.GetDir());
                 //if (body.GetCurrMoveAct().name.Equals("MoveLeft") && moveKey == -1) {
                 if (moveKey == -1 && body.GetFace() == Direction.Left) {
-                    body.SetCurrMoveAct(new MoveAction("DashLeft", body.GetDashSpeed(), body, Direction.Left, 3));  // body.GetDashSpeed used to be 1
+                    body.SetCurrMoveAct(new MoveAction("DashLeft", body.GetDashSpeed(), body, Direction.Left, 5));  // body.GetDashSpeed used to be 1
                     dashTimer = 0f;
                 }
                 //else if (body.GetCurrMoveAct().name.Equals("MoveRight") && moveKey == 1) {
                 else if (moveKey == 1 && body.GetFace() == Direction.Right) {
-                    body.SetCurrMoveAct(new MoveAction("DashRight", body.GetDashSpeed(), body, Direction.Right, 3));
+                    body.SetCurrMoveAct(new MoveAction("DashRight", body.GetDashSpeed(), body, Direction.Right, 5));
                     dashTimer = 0f;
                 }
             }
         }
         if (Input.anyKey) {
             int moveKey = (int)Input.GetAxisRaw("Horizontal");
-            if (body.GetCurrMoveAct().name == "Halt") {
+            if (body.CurrMoveAct.Name.Equals("Open") || body.CurrMoveAct.Name.Equals("Halt")) {
                 if (moveKey == -1) {
                     body.SetCurrMoveAct(new MoveAction("MoveLeft", body.GetMoveSpeed(), body, Direction.Left, 0)); // body.GetMoveSpeed used to be 4
                     dashTimer = dashTime;
@@ -179,6 +176,17 @@ public class PersonAI : AI {
     public PersonAI(Personality _personality, Body _body) : base(_personality, _body) { }
 
     protected void Ding() { }
+
+    public override void Tick() {
+        if (body.CurrAct.Name.Equals("Open")) {
+            Action nextAction = body.CurrSubQuest.GetAction();
+            if (nextAction.Name.Equals("Open")) {
+                if (!body.SetNextSubQuest())
+                    Ding();
+            }
+        }
+        base.Tick();
+    }
 }
 
 public class TurretAI : AI {
