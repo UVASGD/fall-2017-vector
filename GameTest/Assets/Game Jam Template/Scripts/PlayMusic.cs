@@ -95,6 +95,10 @@ public class PlayMusic : MonoBehaviour {
 		musicSource.Play ();
 	}
 
+    public void ChangePlace(MusicChoice m) {
+        PlaySelectedMusic((int)m);
+    }
+
 	//Call this function to very quickly fade up the volume of master mixer
 	public void FadeUp(float fadeTime)
 	{
