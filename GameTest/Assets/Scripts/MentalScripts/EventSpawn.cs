@@ -5,14 +5,16 @@ using UnityEngine;
 public class EventSpawn {
     //string[] info, Interaction interaction, string[] contextNames
     Vector2 origin;
+    int scope;
     string[] info;
     Interaction interaction;
     string[] contextNames;
     List<Body> alreadyHit;
 
     public EventSpawn(Vector2 _origin, Interaction _interaction, string[] _contextNames, string _subj, string _vb, string _obj = "", string _sup = "", 
-        Body subject = null) {
+        Body subject = null, int _scope = 30) {
         origin = _origin;
+        scope = _scope;
         interaction = _interaction;
         contextNames = _contextNames ?? new string[] { "middleburg"};
         //contextNames = (_contextNames.Length == 0) ? new string[] {"middleburg"} : _contextNames;
@@ -30,7 +32,7 @@ public class EventSpawn {
     }
 
     public void Cast(int dir) {
-        RaycastHit2D[] perceivers = Physics2D.RaycastAll(origin, new Vector2(dir, 0));
+        RaycastHit2D[] perceivers = Physics2D.RaycastAll(origin, new Vector2(dir, 0), scope);
         foreach (RaycastHit2D hit in perceivers) {
             float dist = Mathf.Abs(hit.collider.gameObject.transform.position.x - origin.x);
             Body bodhit = hit.collider.gameObject.GetComponent<Body>();

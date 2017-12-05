@@ -15,7 +15,7 @@ public class QuestPicker {
     }
 
     public virtual Quest GetQuest() {
-        Quest topQuest = new StayQuest("Stay", genitor, 10, 0);
+        Quest topQuest = new StayQuest(genitor, 10, 0);
         List<Quest> QuestList = new List<Quest>() { };
         QuestList.AddRange(GetQuestContext());
         QuestList.AddRange(GetQuestSpecial());
@@ -27,15 +27,15 @@ public class QuestPicker {
     }
 
     public virtual List<Quest> GetQuestContext() {
-        return new List<Quest>() { new StayQuest("Stay", genitor) };
+        return new List<Quest>() { new StayQuest(genitor) };
     }
 
     public virtual List<Quest> GetQuestSpecial() {
-        return new List<Quest>() { new StayQuest("Stay", genitor) };
+        return new List<Quest>() { new StayQuest(genitor) };
     }
 
     public virtual List<Quest> GetQuestMoods() {
-        return new List<Quest>() { new StayQuest("Stay", genitor) };
+        return new List<Quest>() { new StayQuest(genitor) };
     }
 }
 

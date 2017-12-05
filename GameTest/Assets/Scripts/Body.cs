@@ -44,6 +44,7 @@ public class Body : MonoBehaviour {
     protected Quest currSubQuest; //Current component quest of the main quest
     public Quest CurrSubQuest { get { return currSubQuest; } }
     protected int subQuestNum = 0;
+    public int SubQuestNum { get { return subQuestNum; } set { subQuestNum = value; } }
     protected Action currMoveAct; //Current movement action
     public Action CurrMoveAct { get { return currMoveAct; } }
     protected Action currAct; //Current non-movement action

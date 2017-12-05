@@ -163,7 +163,7 @@ public class Personality {
                 if (a.Id.Equals(info[2])) obj = a;
             }
             if (info.Length > 3) {
-                if (a.Id.Equals(info[4])) sup = a;
+                if (a.Equals(info[4])) sup = a;
             }
         }
 
@@ -360,6 +360,21 @@ public class Personality {
 
     public void Feel(Association _concept) { }
 
+    public float GetObligation(string personName) {
+        foreach (Association a in associator) {
+            if (a.Id.Equals(personName))
+                return ((PersonAssoc)a).Obligation;
+        }
+        return 0;
+    }
+
+    public Interaction GetInteraction(string assocName) {
+        foreach (Association a in associator) { 
+            if (a.Id.Equals(assocName)) return new Interaction( (((VerbAssoc)a).Polarity), (((VerbAssoc)a).Interest) );
+        }
+        return new Interaction();
+    }
+
     public GameObject FindPerson(Association trait, int distance = 20) {
         GameObject topPerson = null;
         float topAssocStrength = 0;
@@ -367,7 +382,7 @@ public class Personality {
             Vector2.right, distance * 2);
         foreach (RaycastHit2D hit in perceivers) {
             Body bodhit = hit.collider.gameObject.GetComponent<Body>();
-            if (bodhit == null || bodhit.GetPersonality() == null || bodhit != body) {
+            if (bodhit != null && bodhit.GetPersonality() != null && bodhit != body) {
                 foreach (Association a in associator)
                     if (a.Id.Equals(bodhit.Id))
                         if (a.marks.ContainsKey(trait))
@@ -387,7 +402,7 @@ public class Personality {
         Vector2.right, distance * 2);
         foreach (RaycastHit2D hit in perceivers) {
             Body bodhit = hit.collider.gameObject.GetComponent<Body>();
-            if (bodhit == null || bodhit.GetPersonality() == null || bodhit != body) {
+            if (bodhit != null && bodhit.GetPersonality() != null && bodhit != body) {
                 foreach (Association a in associator)
                     if (a.Id.Equals(bodhit.Id)) {
                         if (high) {
@@ -405,6 +420,19 @@ public class Personality {
             }
         }
         return topPerson;
+    }
+
+    public GameObject FindPerson(string role, int distance = 20) {
+        RaycastHit2D[] perceivers = Physics2D.RaycastAll(new Vector2(body.gameObject.transform.position.x - distance, body.gameObject.transform.position.y),
+            Vector2.right, distance * 2);
+        foreach (RaycastHit2D hit in perceivers) {
+            Body bodhit = hit.collider.gameObject.GetComponent<Body>();
+            if (bodhit != null && bodhit.GetPersonality() != null && bodhit != body)
+                if (bodhit.GetPersonality().identity.Role.Equals(role))
+                    if (bodhit.GetPersonality().GetObligation(body.Id) > 0f)
+                        return bodhit.gameObject;
+        }
+        return null;
     }
 
 }

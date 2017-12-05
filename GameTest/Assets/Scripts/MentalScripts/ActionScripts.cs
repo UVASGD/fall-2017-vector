@@ -87,6 +87,7 @@ public class EndTalkAction : Action {
     public EndTalkAction(string _name, int _speedFactor, Body _genitor) :
         base(_name, _speedFactor, _genitor) {
         genitor.EndTalk();
+        nextAction = new Action("Open", 0, genitor);
     }
 }
 
@@ -150,5 +151,26 @@ public class Recovery : Action {
             genitor.Impediment = ImpedimentLevel.unimpeded;
 
         base.Tick();
+    }
+}
+
+public class PerformFavorAction : Action {
+    public PerformFavorAction(string _name, int _speedFactor, Body _genitor, Body targetPerson) :
+        base(_name, _speedFactor, _genitor) {
+        timeLeft = 0;
+        new EventSpawn(genitor.transform.position, targetPerson.GetPersonality().GetInteraction("performs favor for"), null, 
+            genitor.Id, "performs favor for", targetPerson.Id, subject: genitor);
+        nextAction = new Action("Open", 0, genitor);
+    }
+}
+
+public class GetHealedAction : Action {
+    public GetHealedAction(string _name, int _speedFactor, Body _genitor, Body targetPerson) :
+        base(_name, _speedFactor, _genitor) {
+        timeLeft = 0;
+        new EventSpawn(genitor.transform.position, targetPerson.GetPersonality().GetInteraction("heals"), null,
+            targetPerson.Id, "heals", genitor.Id, subject: genitor);
+        genitor.harmQuant = 0;
+        nextAction = new Action("Open", 0, genitor);
     }
 }
