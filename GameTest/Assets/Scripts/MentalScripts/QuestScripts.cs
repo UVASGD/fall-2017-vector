@@ -153,7 +153,7 @@ public class GiftQuest : Quest {
     }
 }
 
-public class PickUpQuest : Quest {
+public class PickUpQuest : Quest { //Listener for ('x', 'gives', genitor.Id, '.'+targetItem.Function)
 
     Item targetItem = null;
     GameObject targetObj = null;
@@ -213,11 +213,12 @@ public class PerformFavorQuest : Quest {
     }
 }
 
-public class GetHealedQuest : Quest {
+public class GetHealedQuest : Quest { //Listener for ('x', 'heals', genitor.Id) and ('x', 'gives', genitor.Id, '.healing')
 
     GameObject targetPerson = null;
 
     public GetHealedQuest(Body _genitor, GameObject _targetPerson, int _priority = 2) : base(_genitor, _priority) {
+        name = "get healed";
         targetPerson = _targetPerson ?? genitor.GetPersonality().FindPerson("Healer");
     }
 
@@ -230,6 +231,118 @@ public class GetHealedQuest : Quest {
     }
 }
 
-//new EventSpawn(body.transform.position, new Interaction(0, 0), null, "bear", "brawls");
-//new EventSpawn(genitor.gameObject.transform.position, new Interaction(0, 0), 
-//  genitor.Mind.GetPersonality.GetActiveContexts(), genitor.Id, "swings weapon", "", "", genitor);
+
+//--------USED BY SOLDIER AND GUARDS--------
+
+public class PatrolQuest : Quest {
+
+    public PatrolQuest(Body _genitor, int _priority = 2) : base(_genitor, _priority) {
+        name = "patrol";
+    }
+
+    protected override void Setup() {
+        SubQuests = new List<Quest>() { new MoveToQuest(genitor, genitor.CurrPlace.Coordinate-genitor.CurrPlace.Size/4),
+                                        new StayQuest(genitor, 20),
+                                        new MoveToQuest(genitor, genitor.CurrPlace.Coordinate+genitor.CurrPlace.Size/4),
+                                        new StayQuest(genitor, 20)
+        };
+    }
+
+    public override Action GetAction() {
+    return new Action("Open", 0, genitor);
+    }
+}
+
+public class ScoldQuest : Quest {
+
+    GameObject targetPerson = null;
+
+    public ScoldQuest(Body _genitor, GameObject _targetPerson = null, int _priority = 2) : base(_genitor, _priority) {
+        name = "scold";
+        targetPerson = _targetPerson ?? genitor.GetPersonality().FindPerson(false);
+    }
+
+    protected override void Setup() {
+        SubQuests = new List<Quest>() { new TalkToQuest(genitor, targetPerson), this};
+    }
+
+    public override Action GetAction() {
+        return new ScoldAction("Scold", 0, genitor, targetPerson.GetComponent<Body>());
+    }
+}
+
+public class OpenDoorQuest : Quest {
+
+    GameObject targetDoor;
+
+    public OpenDoorQuest(Body _genitor, GameObject _targetDoor, int _priority = 2) : base(_genitor, _priority) {
+        name = "scold";
+        targetDoor = _targetDoor;
+    }
+
+    protected override void Setup() {
+        SubQuests = new List<Quest>() { new MoveToQuest(genitor, _targetObj:targetDoor), this };
+    }
+
+    public override Action GetAction() {
+        return null; //new OpenDoorAction("Open Door", 0, genitor, targetDoor.GetComponent<Door>()); TODO MAKE DOORS
+    }
+}
+
+public class GuardDoorQuest : Quest {
+
+    GameObject targetDoor;
+
+    public GuardDoorQuest(Body _genitor, GameObject _targetDoor, int _priority = 2) : base(_genitor, _priority) {
+        name = "guard door";
+        targetDoor = _targetDoor;
+    }
+
+    protected override void Setup() {
+        SubQuests = new List<Quest>() { new MoveToQuest(genitor, _targetObj:targetDoor),
+                                        new StayQuest(genitor, 30),
+        };
+    }
+
+    public override Action GetAction() {
+        return new Action("Open", 0, genitor);
+    }
+}
+
+//--------USED BY OLD MAN--------
+
+public class TellJokeQuest : Quest {
+
+    GameObject targetPerson;
+
+    public TellJokeQuest(Body _genitor, int _priority = 2) : base(_genitor, _priority) {
+        name = "tell joke";
+        targetPerson = genitor.GetPersonality().FindPerson("Player");
+    }
+
+    protected override void Setup() {
+        SubQuests = new List<Quest>() { new TalkToQuest(genitor, targetPerson), this };
+    }
+
+    public override Action GetAction() {
+        return new TellJokeAction("Tell Joke", 0, genitor, targetPerson.GetComponent<Body>());
+    }
+}
+
+//--------USED BY TOWN CRIER--------
+
+public class AnnounceQuest : Quest {
+
+    public AnnounceQuest(Body _genitor, int _priority = 2) : base(_genitor, _priority) {
+        name = "tell joke";
+    }
+
+    protected override void Setup() {
+        SubQuests = new List<Quest>() { this, new StayQuest(genitor), this, new StayQuest(genitor), this, new StayQuest(genitor) };
+    }
+
+    public override Action GetAction() {
+        return new AnnounceAction("Announce", 0, genitor);
+    }
+}
+

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Personality {
     List<Association> associator;
-    List<Association> activeAssocs;
+    public List<Association> activeAssocs;
     public Dictionary<string[], EventInfo> seenEvents; //interest[0], interaction polarity [1], interaction [2], # times [3]
     public Dictionary<string[], EventInfo> unseenEvents;
     Identity identity;
@@ -173,8 +173,10 @@ public class Personality {
         totalInterest += eventsList[info].Interest;
 
         bool alreadySeen = false; //Whether this event has already been seen
+        //TODO CHECK WITH LISTENERS HERE
         string infoSentence = string.Join(" ", info); //convert info so it can be compared to info in seenList
         infoSentence = infoSentence.ToLower(); //convert info so it can be compared to info in seenList
+
         if (!seen) { //If we are reacting
             foreach (string[] sentenceList in seenEvents.Keys) { //Iterate through each sentence
                 string sentence = string.Join(" ", sentenceList); //Convert sentence so it can be compared to info
@@ -234,6 +236,7 @@ public class Personality {
         if (subj == null || vb == null || (info.Length > 2 && obj == null) || (info.Length > 3 && sup == null))
             return;
 
+        //TODO CHECK WITH LISTENERS HERE
         string infoSentence = string.Join(" ", info); //convert info so it can be compared to info
         infoSentence = infoSentence.ToLower(); //convert info so it can be compared to info
 
@@ -360,18 +363,23 @@ public class Personality {
 
     public void Feel(Association _concept) { }
 
+    public Association GetAssociation(string assocName) {
+        foreach (Association a in associator)
+            if (a.Id.Equals(assocName))
+                return a;
+        return null;
+    }
+
     public float GetObligation(string personName) {
-        foreach (Association a in associator) {
+        foreach (Association a in associator)
             if (a.Id.Equals(personName))
                 return ((PersonAssoc)a).Obligation;
-        }
         return 0;
     }
 
     public Interaction GetInteraction(string assocName) {
-        foreach (Association a in associator) { 
-            if (a.Id.Equals(assocName)) return new Interaction( (((VerbAssoc)a).Polarity), (((VerbAssoc)a).Interest) );
-        }
+        foreach (Association a in associator)
+            if (a.Id.Equals(assocName)) return new Interaction((((VerbAssoc)a).Polarity), (((VerbAssoc)a).Interest));
         return new Interaction();
     }
 

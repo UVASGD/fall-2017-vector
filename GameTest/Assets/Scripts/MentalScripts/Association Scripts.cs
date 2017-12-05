@@ -165,6 +165,19 @@ public class Association {
         if (interest < 0)
             interest = 0;
     }
+
+    public MoodAssoc GetPrimeMood() {
+        MoodAssoc topMood = null;
+        float topStrength = 0;
+        foreach (Association a in marks.Keys) {
+            if (a.GetType() == typeof(MoodAssoc))
+                if (marks[a].Strength > topStrength) {
+                    topStrength = marks[a].Strength;
+                    topMood = (MoodAssoc)a;
+                }
+        }
+        return topMood;
+    }
 }
 
 public class VerbAssoc : Association {

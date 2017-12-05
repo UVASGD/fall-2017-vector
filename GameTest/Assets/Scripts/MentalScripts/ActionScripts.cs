@@ -169,8 +169,58 @@ public class GetHealedAction : Action {
         base(_name, _speedFactor, _genitor) {
         timeLeft = 0;
         new EventSpawn(genitor.transform.position, targetPerson.GetPersonality().GetInteraction("heals"), null,
-            targetPerson.Id, "heals", genitor.Id, subject: genitor);
+            targetPerson.Id, "heals", genitor.Id, subject: targetPerson);
         genitor.harmQuant = 0;
+        nextAction = new Action("Open", 0, genitor);
+    }
+}
+
+//SPECIAL ACTIONS
+
+public class ScoldAction : Action {
+    public ScoldAction(string _name, int _speedFactor, Body _genitor, Body targetPerson) :
+        base(_name, _speedFactor, _genitor) {
+        timeLeft = 0;
+        new EventSpawn(genitor.transform.position, targetPerson.GetPersonality().GetInteraction("scolds"), null,
+            genitor.Id, "scolds", targetPerson.Id, subject: genitor);
+        new EventSpawn(targetPerson.transform.position, targetPerson.GetPersonality().GetInteraction("is disgraced"), null,
+            targetPerson.Id, "is disgraced", subject: targetPerson);
+        nextAction = new Action("Open", 0, genitor);
+    }
+}
+
+/*public class OpenDoorAction : Action {
+    public OpenDoorAction(string _name, int _speedFactor, Body _genitor, Door targetDoor) :
+        base(_name, _speedFactor, _genitor) {
+        timeLeft = 0;
+        targetDoor.Open();
+        new EventSpawn(genitor.transform.position, new Interaction(), null,
+            genitor.Id, "opens door", subject: genitor);
+        nextAction = new Action("Open", 0, genitor);
+    }
+}*/
+
+public class TellJokeAction : Action {
+    public TellJokeAction(string _name, int _speedFactor, Body _genitor, Body targetPerson) :
+        base(_name, _speedFactor, _genitor) {
+        timeLeft = 0;
+        new EventSpawn(genitor.transform.position, new Interaction(), null,
+            genitor.Id, "jokes", subject: genitor, _scope:3);
+        nextAction = new Action("Open", 0, genitor);
+    }
+}
+
+public class AnnounceAction : Action {
+    public AnnounceAction(string _name, int _speedFactor, Body _genitor, Body targetPerson = null) :
+        base(_name, _speedFactor, _genitor) {
+        timeLeft = 0;
+        new EventSpawn(genitor.transform.position, new Interaction(), null,
+        genitor.Id, "announces", subject: genitor);
+        Association subj = Statics.RandomElement(genitor.GetPersonality().activeAssocs);
+        Association primeAssoc = subj.GetPrimeMood();
+        if (primeAssoc != null) 
+            new EventSpawn(genitor.transform.position, new Interaction(100, 100), null,
+                subj.Id, "incites", primeAssoc.Id, subject:genitor);
         nextAction = new Action("Open", 0, genitor);
     }
 }

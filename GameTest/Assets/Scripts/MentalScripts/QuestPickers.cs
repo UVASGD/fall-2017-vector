@@ -41,7 +41,7 @@ public class QuestPicker {
 
 
 //SOLDIER
-public class Soldier_QuestPicker : QuestPicker {
+public class Soldier_QuestPicker : QuestPicker { //needs listener for "x", "tells joke"
     public Soldier_QuestPicker(Body _genitor) : base(_genitor) { }
 
     public override List<Quest> GetQuestContext() {
