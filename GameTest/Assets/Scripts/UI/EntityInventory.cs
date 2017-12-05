@@ -2,20 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 
-public class NearbyInteraction : UIInventoryAbstract{
+public class EntityInventory : UIInventoryAbstract {
 
     [HideInInspector]
-    public ItemPackage currentInventory;
-
-    private static GameObject itemPackageRes;
-
-    void OnEnable()
-    {
-        if (itemPackageRes == null)
-            itemPackageRes = Resources.Load("ItemPackage") as GameObject;
-    }
+    public Body currentInventory;
 
     public override void UpdateUI()
     {
@@ -33,29 +24,22 @@ public class NearbyInteraction : UIInventoryAbstract{
 
     public override void removeElement(GameObject g)
     {
+        if (currentInventory == null) return;
         var item = g.GetComponent<UIInteractable>().item;
         base.removeElement(g);
-        currentInventory.RemoveItem(item);
+        currentInventory.Inventory.Remove(item);
     }
 
     public override void addElement(GameObject g)
     {
         if (currentInventory == null)
-        {
-            GameObject packObj = Instantiate(itemPackageRes, new Vector2(GameManager.instance.thePlayer.transform.position.x,-2.75f), Quaternion.identity) as GameObject;
-            Item itemq = g.GetComponent<UIInteractable>().item;
-            ItemPackage pack = packObj.transform.GetChild(0).GetComponent<ItemPackage>();
-            pack.CreateItemPackage(new List<Item>(), "Chest", GameManager.instance.thePlayer.transform.position.x);
-            pack.AddItem(itemq);
-            currentInventory = pack;
-            itemq.SwitchHolder(currentInventory);
-            base.addElement(g);
             return;
-        }
+
         var item = g.GetComponent<UIInteractable>().item;
-        currentInventory.AddItem(item);
         item.SwitchHolder(currentInventory);
+        currentInventory.Inventory.Add(item);
         base.addElement(g);
     }
+
 
 }
