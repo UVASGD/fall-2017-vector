@@ -220,7 +220,7 @@ public class AnnounceAction : Action {
         Association primeAssoc = subj.GetPrimeMood();
         if (primeAssoc != null) 
             new EventSpawn(genitor.transform.position, new Interaction(100, 100), null,
-                subj.Id, "incites", primeAssoc.Id, subject:genitor);
+                subj.Id, "is associated with", primeAssoc.Id, subject:genitor);
         nextAction = new Action("Open", 0, genitor);
     }
 }

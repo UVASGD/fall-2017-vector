@@ -14,8 +14,8 @@ public class Listener {
         priority = _priority;
     }
 
-    public bool CheckMatch(Association[] info) {
-        if (info.Length != infoCheck.Length)
+    public bool CheckMatch(List<Association> info) {
+        if (info.Count != infoCheck.Length)
             return false;
         foreach (Association a in info) {
             foreach (string element in infoCheck) {
