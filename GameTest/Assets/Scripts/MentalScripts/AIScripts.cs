@@ -201,7 +201,6 @@ public class PlayerAI : AI {
 
 public class PersonAI : AI {
 
-
     public PersonAI(Personality _personality, Body _body) : base(_personality, _body) { }
 
     public void Ding() {

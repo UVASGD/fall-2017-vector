@@ -106,6 +106,9 @@ public class Body : MonoBehaviour {
         forbiddenDirects.Remove(_direct);
     }
 
+    protected bool sleeping;
+    public bool Sleeping { get { return Sleeping; } set { sleeping = value; } }
+
     void Start() {
         time = (TimeManager)FindObjectOfType(typeof(TimeManager)); //Set Time manager
         gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
@@ -127,10 +130,12 @@ public class Body : MonoBehaviour {
     }
 
     void Update() {
-        mind.Update();
-        if (time.clock) {
+        if (!sleeping)
+            mind.Update();
+        if (time.clock && !sleeping) {
             Tick();
         }
+        CheckSleep();
     }
 
     public void BodyConstructor(string _id, int _size, Direction _dir, List<string> _targetTags, AI _mind) {
@@ -524,5 +529,9 @@ public class Body : MonoBehaviour {
     public int GetDashSpeed() {
         //return 11 - coordination;
         return 2;
+    }
+
+    public void CheckSleep() {
+        Sleeping = gameManager.ShouldSleep(this);
     }
 }
