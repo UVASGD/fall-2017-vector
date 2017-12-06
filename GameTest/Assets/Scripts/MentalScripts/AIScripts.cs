@@ -39,9 +39,6 @@ public class AI {
             personality.Tick();
             personalityChecker = Random.Range(0, 50);
         }
-        foreach (WatchZone zone in zones) {
-            Debug.Log("zone: " + zone.ToString());
-        }
     }
 }
 

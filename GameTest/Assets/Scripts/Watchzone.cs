@@ -5,6 +5,7 @@ using UnityEngine;
 public class WatchZone : MonoBehaviour {
 
     List<Body> others;
+    public string Name;
 
     void OnTriggerEnter2D(Collider2D other) {
         AddColliderBody(other);
@@ -21,8 +22,9 @@ public class WatchZone : MonoBehaviour {
     }
 
     void AddColliderBody(Collider2D other) {
-        if (other.gameObject.GetComponent<Body>() != null)
+        if (other.gameObject.GetComponent<Body>() != null) {
             others.Add(other.gameObject.GetComponent<Body>());
+        }
     }
 
     void ShowContent() {
