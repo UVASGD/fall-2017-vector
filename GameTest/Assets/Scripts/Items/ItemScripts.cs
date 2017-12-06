@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Item {
-    protected Body holder;
+    public Body holder;
     protected int size;
     protected int speed;
     protected Affecter material;

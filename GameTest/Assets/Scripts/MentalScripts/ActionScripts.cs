@@ -175,6 +175,29 @@ public class GetHealedAction : Action {
     }
 }
 
+public class StartFightAction : Action {
+    public StartFightAction(string _name, int _speedFactor, Body _genitor, string fightType, string contextName) :
+        base(_name, _speedFactor, _genitor) {
+        timeLeft = 0;
+        new EventSpawn(genitor.transform.position, new Interaction(), new string[] { contextName },
+            genitor.Id, fightType, subject: genitor);
+        genitor.harmQuant = 0;
+        nextAction = new Action("Open", 0, genitor);
+    }
+}
+
+public class EndFightAction : Action {
+    public EndFightAction(string _name, int _speedFactor, Body _genitor) :
+        base(_name, _speedFactor, _genitor) {
+        timeLeft = 0;
+        new EventSpawn(genitor.transform.position, new Interaction(), null,
+            genitor.Id, "ends fight", subject: genitor);
+        genitor.harmQuant = 0;
+        nextAction = new Action("Open", 0, genitor);
+    }
+}
+
+
 public class GiftAction : Action
 {
     public GiftAction(string _name, int _speedFactor, Body _genitor, Body targetPerson,Item item) :
