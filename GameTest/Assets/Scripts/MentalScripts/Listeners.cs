@@ -9,12 +9,15 @@ public class Listener {
     Personality perceiver;
     int timer = 500;
     public bool temp;
+    public bool perm;
+    string name;
 
-    public Listener(string[] _infoCheck, Personality _perceiver, bool _temp = true, int _priority = 0) {
+    public Listener(string[] _infoCheck, Personality _perceiver, bool _temp = true, bool _perm = false, int _priority = 0) {
         infoCheck = _infoCheck;
         perceiver = _perceiver;
         priority = _priority;
         temp = _temp;
+        perm = _perm;
     }
 
     public bool CheckMatch(List<Association> info) {

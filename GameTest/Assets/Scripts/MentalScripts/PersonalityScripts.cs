@@ -15,7 +15,7 @@ public class Personality {
     FactChecker factChecker;
 
     string openingText;
-    public string OpeningText { get { return openingText; } }
+    public string OpeningText { get { return openingText; } set { openingText = value; } }
     List<string> smallTalk;
     List<string> usedSpeech;
 
@@ -431,9 +431,9 @@ public class Personality {
                         }
                         else
                            if (((PersonAssoc)a).Obligation < mostObl) {
-                                mostObl = ((PersonAssoc)a).Obligation;
-                                topPerson = bodhit.gameObject;
-                            }
+                            mostObl = ((PersonAssoc)a).Obligation;
+                            topPerson = bodhit.gameObject;
+                        }
                     }
             }
         }
@@ -453,4 +453,24 @@ public class Personality {
         return null;
     }
 
+
+    public Item FindItem(Association trait, int distance = 20) {
+        Item topItem = null;
+        float topAssocStrength = 0;
+        RaycastHit2D[] perceivers = Physics2D.RaycastAll(new Vector2(body.gameObject.transform.position.x - distance, body.gameObject.transform.position.y),
+            Vector2.right, distance * 2);
+        foreach (RaycastHit2D hit in perceivers) {
+            Body bodhit = hit.collider.gameObject.GetComponent<Body>();
+            if (bodhit != null)
+                foreach (Item i in bodhit.Inventory)
+                    foreach (Association a in associator)
+                        if (a.Id.Equals(i.Id))
+                            if (a.marks.ContainsKey(trait))
+                                if (a.marks[trait].Strength > topAssocStrength) {
+                                    topAssocStrength = a.marks[trait].Strength;
+                                    topItem = i;
+                                }
+        }
+        return topItem;
+    }
 }
