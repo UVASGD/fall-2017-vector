@@ -250,7 +250,79 @@ public class FightQuest : Quest {
 
     public FightQuest(Body _genitor, GameObject _targetPerson, int _priority=10) : base(_genitor, _priority) {
         name = "fight";
+        targetPerson = _targetPerson;
         
+    }
+
+    public override Action GetAction() {
+        Vector3 targetPos = targetPerson.transform.position;
+        Vector3 genPos = genitor.gameObject.transform.position;
+
+        float targetDist = Mathf.Abs(targetPos.x - genPos.x);
+        Body targetBod = targetPerson.GetComponent<Body>();
+
+        float targetHarm = targetBod.HarmQuant;
+        float targetHinder = targetBod.HinderQuant;
+
+        float genHarm = genitor.HarmQuant;
+        float genHinder = genitor.HinderQuant;
+
+        if (genHarm > 0.85) {
+            Quest nextQuest = new FleeQuest(genitor, targetPerson);
+            genitor.SetNextQuest(nextQuest);
+            return new Action("Open", 0, genitor);
+        }
+        else if (targetDist > 5 && targetDist < 10 && !targetBod.Dashing) {
+            return new MoveAction("Dash", genitor.GetDashSpeed(), genitor, Direction.Left, 5);
+        }
+        else if (targetDist < 3 && targetBod.CurrAct.GetType() != typeof(Block)) {
+            ((ICloseMelee)targetBod.Weapon).CloseMeleeLightAttack();
+            return new Action("Hold", 0, genitor);
+        }
+
+        Action targetAction = targetBod.CurrAct;
+        Direction targetFace = targetBod.face;
+        bool targetDash = targetBod.Dashing;
+        return new Action("Open", 0, genitor);
+    }
+
+}
+
+
+public class FleeQuest : Quest {
+    GameObject targetObj = null;
+    float target;
+
+    public FleeQuest(Body _genitor, GameObject _taretObj, int _priority=10) : base(_genitor, _priority) {
+        name = "flee";
+        targetObj = _taretObj;
+    }
+
+    public override Action GetAction() {
+        if (targetObj != null)
+            target = targetObj.transform.position.x;
+        float targetDist = Mathf.Abs(target - genitor.transform.position.x);
+        int direction = (int)(Mathf.Sign(target - genitor.transform.position.x));
+        if (direction == 0 || (targetObj != null && ((genitor.gameObject.transform.position.x - targetObj.transform.position.x) > 50)))
+            return new Action("Open", 0, genitor);
+        if (targetDist < 15)
+            return new MoveAction("Dash", genitor.GetDashSpeed(), genitor, (Direction)direction, 5);
+        else
+            return new MoveAction("Move", genitor.GetMoveSpeed(), genitor, (Direction)direction, 0);
+    }
+}
+
+
+public class AdvanceQuest : Quest {
+    GameObject targetPerson = null;
+
+    public AdvanceQuest(Body _genitor, GameObject _targetPerson, int _priority=8) : base(_genitor, _priority) {
+        name = "advance";
+        targetPerson = _targetPerson;
+    }
+
+    public override Action GetAction() {
+        return base.GetAction();
     }
 }
 
