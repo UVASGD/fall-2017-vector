@@ -218,6 +218,17 @@ public class DropAction : Action
     }
 }
 
+public class EquipAction : Action
+{
+    public EquipAction(string _name, int _speedFactor, Body _genitor, Item item) :
+        base(_name, _speedFactor, _genitor)
+    {
+        timeLeft = 0;
+        item.EquipTo(genitor);
+        nextAction = new Action("Open", 0, genitor);
+    }
+}
+
 //SPECIAL ACTIONS
 
 public class ScoldAction : Action {
