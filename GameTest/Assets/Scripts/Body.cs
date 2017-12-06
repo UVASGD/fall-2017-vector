@@ -94,6 +94,18 @@ public class Body : MonoBehaviour {
     private InventoryInteraction inventoryUI;
     private NearbyInteraction nearbyUI;
 
+    protected List<Direction> forbiddenDirects = new List<Direction>();
+    protected bool CanMoveRight { get { return forbiddenDirects.Contains(Direction.Right); } }
+    protected bool CanMoveLeft { get { return forbiddenDirects.Contains(Direction.Left); } }
+
+    public void AddForbiddenDirect(Direction _direct) {
+        forbiddenDirects.Add(_direct);
+    }
+
+    public void RemoveForbiddenDirect(Direction _direct) {
+        forbiddenDirects.Remove(_direct);
+    }
+
     void Start() {
         time = (TimeManager)FindObjectOfType(typeof(TimeManager)); //Set Time manager
         gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
@@ -253,6 +265,9 @@ public class Body : MonoBehaviour {
 
     //ABILITY TO MOVE
     public void Move(Direction _dir) {
+        if (forbiddenDirects.Contains(_dir))
+            return;
+
         if (mind.GetType() == typeof(PlayerAI))
             Camera.main.transform.Translate((int)_dir, 0, 0);
         else transform.localScale = new Vector2((int)face, 1);
