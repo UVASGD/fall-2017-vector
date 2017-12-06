@@ -153,17 +153,20 @@ public class GiftQuest : Quest {
     }
 }
 
-public class PickUpQuest : Quest { //Listener for ('x', 'gives', genitor.Id, '.'+targetItem.Function)
+public class PickUpQuest : Quest {
 
     Item targetItem = null;
     GameObject targetObj = null;
     Body targetHolder = null;
+    Listener newListener1;
 
     public PickUpQuest(Body _genitor, Item _targetItem, GameObject _targetObj, Body _targetHolder, int _priority = 2) : base(_genitor, _priority) {
         name = "pick up";
         targetItem = _targetItem;
         targetObj = _targetObj;
         targetHolder = _targetHolder;
+        newListener1 = new Listener(new string[] { "x", "gives", genitor.Id, "."+targetItem.Function}, genitor.GetPersonality());
+        genitor.Mind.QuestMind.Listeners.Add(newListener1);
     }
 
     protected override void Setup() {
@@ -173,6 +176,7 @@ public class PickUpQuest : Quest { //Listener for ('x', 'gives', genitor.Id, '.'
     public override Action GetAction() {
         //TODO IF TARGETHOLDER IS PACKAGE PICK UP TARGETITEM
         //TODO IF TARGETHOLDER IS PERSON GET ITEM BY REQUEST OR DEMAND
+        genitor.Mind.QuestMind.Listeners.Remove(newListener1);
         return new Action("Open", 0, genitor); //DELET THIS
     }
 }
@@ -213,13 +217,17 @@ public class PerformFavorQuest : Quest {
     }
 }
 
-public class GetHealedQuest : Quest { //Listener for ('x', 'heals', genitor.Id) and ('x', 'gives', genitor.Id, '.healing')
+public class GetHealedQuest : Quest {
 
     GameObject targetPerson = null;
+    Listener newListener1;
+    Listener newListener2;
 
     public GetHealedQuest(Body _genitor, GameObject _targetPerson, int _priority = 2) : base(_genitor, _priority) {
         name = "get healed";
         targetPerson = _targetPerson ?? genitor.GetPersonality().FindPerson("Healer");
+        newListener1 = new Listener(new string[] { "x", "heals", genitor.Id }, genitor.GetPersonality());
+        newListener2 = new Listener(new string[] { "x", "gives", genitor.Id, ".healing" }, genitor.GetPersonality());
     }
 
     protected override void Setup() {

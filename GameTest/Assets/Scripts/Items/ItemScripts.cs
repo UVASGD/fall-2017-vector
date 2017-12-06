@@ -16,6 +16,9 @@ public class Item {
     protected string id = "generic item";
     public string Id { get { return id; }}
 
+    protected string function = "generic function";
+    public string Function { get { return function; } }
+
     protected Color color = Color.grey;
     public Color itemColor { get { return color; } }
 
