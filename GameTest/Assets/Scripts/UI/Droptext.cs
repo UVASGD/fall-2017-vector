@@ -45,7 +45,7 @@ public class Droptext : MonoBehaviour, IDropHandler {
                 {
                     Item item = moved.GetComponent<UIInteractable>().item;
                     playerBody.addItem(item);
-                    if (item.GetType() != typeof(Armor)) {
+                    if (item.GetType() == typeof(Armor)) {
                         Armor none = new Armor(playerBody, 0, "none");
                         none.EquipTo(playerBody);
                     }

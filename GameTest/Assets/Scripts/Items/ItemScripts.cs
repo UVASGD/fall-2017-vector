@@ -19,6 +19,9 @@ public class Item {
     protected string function = "generic function";
     public string Function { get { return function; } }
 
+    protected string descriptor= "waluigi";
+    public string Descriptor { get { return descriptor; } }
+
     protected Color color = Color.grey;
     public Color itemColor { get { return color; } }
 
