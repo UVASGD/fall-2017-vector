@@ -357,6 +357,10 @@ public class Body : MonoBehaviour {
     }
 
     //SET NEXT QUEST
+    public void SetNextQuest(Quest nextQuest) {
+        currQuest = nextQuest;
+    }
+
     public bool SetNextSubQuest() {
         subQuestNum++;
         if (subQuestNum < currQuest.SubQuests.Count) {

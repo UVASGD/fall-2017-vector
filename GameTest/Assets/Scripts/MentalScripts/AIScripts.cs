@@ -196,7 +196,14 @@ public class PersonAI : AI {
 
     public PersonAI(Personality _personality, Body _body) : base(_personality, _body) { }
 
-    protected void Ding() { }
+    public void Ding() {
+        body.CurrQuest.End();
+        body.SetNextQuest(questMind.GetQuest());
+    }
+
+    public void CheckListener(Listener listener) {
+
+    }
 
     public override void Tick() {
         if (body.CurrAct.Name.Equals("Open")) {
