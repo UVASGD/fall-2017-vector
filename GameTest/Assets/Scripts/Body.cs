@@ -55,6 +55,7 @@ public class Body : MonoBehaviour {
 
     protected AI mind; //The AI object that will generate actions *MUST BE SET
     public AI Mind { get { return mind; } }
+    public bool Dashing { get { return mind.Dashing; } }
 
     protected List<Affecter> affecterList = new List<Affecter>(); //List of Affecters
     protected List<Affecter> traitList = new List<Affecter>(); //List of Traits 
@@ -67,6 +68,9 @@ public class Body : MonoBehaviour {
 
     Item weapon;
     public Item Weapon { get { return weapon; } set { weapon = value; } }
+
+    Item armor;
+    public Item Armor { get { return weapon; } set { weapon = value; } }
 
     string id;
     public string Id { get { return id; }}
