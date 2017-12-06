@@ -16,4 +16,11 @@ public class Armor : Item {
         _holder.Armor = this;
     }
 
+    public void Enact() {
+        holder.AddAffecter(armorPower);
+    }
+
+    public void Deact() {
+        holder.RemoveFromAffecterList(armorPower);
+    }
 }

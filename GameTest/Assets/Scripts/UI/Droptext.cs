@@ -43,9 +43,16 @@ public class Droptext : MonoBehaviour, IDropHandler {
                 Debug.Log("Unequipping");
                 if (newFrom != null)
                 {
-                    playerBody.addItem(moved.GetComponent<UIInteractable>().item);
-                    Fists fist = new Fists(playerBody, 1);
-                    fist.EquipTo(playerBody);
+                    Item item = moved.GetComponent<UIInteractable>().item;
+                    playerBody.addItem(item);
+                    if (item.GetType() != typeof(Armor)) {
+                        Armor none = new Armor(playerBody, 0, "none");
+                        none.EquipTo(playerBody);
+                    }
+                    else {
+                        Fists fist = new Fists(playerBody, 1);
+                        fist.EquipTo(playerBody);
+                    }
                 }
             }
 

@@ -69,8 +69,14 @@ public class Body : MonoBehaviour {
     Item weapon;
     public Item Weapon { get { return weapon; } set { weapon = value; } }
 
-    Item armor;
-    public Item Armor { get { return weapon; } set { weapon = value; } }
+    Armor armor;
+    public Armor Armor { get { return armor; }
+        set {
+            armor.Deact();
+            armor = value;
+            armor.Enact();
+        }
+    }
 
     string id;
     public string Id { get { return id; }}
