@@ -85,6 +85,7 @@ public class Wound : Affecter {
     public override bool Enact(Body _targetBody) {
         bool result = base.Enact(_targetBody);
         if (result) {
+            Debug.Log("WOUND: " + vitality.ToString());
             targetBody.ChangeHarm(vitality);
         }
         return result;

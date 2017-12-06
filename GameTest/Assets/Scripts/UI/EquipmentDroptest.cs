@@ -28,7 +28,7 @@ public class EquipmentDroptest : MonoBehaviour, IDropHandler {
         var fromObject = UIInteractable.origin;
         var to = gameObject;
 
-        Debug.Log("Equipping: " + moved.GetComponent<UIInteractable>().item.Name);
+        // Debug.Log("Equipping: " + moved.GetComponent<UIInteractable>().item.Name);
         Item checkedItem;
         switch (type)
         {
@@ -53,11 +53,11 @@ public class EquipmentDroptest : MonoBehaviour, IDropHandler {
                 {
                     if (playerBody.Armor.Name != "none") //Needs to check for proper default. Not null. 
                     {
-                        playerBody.addItem(playerBody.Weapon);
+                        playerBody.addItem(playerBody.Armor);
                     }
                     from.removeElement(moved);
                     checkedItem.EquipTo(playerBody);
-                    Debug.Log("Is the item in moved null? " + moved.GetComponent<UIInteractable>().item.ToString());
+                    // Debug.Log("Is the item in moved null? " + moved.GetComponent<UIInteractable>().item.ToString());
 
                     UIInteractable.origin = transform.gameObject;
                 }
