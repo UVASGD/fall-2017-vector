@@ -165,13 +165,13 @@ public class PersonCreator { //This class exists just to spawn in a person. Not 
                 new Mood("intrigued", "intrigue", "bored", "boringness", -0.30f, CoreMood.IntrigueAxis),
                 new Mood("pitying", "pity", "envious", "envy", 0, CoreMood.PityAxis)});
 
-            personBody.BodyConstructor(id, size, Direction.Left, new List<string> { "Hostile" }, new PersonAI(new Personality(personBody, associator, 
+            personBody.BodyConstructor(id, size, Direction.Left, new List<string> { "Hostile", "Player" }, new PersonAI(new Personality(personBody, associator, 
                 new Identity(id, false, "", "", personBodyObject), moodHandler, "Welcome to Middleburg. Don't break anything.", smallTalk), 
                 new QuestPicker(personBody),personBody));
             personBodyObject.AddTag("Hostile");
         }
         else if (mindNum == AINum.dummy) {
-            personBody.BodyConstructor(id, size, Direction.Left, new List<string> { "Hostile" }, new AI(new Personality(), personBody));
+            personBody.BodyConstructor(id, size, Direction.Left, new List<string> { "Hostile", "Player" }, new AI(new Personality(), personBody));
             personBodyObject.AddTag("Hostile");
         }
         else if (mindNum == AINum.turret) {

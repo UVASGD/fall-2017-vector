@@ -151,17 +151,20 @@ public class Attack : MonoBehaviour {
         if (isTarget) {
             Body body = other.gameObject.GetComponent<Body>();
             Attack attack = other.gameObject.GetComponent<Attack>();
-            if (body != null) {
-                foreach (Affecter eff in effects) {
-                    eff.SetPower(power);
-                    body.AddAffecter(eff.GetAffecterClone(eff));
+            try {
+                if (body != null) {
+                    foreach (Affecter eff in effects) {
+                        eff.SetPower(power);
+                        body.AddAffecter(eff.GetAffecterClone(eff));
+                    }
+                    alreadyHit.Add(other.gameObject);
                 }
-                alreadyHit.Add(other.gameObject);
+                else if (attack != null) {
+                    attack.genitor.SetCurrAct(new Recovery("Recovery", 50, attack.genitor));
+                    Destroy(attack.gameObject);
+                }
             }
-            else if (attack != null) {
-                attack.genitor.SetCurrAct(new Recovery("Recovery", 50, attack.genitor));
-                Destroy(attack.gameObject);
-            }
+            catch { body.harmQuant += 0.1f; }
         }
     }
 
