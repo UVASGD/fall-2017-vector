@@ -244,6 +244,16 @@ public class GetHealedQuest : Quest {
     }
 }
 
+public class FightQuest : Quest {
+
+    GameObject targetPerson = null;
+
+    public FightQuest(Body _genitor, GameObject _targetPerson, int _priority=10) : base(_genitor, _priority) {
+        name = "fight";
+        
+    }
+}
+
 
 //--------USED BY SOLDIER AND GUARDS--------
 
