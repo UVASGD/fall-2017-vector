@@ -65,6 +65,7 @@ public class PlayerAI : AI {
 
     public PlayerAI(Personality _personality, Body _body) : base(_personality, _body) {
         mouse = (MouseManager)MonoBehaviour.FindObjectOfType(typeof(MouseManager));
+        music = (PlayMusic)MonoBehaviour.FindObjectOfType(typeof(PlayMusic));
     }
 
     public override void Start() {

@@ -265,8 +265,13 @@ public class Body : MonoBehaviour {
 
     //ABILITY TO MOVE
     public void Move(Direction _dir) {
-        if (forbiddenDirects.Contains(_dir))
+        if (forbiddenDirects.Contains(_dir)) {
+            if (Dashing) {
+                Wound thump = new Wound(this, 0.01f);
+                AddAffecter(thump);
+            }
             return;
+        }
 
         if (mind.GetType() == typeof(PlayerAI))
             Camera.main.transform.Translate((int)_dir, 0, 0);

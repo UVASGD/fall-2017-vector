@@ -215,16 +215,16 @@ public class ScoldAction : Action {
     }
 }
 
-/*public class OpenDoorAction : Action {
-    public OpenDoorAction(string _name, int _speedFactor, Body _genitor, Door targetDoor) :
+public class OpenDoorAction : Action {
+    public OpenDoorAction(string _name, int _speedFactor, Body _genitor, Impassable targetDoor) :
         base(_name, _speedFactor, _genitor) {
         timeLeft = 0;
-        targetDoor.Open();
+        targetDoor.Deactivate();
         new EventSpawn(genitor.transform.position, new Interaction(), null,
             genitor.Id, "opens door", subject: genitor);
         nextAction = new Action("Open", 0, genitor);
     }
-}*/
+}
 
 public class TellJokeAction : Action {
     public TellJokeAction(string _name, int _speedFactor, Body _genitor, Body targetPerson) :

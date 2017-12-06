@@ -298,7 +298,7 @@ public class OpenDoorQuest : Quest {
     }
 
     public override Action GetAction() {
-        return null; //new OpenDoorAction("Open Door", 0, genitor, targetDoor.GetComponent<Door>()); TODO MAKE DOORS
+        return new OpenDoorAction("Open Door", 0, genitor, targetDoor.GetComponent<Impassable>()); 
     }
 }
 
