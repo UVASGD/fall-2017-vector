@@ -40,7 +40,7 @@ Disgust, Anger, Intimidate, Sad
         Body playerBody = (Body)FindObjectOfType(typeof(Body));
         //playerBody.AddAffecter(new Fire(playerBody, 40f));
         //playerBody.AddAffecter(new Fire(playerBody, 20f));
-        PersonCreator innkeeper = new PersonCreator("Soldier", "soldier", -6.5f, 1, AINum.soldier, 
+        PersonCreator soldier = new PersonCreator("Soldier", "soldier", -6.5f, 1, AINum.soldier, 
             new List<string> { "You want me to open the gate? No.",
                 "This is Middleburg. Congrats on getting here.",
                 "Why do your feet look like that?",
@@ -69,6 +69,9 @@ Disgust, Anger, Intimidate, Sad
                 "What do you need--actually, scratch that. I don’t care.",
                 "I wish you could do more in this game.",
                 "AHHH, A BEAR!" });
+        GameObject soldierObject = soldier.CreatedPerson;
+        Sword newSword = new Sword(soldierObject.GetComponent<Body>(), 1);
+        soldierObject.GetComponent<Body>().Inventory.Add(newSword);
 
         List<Item> items = new List<Item> { };
 

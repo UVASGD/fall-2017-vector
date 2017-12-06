@@ -61,6 +61,12 @@ public class Droptext : MonoBehaviour, IDropHandler {
                 to = gameObject.GetComponentInParent<UIInventoryAbstract>();
             }
 
+            if(to.GetType() == typeof(EntityInventory))
+            {
+                EntityInventory toE = to as EntityInventory;
+                if (toE.currentInventory == null) return;
+            }
+
             from.removeElement(UIInteractable.draggedItem);
             to.addElement(UIInteractable.draggedItem);
             UIInteractable.origin = transform.GetChild(0).gameObject;
