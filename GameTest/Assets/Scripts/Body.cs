@@ -28,9 +28,11 @@ public class Body : MonoBehaviour {
 
     public float harmQuant; //Harm Variables
     protected float harmThreshold;
+    public float HarmQuant { get { return harmQuant; } }
 
     protected float hinderQuant; //Hinder Variables
     protected float hinderThreshold;
+    public float HinderQuant { get { return hinderQuant; } }
 
     protected int size; //Self-Explanatory *MUST BE SET
     public int Size { get { return size; } }
