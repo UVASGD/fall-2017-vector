@@ -21,9 +21,10 @@ public class QuestPicker {
         List<Quest> QuestList = new List<Quest>() {
             new StayQuest(genitor),
             new MoveToQuest(genitor),
-            new TalkToQuest(genitor, 20),
+            new TalkToQuest(genitor, 7),
             new GiftQuest(genitor),
-            new PerformFavorQuest(genitor, genitor.GetPersonality().FindPerson(true))
+            new PerformFavorQuest(genitor, genitor.GetPersonality().FindPerson(true)),
+            new AnnounceQuest(genitor, 5)
         }; //ALL 'NORMAL' QUESTS SHOULD BE IN THIS LIST
         QuestList.AddRange(GetQuestContext());
         QuestList.AddRange(GetQuestSpecial());
