@@ -317,7 +317,7 @@ public class DogAI : AI {
     }
 
     public void DetermineDirection() {
-        if (Mathf.Abs((player.transform.position.x - body.transform.position.x)-(player.GetComponent<Body>().Size + body.Size)) <= 1)
+        if (Mathf.Abs((player.transform.position.x - body.transform.position.x)-(player.GetComponent<Body>().Size + body.Size)) <= 6)
             desiredDirect = Direction.None;
         else
             desiredDirect = playerDirect;
