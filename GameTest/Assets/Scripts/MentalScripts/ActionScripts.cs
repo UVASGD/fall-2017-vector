@@ -201,6 +201,23 @@ public class PickupAction : Action
     }
 }
 
+public class DropAction : Action
+{
+    public DropAction(string _name, int _speedFactor, Body _genitor,  Item item) :
+        base(_name, _speedFactor, _genitor)
+    {
+        timeLeft = 0;
+        GameObject package = Resources.Load<GameObject>("ItemPackage");
+        GameObject newPackage = Object.Instantiate(package, new Vector2(genitor.transform.position.x, -2.75f), Quaternion.identity) as GameObject;
+        ItemPackage iPack = newPackage.transform.GetChild(0).GetComponent<ItemPackage>();
+        iPack.CreateItemPackage(new List<Item>(), "Chest", genitor.transform.position.x);
+        iPack.AddItem(item);
+        genitor.Inventory.Remove(item);
+        item.SwitchHolder(iPack);
+        nextAction = new Action("Open", 0, genitor);
+    }
+}
+
 //SPECIAL ACTIONS
 
 public class ScoldAction : Action {
