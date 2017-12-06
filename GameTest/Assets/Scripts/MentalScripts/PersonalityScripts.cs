@@ -154,16 +154,17 @@ public class Personality {
 
         Dictionary<string[], EventInfo> eventsList;
         eventsList = (seen) ? seenEvents : unseenEvents;
+        List<Association> infoAssocs = new List<Association>() { };
 
         float totalInterest = 0;
         foreach (Association a in associator) { //Assign subject, verb, and object accordingly
-            if (a.Id.Equals(info[0])) subj = a;
-            else if (a.Id.Equals(info[1])) vb = (VerbAssoc)a;
+            if (a.Id.Equals(info[0])) { subj = a; infoAssocs.Add(subj); }
+            else if (a.Id.Equals(info[1])) { vb = (VerbAssoc)a; infoAssocs.Add(vb); }
             if (info.Length > 2) {
-                if (a.Id.Equals(info[2])) obj = a;
+                if (a.Id.Equals(info[2])) { obj = a; infoAssocs.Add(obj); }
             }
             if (info.Length > 3) {
-                if (a.Equals(info[4])) sup = a;
+                if (a.Equals(info[4])) { sup = a; infoAssocs.Add(sup); }
             }
         }
 
@@ -173,7 +174,11 @@ public class Personality {
         totalInterest += eventsList[info].Interest;
 
         bool alreadySeen = false; //Whether this event has already been seen
-        //TODO CHECK WITH LISTENERS HERE
+        foreach (Listener listener in body.Mind.QuestMind.Listeners) {
+            if (listener.CheckMatch(infoAssocs)) {
+                //body.Mind.CheckListener(listener); TODO MAKE CHECKLISTENER- CHECKS TO SEE IF MIND SHOULD PICK NEW INITIATIVE
+            }
+        }
         string infoSentence = string.Join(" ", info); //convert info so it can be compared to info in seenList
         infoSentence = infoSentence.ToLower(); //convert info so it can be compared to info in seenList
 

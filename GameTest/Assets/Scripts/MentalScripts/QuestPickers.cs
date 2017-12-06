@@ -2,16 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/* 
- * Contexts - lastly do this
- * Special Circumstances - look at this second
- * Moods - look at this first
- */
-
 public class QuestPicker {
+
     protected Body genitor;
+    public List<Listener> Listeners;
+
     public QuestPicker(Body _genitor) {
         genitor = _genitor;
+        Listeners = new List<Listener>() { };
     }
 
     public virtual Quest GetQuest() {

@@ -175,6 +175,32 @@ public class GetHealedAction : Action {
     }
 }
 
+public class GiftAction : Action
+{
+    public GiftAction(string _name, int _speedFactor, Body _genitor, Body targetPerson,Item item) :
+        base(_name, _speedFactor, _genitor)
+    {
+        timeLeft = 0;
+        genitor.Inventory.Remove(item);
+        targetPerson.Inventory.Add(item);
+        item.SwitchHolder(targetPerson);
+        nextAction = new Action("Open", 0, genitor);
+    }
+}
+
+public class PickupAction : Action
+{
+    public PickupAction(string _name, int _speedFactor, Body _genitor, ItemPackage targetPerson, Item item) :
+        base(_name, _speedFactor, _genitor)
+    {
+        timeLeft = 0;
+        targetPerson.Inventory.Remove(item);
+        genitor.Inventory.Add(item);
+        item.SwitchHolder(genitor);
+        nextAction = new Action("Open", 0, genitor);
+    }
+}
+
 //SPECIAL ACTIONS
 
 public class ScoldAction : Action {
@@ -220,7 +246,7 @@ public class AnnounceAction : Action {
         Association primeAssoc = subj.GetPrimeMood();
         if (primeAssoc != null) 
             new EventSpawn(genitor.transform.position, new Interaction(100, 100), null,
-                subj.Id, "incites", primeAssoc.Id, subject:genitor);
+                subj.Id, "is associated with", primeAssoc.Id, subject:genitor);
         nextAction = new Action("Open", 0, genitor);
     }
 }

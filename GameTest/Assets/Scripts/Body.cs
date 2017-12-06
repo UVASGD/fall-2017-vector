@@ -162,6 +162,9 @@ public class Body : MonoBehaviour {
     public void BeginTalk(Personality _interactee) {
         if (mind.GetType() != typeof(PlayerAI))
             return;
+        EntityInventory entInv = GameObject.Find("EntityInv").GetComponent<EntityInventory>();
+        entInv.currentInventory = _interactee.GetBody;
+        entInv.UpdateUI();
         TalkInput.SetInteractable();
         interactee = _interactee;
         Text Title = TalkBox.transform.GetChild(0).GetComponent<Text>();
@@ -229,6 +232,9 @@ public class Body : MonoBehaviour {
 
     public void EndTalk() {
         interactee = null;
+        EntityInventory entInv = GameObject.Find("EntityInv").GetComponent<EntityInventory>();
+        entInv.currentInventory = null;
+        entInv.UpdateUI();
         Text Title = TalkBox.transform.GetChild(0).GetComponent<Text>();
         Title.text = "MIDDLEBURG";
         DialogueBox.text = "You're in Middleburg.";

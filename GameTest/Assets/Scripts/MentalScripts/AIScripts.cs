@@ -15,11 +15,15 @@ public class AI {
     protected Place place;
     public virtual Place Place { get { return place; } set { place = value; } }
 
+    protected QuestPicker questMind;
+    public QuestPicker QuestMind {get { return questMind; } }
+
     protected List<Watchzone> zones = new List<Watchzone>();
 
     protected int personalityChecker = 0;
 
     public AI(Personality _personality, Body _body) {
+        questMind = new QuestPicker(_body);
         personality = _personality;
         body = _body;
     }

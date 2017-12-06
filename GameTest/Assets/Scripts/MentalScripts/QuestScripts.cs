@@ -149,7 +149,7 @@ public class GiftQuest : Quest {
 
     public override Action GetAction() {
         //TODO GIVE GIFT TO PERSON
-        return new Action("Open", 0, genitor); //DELET THIS
+        return new GiftAction("Gift", 0, genitor,targetPerson.GetComponent<Body>(),gift); //DELET THIS
     }
 }
 

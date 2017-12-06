@@ -104,6 +104,11 @@ public class Item {
         holder = _holder;
         _holder.Weapon = this;
     }
+
+    public void SwitchHolder(Body _newHolder)
+    {
+        holder = _newHolder;
+    }
 }
 
 public interface ICloseMelee {
