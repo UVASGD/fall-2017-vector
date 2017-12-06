@@ -12,7 +12,7 @@ public class Sword : Item, ICloseMelee {
 
     int attackLim = 1;
 
-    GameObject dot;
+    // GameObject dot;       <- Transferred up to ItemScripts
     GameObject newAttack;
     SpriteRenderer attackRender;
     List<GameObject> attacks = new List<GameObject>();
@@ -30,7 +30,7 @@ public class Sword : Item, ICloseMelee {
         blockPower = new Resistance(_holder, 1f);
 
         name = "Sword";
-        dot = Resources.Load("Bead", typeof(GameObject)) as GameObject;
+        // dot = Resources.Load("Bead", typeof(GameObject)) as GameObject; <-  transfered up to ItemScripts
     }
 
     public void CloseMeleeLightAttack() {

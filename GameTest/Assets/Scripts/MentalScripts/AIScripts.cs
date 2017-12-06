@@ -9,14 +9,21 @@ public class AI {
     protected Body body;
     public Body GetBody { get { return body; } }
 
+    protected bool dashing = false;
+    public bool Dashing { get { return dashing; } }
+
     protected Place place;
     public virtual Place Place { get { return place; } set { place = value; } }
+
+    protected QuestPicker questMind;
+    public QuestPicker QuestMind {get { return questMind; } }
 
     protected List<Watchzone> zones = new List<Watchzone>();
 
     protected int personalityChecker = 0;
 
     public AI(Personality _personality, Body _body) {
+        questMind = new QuestPicker(_body);
         personality = _personality;
         body = _body;
     }
@@ -153,7 +160,9 @@ public class PlayerAI : AI {
                     body.SetCurrMoveAct(new MoveAction("DashRight", body.GetDashSpeed(), body, Direction.Right, 5));
                     dashTimer = 0f;
                 }
+                dashing = true;
             }
+            else { dashing = false; }
         }
         if (Input.anyKey) {
             int moveKey = (int)Input.GetAxisRaw("Horizontal");

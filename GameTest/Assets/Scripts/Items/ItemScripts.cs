@@ -22,6 +22,8 @@ public class Item {
 
     protected bool generic = true;
 
+    protected GameObject dot;
+
     Identity identity;
 
     protected List<Affecter> EquippedList;
@@ -60,6 +62,8 @@ public class Item {
         speed = 5;
         natural = _natural;
         identity = new Identity(id, generic);
+
+        dot = Resources.Load("Bead", typeof(GameObject)) as GameObject;
     }
 
     protected T AddAttackScript<T>(string resource, GameObject _sprite=null) where T : Component {
@@ -96,7 +100,7 @@ public class Item {
 
     }
 
-    public void EquipTo(Body _holder) {
+    public virtual void EquipTo(Body _holder) {
         holder = _holder;
         _holder.Weapon = this;
     }

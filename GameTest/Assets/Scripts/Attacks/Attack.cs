@@ -136,7 +136,7 @@ public class Attack : MonoBehaviour {
 
     private void OnTriggerEnter2D(Collider2D other) {
         foreach (GameObject go in alreadyHit)
-            if (go == other.gameObject) {
+            if (go == other.gameObject || go.GetComponent<Body>().Dashing ) {
                 return;
             }
 
