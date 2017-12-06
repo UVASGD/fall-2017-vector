@@ -70,13 +70,24 @@ public class QuestPicker {
             potentialQuests.Add(new GiftQuest(genitor));
         }
         else {
-            Item newItem = Statics.RandomElement(genitor.GetPersonality().FindPerson(false).GetComponent<Body>().Inventory);
-            potentialQuests.Add(new PickUpQuest(genitor, newItem, newItem.holder.gameObject, newItem.holder, 3));
+            GameObject lowPerson = genitor.GetPersonality().FindPerson(false);
+            if (lowPerson != null) {
+                Item newItem = Statics.RandomElement(lowPerson.GetComponent<Body>().Inventory);
+                if (newItem != null) {
+                    potentialQuests.Add(new PickUpQuest(genitor, newItem, newItem.holder.gameObject, newItem.holder, 3));
+                }
+            }
             potentialQuests.Add(new StartFightQuest(genitor, genitor.GetPersonality().FindPerson(false)));
         }
 
-        GameObject newPal = genitor.GetPersonality().FindPerson(genitor.GetPersonality().GetAssociation((topMood.ToString())));
-        potentialQuests.Add(new TalkToQuest(genitor, genitor.GetPersonality().FindPerson(newPal), genitor.Id + " feels " + topMood + " with you."));
+        string moodstr = topMood.GetId();
+        Debug.Log(moodstr);
+        Association a = genitor.GetPersonality().GetAssociation(moodstr);
+        Debug.Log("GUGU?" + a);
+        if (a == null) {
+            GameObject newPal = genitor.GetPersonality().FindPerson(a);
+            potentialQuests.Add(new TalkToQuest(genitor, genitor.GetPersonality().FindPerson(newPal), genitor.Id + " feels " + topMood + " with you."));
+        }
 
         return potentialQuests;
     }

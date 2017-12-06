@@ -24,9 +24,6 @@ public class Body : MonoBehaviour {
 
     protected Transform bodyRenderTransform; //Reference to the body-renderer's transform
 
-    protected Place currPlace; //What place gameobject you're currently colliding with
-    public Place CurrPlace { get { return currPlace; } set { currPlace = value; } } //Yeah
-
     int bodyCollisions = 0;
 
     public float harmQuant; //Harm Variables
@@ -63,7 +60,7 @@ public class Body : MonoBehaviour {
     protected List<Affecter> spreadList = new List<Affecter>();
     protected List<Affecter> layerList = new List<Affecter>();
 
-    protected List<Item> inventory = new List<Item>();
+    protected List<Item> inventory = new List<Item>() { };
     public List<Item> Inventory { get { return inventory; } set { inventory = value; } }
 
     Item weapon;
@@ -127,6 +124,8 @@ public class Body : MonoBehaviour {
 
         armor = new Armor(this, 1, "none");
         armor.Enact();
+
+        weapon = new Fists(this, 1);
     }
 
     void Update() {
@@ -430,6 +429,7 @@ public class Body : MonoBehaviour {
 
     //SET NEXT QUEST
     public void SetNextQuest(Quest nextQuest) {
+        Debug.Log(nextQuest);
         currQuest = nextQuest;
     }
 

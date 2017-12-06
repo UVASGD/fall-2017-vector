@@ -201,10 +201,14 @@ public class PlayerAI : AI {
 
 public class PersonAI : AI {
 
-    public PersonAI(Personality _personality, Body _body) : base(_personality, _body) { }
+    public PersonAI(Personality _personality, QuestPicker _questMind, Body _body) : base(_personality, _body) {
+        questMind = _questMind;
+    }
 
     public void Ding() {
-        body.CurrQuest.End();
+        Debug.Log("HMMM");
+        if (body.CurrQuest != null)
+            body.CurrQuest.End();
         body.SetNextQuest(questMind.GetQuest());
     }
 
@@ -213,13 +217,15 @@ public class PersonAI : AI {
     }
 
     public override void Tick() {
-        if (body.CurrAct.Name.Equals("Open")) {
-            Action nextAction = body.CurrSubQuest.GetAction();
-            if (nextAction.Name.Equals("Open")) {
-                if (!body.SetNextSubQuest())
-                    Ding();
+        if (body.CurrSubQuest == null) { Ding(); }
+        else
+            if (body.CurrAct.Name.Equals("Open")) {
+                Action nextAction = body.CurrSubQuest.GetAction();
+                if (nextAction.Name.Equals("Open")) {
+                    if (!body.SetNextSubQuest())
+                        Ding();
+                }
             }
-        }
         base.Tick();
     }
 }

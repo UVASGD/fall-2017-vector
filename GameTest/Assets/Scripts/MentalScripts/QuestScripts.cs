@@ -58,7 +58,7 @@ public class MoveToQuest : Quest {
 
     public MoveToQuest(Body _genitor, float _target = float.MinValue, GameObject _targetObj = null, int _priority = 2) : base(_genitor, _priority) {
         name = "move to";
-        target = (target == float.MinValue) ? _target : Statics.RandomLocIn(_genitor.CurrPlace);
+        target = (target == float.MinValue) ? _target : Statics.RandomLocIn(_genitor.Mind.Place);
         targetObj = _targetObj;
     }
 
@@ -323,9 +323,9 @@ public class PatrolQuest : Quest {
     }
 
     protected override void Setup() {
-        SubQuests = new List<Quest>() { new MoveToQuest(genitor, genitor.CurrPlace.Coordinate-genitor.CurrPlace.Size/4),
+        SubQuests = new List<Quest>() { new MoveToQuest(genitor, genitor.Mind.Place.Coordinate-genitor.Mind.Place.Size/4),
                                         new StayQuest(genitor, 20),
-                                        new MoveToQuest(genitor, genitor.CurrPlace.Coordinate+genitor.CurrPlace.Size/4),
+                                        new MoveToQuest(genitor, genitor.Mind.Place.Coordinate+genitor.Mind.Place.Size/4),
                                         new StayQuest(genitor, 20)
         };
     }

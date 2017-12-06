@@ -118,13 +118,14 @@ public class PersonCreator { //This class exists just to spawn in a person. Not 
                  })};
 
             MoodHandler moodHandler = new MoodHandler(new List<Mood>() {
-                new Mood("charmed", "disgusted", 0, CoreMood.CharmAxis),
-                new Mood("amused", "angered", -.40f, CoreMood.AmuseAxis),
-                new Mood("happy", "sad", 0, CoreMood.HappyAxis),
-                new Mood("inspired", "frightened", 0, CoreMood.InspireAxis)});
+                new Mood("charmed", "charm", "disgusted", "disgust", 0, CoreMood.CharmAxis),
+                new Mood("amused", "amusement", "angered", "anger", -.40f, CoreMood.AmuseAxis),
+                new Mood("happy", "happiness", "sad", "sadness", 0, CoreMood.HappyAxis),
+                new Mood("inspired", "inspiration", "frightened", "intimidation", 0, CoreMood.InspireAxis)});
 
-            personBody.BodyConstructor(id, size, Direction.Left, new List<string> { "Hostile" }, new AI(new Personality(personBody, associator, 
-                new Identity(id, false, "", "", personBodyObject), moodHandler, "Welcome to Middleburg. Don't break anything.", smallTalk), personBody));
+            personBody.BodyConstructor(id, size, Direction.Left, new List<string> { "Hostile" }, new PersonAI(new Personality(personBody, associator, 
+                new Identity(id, false, "", "", personBodyObject), moodHandler, "Welcome to Middleburg. Don't break anything.", smallTalk), 
+                new QuestPicker(personBody),personBody));
             personBodyObject.AddTag("Hostile");
         }
         else if (mindNum == AINum.dummy) {

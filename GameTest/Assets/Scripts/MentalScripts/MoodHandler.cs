@@ -37,9 +37,13 @@ public class MoodHandler {
 public class Mood {
     string positive;
     public string Positive { get { return positive; } }
+    string positiveId;
+    public string PositiveId { get { return positiveId; } }
 
     string negative;
     public string Negative { get { return negative; } }
+    string negativeId;
+    public string NegativeId { get { return negativeId; } }
 
     float polarity;
     public float Polarity { get { return polarity; } }
@@ -47,9 +51,11 @@ public class Mood {
     CoreMood cMood;
     public CoreMood CMood { get { return cMood; } }
 
-    public Mood(string _positive, string _negative, float _polarity, CoreMood _cMood) {
+    public Mood(string _positive, string _positiveId, string _negative, string _negativeId, float _polarity, CoreMood _cMood) {
         positive = _positive;
+        positiveId = _positiveId;
         negative = _negative;
+        negativeId = _negativeId;
         polarity = _polarity;
         cMood = _cMood;
     }
@@ -63,6 +69,14 @@ public class Mood {
         if (polarity > 0)
             returnString = positive;
         else returnString = negative;
+        return returnString;
+    }
+
+    public string GetId() {
+        string returnString = "";
+        if (polarity > 0)
+            returnString = positiveId;
+        else returnString = negativeId;
         return returnString;
     }
 }
