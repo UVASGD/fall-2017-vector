@@ -18,7 +18,7 @@ public class AI {
     protected QuestPicker questMind;
     public QuestPicker QuestMind {get { return questMind; } }
 
-    protected List<Watchzone> zones = new List<Watchzone>();
+    protected List<WatchZone> zones = new List<WatchZone>();
 
     protected int personalityChecker = 0;
 
@@ -39,7 +39,7 @@ public class AI {
             personality.Tick();
             personalityChecker = Random.Range(0, 50);
         }
-        foreach (Watchzone zone in zones) {
+        foreach (WatchZone zone in zones) {
             Debug.Log("zone: " + zone.ToString());
         }
     }
