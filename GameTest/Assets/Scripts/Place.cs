@@ -17,8 +17,10 @@ public class Place : MonoBehaviour {
     }
 
 	void Start () {
-		
-	}
+        BoxCollider2D thisCollider = gameObject.GetComponent<BoxCollider2D>();
+        size = thisCollider.size.x;
+        coordinate = gameObject.transform.position.x;
+    }
 
     void OnTriggerEnter2D(Collider2D other) {
         AI theMind = GetColliderAI(other);

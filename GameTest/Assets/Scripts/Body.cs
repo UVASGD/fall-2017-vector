@@ -123,6 +123,7 @@ public class Body : MonoBehaviour {
         AddAffecter(new ResistanceAggregate(this, 0f));
 
         armor = new Armor(this, 1, "none");
+        armor.Enact();
     }
 
     void Update() {

@@ -22,6 +22,6 @@ public class Armor : Item {
     }
 
     public void Deact() {
-        holder.RemoveFromAffecterList(armorPower);
+        armorPower.Kill();
     }
 }

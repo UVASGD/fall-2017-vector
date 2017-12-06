@@ -36,7 +36,7 @@ public class Droptext : MonoBehaviour, IDropHandler {
         {
             var from = UIInteractable.origin.GetComponentInParent<UIInventoryAbstract>();
             var to = gameObject.GetComponent<UIInventoryAbstract>();
-            Debug.Log(GetGameObjectPath(from.gameObject));
+            // Debug.Log(GetGameObjectPath(from.gameObject));
             if(UIInteractable.origin.tag == "EquipmentUI") //Assume that it's coming from inventory.
             {
                 var newFrom = UIInteractable.origin.GetComponent<EquipmentDroptest>();
@@ -46,7 +46,8 @@ public class Droptext : MonoBehaviour, IDropHandler {
                     Item item = moved.GetComponent<UIInteractable>().item;
                     playerBody.addItem(item);
                     if (item.GetType() == typeof(Armor)) {
-                        Armor none = new Armor(playerBody, 0, "none");
+                        Debug.Log("Equipping None Armor!");
+                        Armor none = new Armor(playerBody, 1, "none");
                         none.EquipTo(playerBody);
                     }
                     else {
