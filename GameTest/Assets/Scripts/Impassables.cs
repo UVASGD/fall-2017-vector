@@ -9,14 +9,14 @@ public class Impassable : MonoBehaviour {
     void OnTriggerEnter2D(Collider2D other) {
         Body otherBody = other.GetComponent<Body>();
         if (otherBody != null) {
-            otherBody.Mind.AddForbiddenDirect(direct);
+            otherBody.AddForbiddenDirect(direct);
         }
     }
 
     void OnTriggerExit2D(Collider2D other) {
         Body otherBody = other.GetComponent<Body>();
         if (otherBody != null) {
-            otherBody.Mind.RemoveForbiddenDirect(direct);
+            otherBody.RemoveForbiddenDirect(direct);
         }
     }
 }
