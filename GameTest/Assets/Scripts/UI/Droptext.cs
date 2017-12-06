@@ -43,9 +43,16 @@ public class Droptext : MonoBehaviour, IDropHandler {
                 Debug.Log("Unequipping");
                 if (newFrom != null)
                 {
-                    playerBody.addItem(moved.GetComponent<UIInteractable>().item);
-                    Fists fist = new Fists(playerBody, 1);
-                    fist.EquipTo(playerBody);
+                    Item item = moved.GetComponent<UIInteractable>().item;
+                    playerBody.addItem(item);
+                    if (item.GetType() != typeof(Armor)) {
+                        Armor none = new Armor(playerBody, 0, "none");
+                        none.EquipTo(playerBody);
+                    }
+                    else {
+                        Fists fist = new Fists(playerBody, 1);
+                        fist.EquipTo(playerBody);
+                    }
                 }
             }
 
@@ -54,10 +61,28 @@ public class Droptext : MonoBehaviour, IDropHandler {
                 to = gameObject.GetComponentInParent<UIInventoryAbstract>();
             }
 
-            from.removeElement(UIInteractable.draggedItem);
-            to.addElement(UIInteractable.draggedItem);
-            UIInteractable.origin = transform.GetChild(0).gameObject;
+            if(to.GetType() == typeof(EntityInventory)) //Taking from entities.
+            {
+                EntityInventory toE = to as EntityInventory;
+                if (toE.currentInventory == null) return;
 
+                //Do entity item checking here.
+                from.removeElement(UIInteractable.draggedItem);
+                to.addElement(UIInteractable.draggedItem);
+                UIInteractable.origin = transform.GetChild(0).gameObject;
+            }
+            else if(from.GetType() == typeof(EntityInventory)) //Giving to entities.
+            {
+                from.removeElement(UIInteractable.draggedItem);
+                to.addElement(UIInteractable.draggedItem);
+                UIInteractable.origin = transform.GetChild(0).gameObject;
+            }
+            else
+            {
+                from.removeElement(UIInteractable.draggedItem);
+                to.addElement(UIInteractable.draggedItem);
+                UIInteractable.origin = transform.GetChild(0).gameObject;
+            }
 
         }
     }

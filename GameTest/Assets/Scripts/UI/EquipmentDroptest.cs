@@ -20,6 +20,7 @@ public class EquipmentDroptest : MonoBehaviour, IDropHandler {
         GameObject moved = UIInteractable.draggedItem;
         if (moved == null) return;
         var from = UIInteractable.origin.GetComponentInParent<UIInventoryAbstract>();
+        if (from.GetType() != typeof(InventoryInteraction)) return;
         var fromObject = UIInteractable.origin;
         var to = gameObject;
 

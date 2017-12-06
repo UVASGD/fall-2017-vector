@@ -10,6 +10,7 @@ public class PersonCreator { //This class exists just to spawn in a person. Not 
     GameObject healthBar;
     GameObject bodyRenderObject;
 
+    public GameObject CreatedPerson { get { return personBodyObject; } }
 
     AI mind;
     string sortingLayerNum;

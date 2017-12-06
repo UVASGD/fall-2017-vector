@@ -37,7 +37,7 @@ public class UIInteractable : MonoBehaviour, IBeginDragHandler, IEndDragHandler,
     {
         isDragging = true;
         origin = transform.parent.gameObject;
-        Debug.Log(origin.GetInstanceID());
+        Debug.Log(item);
         hoverhud.transform.position = sendoff;
         draggedItem = gameObject;
         draggedItem.GetComponent<Image>().raycastTarget = false;
