@@ -99,5 +99,10 @@ Disgust, Anger, Intimidate, Sad
 	void Update () {
 		
 	}
-}
 
+    public bool ShouldSleep(Body bod) {
+        float playerpos = thePlayer.transform.position.x;
+        float bodpos = bod.transform.position.x;
+        return Mathf.Abs(bodpos - playerpos) > 100f;
+    }
+}
