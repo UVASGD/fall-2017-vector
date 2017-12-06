@@ -22,6 +22,7 @@ public class AI {
 
     protected int personalityChecker = 0;
 
+
     public AI(Personality _personality, Body _body) {
         questMind = new QuestPicker(_body);
         personality = _personality;
@@ -40,6 +41,8 @@ public class AI {
             personalityChecker = Random.Range(0, 50);
         }
     }
+
+
 }
 
 public class PlayerAI : AI {
