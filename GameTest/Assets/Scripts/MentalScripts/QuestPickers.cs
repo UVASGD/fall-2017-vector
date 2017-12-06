@@ -30,7 +30,7 @@ public class QuestPicker {
         QuestList.AddRange(GetQuestMoods());
         bool foundTop = false;
         foreach (Quest q in QuestList)
-            if (q.Priority > (topQuest.Priority + 3)) {
+            if ((q.Priority + Random.Range(-2, 4)) > (topQuest.Priority + 3)) {
                 topQuest = q;
                 foundTop = true;
             }
@@ -51,12 +51,12 @@ public class QuestPicker {
 
         if (genitor.Weapon.GetType() == typeof(Fists)) {
             Item newWeapon = genitor.GetPersonality().FindItem(genitor.GetPersonality().GetAssociation("weaponry"));
-            potentialQuests.Add(new EquipQuest(genitor, newWeapon, 6));
+            potentialQuests.Add(new EquipQuest(genitor, newWeapon, 5));
         }
 
         if (genitor.harmQuant > 0.5f) {
             Item newConsumable = genitor.GetPersonality().FindItem(genitor.GetPersonality().GetAssociation("consumable"));
-            potentialQuests.Add(new ConsumeQuest(genitor, newConsumable, 6));
+            potentialQuests.Add(new ConsumeQuest(genitor, newConsumable, 5));
             potentialQuests.Add(new GetHealedQuest(genitor));
         }
 
@@ -81,9 +81,7 @@ public class QuestPicker {
         }
 
         string moodstr = topMood.GetId();
-        Debug.Log(moodstr);
         Association a = genitor.GetPersonality().GetAssociation(moodstr);
-        Debug.Log("GUGU?" + a);
         if (a == null) {
             GameObject newPal = genitor.GetPersonality().FindPerson(a);
             potentialQuests.Add(new TalkToQuest(genitor, genitor.GetPersonality().FindPerson(newPal), genitor.Id + " feels " + topMood + " with you."));

@@ -6,7 +6,7 @@ public class Armor : Item {
 
     Reduction armorPower;
 
-    public Armor(Body _holder, int _size, string _name, float power=1f) : base(_holder, _size, new Color(0.3f,0.3f,0.5f)) {
+    public Armor(Body _holder, int _size, string _name, float power=0f) : base(_holder, _size, new Color(0.3f,0.3f,0.5f)) {
         armorPower = new Reduction(_holder, power);
         name = _name;
         function = "Armor";

@@ -13,12 +13,11 @@ public class EventSpawn {
 
     public EventSpawn(Vector2 _origin, Interaction _interaction, string[] _contextNames, string _subj, string _vb, string _obj = "", string _sup = "", 
         Body subject = null, int _scope = 30) {
+        info = new string[] { };
         origin = _origin;
         scope = _scope;
         interaction = _interaction;
-        contextNames = _contextNames ?? new string[] { "middleburg"};
-        //contextNames = (_contextNames.Length == 0) ? new string[] {"middleburg"} : _contextNames;
-        info = (_obj.Equals("")) ? new string[] { _subj, _vb } : new string[] { _subj, _vb, _obj };
+        contextNames = _contextNames ?? new string[] { "Middleburg"};
         if (_obj.Equals(""))
             info = new string[] { _subj, _vb };
         else if (_sup.Equals(""))

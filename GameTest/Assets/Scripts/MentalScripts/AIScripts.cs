@@ -206,10 +206,10 @@ public class PersonAI : AI {
     }
 
     public void Ding() {
-        Debug.Log("HMMM");
         if (body.CurrQuest != null)
             body.CurrQuest.End();
         body.SetNextQuest(questMind.GetQuest());
+        body.SetSubQuest();
     }
 
     public void CheckListener(Listener listener) {
@@ -217,15 +217,22 @@ public class PersonAI : AI {
     }
 
     public override void Tick() {
-        if (body.CurrSubQuest == null) { Ding(); }
-        else
-            if (body.CurrAct.Name.Equals("Open")) {
+        Debug.Log(body.CurrQuest);
+        if (body.CurrQuest == null) { Ding(); }
+        else {
+            if (body.CurrAct.Name.Equals("Open") && body.CurrMoveAct.Name.Equals("Open")) {
                 Action nextAction = body.CurrSubQuest.GetAction();
+                if (nextAction.GetType() == typeof(MoveAction)) {
+                    body.SetCurrMoveAct(nextAction);
+                }
+                else body.SetCurrAct(nextAction);
                 if (nextAction.Name.Equals("Open")) {
                     if (!body.SetNextSubQuest())
                         Ding();
                 }
             }
+            
+        }
         base.Tick();
     }
 }

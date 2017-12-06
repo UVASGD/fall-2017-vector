@@ -178,6 +178,7 @@ public class GetHealedAction : Action {
 public class StartFightAction : Action {
     public StartFightAction(string _name, int _speedFactor, Body _genitor, string fightType, string contextName) :
         base(_name, _speedFactor, _genitor) {
+        Debug.Log("Fight!");
         timeLeft = 0;
         new EventSpawn(genitor.transform.position, new Interaction(), new string[] { contextName },
             genitor.Id, fightType, subject: genitor);
@@ -207,6 +208,8 @@ public class GiftAction : Action
         genitor.Inventory.Remove(item);
         targetPerson.Inventory.Add(item);
         item.SwitchHolder(targetPerson);
+        new EventSpawn(genitor.transform.position, targetPerson.GetPersonality().GetInteraction("gifts"), null,
+    genitor.Id, "gifts", targetPerson.Id, item.Id, subject: genitor);
         nextAction = new Action("Open", 0, genitor);
     }
 }
@@ -220,6 +223,8 @@ public class PickupAction : Action
         targetPerson.Inventory.Remove(item);
         genitor.Inventory.Add(item);
         item.SwitchHolder(genitor);
+        new EventSpawn(genitor.transform.position, new Interaction(), null,
+    genitor.Id, "picks up", item.Id, subject: genitor);
         nextAction = new Action("Open", 0, genitor);
     }
 }
@@ -237,6 +242,8 @@ public class DropAction : Action
         iPack.AddItem(item);
         genitor.Inventory.Remove(item);
         item.SwitchHolder(iPack);
+        new EventSpawn(genitor.transform.position, new Interaction(), null,
+        genitor.Id, "drops", item.Id, subject: genitor);
         nextAction = new Action("Open", 0, genitor);
     }
 }
@@ -270,7 +277,7 @@ public class OpenDoorAction : Action {
     public OpenDoorAction(string _name, int _speedFactor, Body _genitor, Impassable targetDoor) :
         base(_name, _speedFactor, _genitor) {
         timeLeft = 0;
-        targetDoor.Deactivate();
+        Object.Destroy(targetDoor);
         new EventSpawn(genitor.transform.position, new Interaction(), null,
             genitor.Id, "opens door", subject: genitor);
         nextAction = new Action("Open", 0, genitor);

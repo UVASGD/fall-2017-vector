@@ -18,6 +18,11 @@ public class Sword : Item, ICloseMelee {
     List<GameObject> attacks = new List<GameObject>();
 
     public Sword(Body _holder, int _size) : base(_holder, _size, Color.gray) {
+        name = "Sword";
+        id = "sword";
+        function = "weaponry";
+        descriptor = "Well, at least it’s sharp. And durable-ish. You think. You haven’t actually tried bending it though, better not.";
+
         LightAttackList = new List<Affecter> { new Wound(holder, 0.2f) };
         lightAttackActScheme.Add(new AttackAct(Attack.Push, 3, newAttack));
 

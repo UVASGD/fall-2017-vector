@@ -26,8 +26,8 @@ Disgust, Anger, Intimidate, Sad
     public Know TheKnow = new Know();
 
     public static GameManager instance = null;
-	// Use this for initialization
-	void Awake () {
+    // Use this for initialization
+    void Awake() {
         if (instance == null) {
             instance = this;
         }
@@ -35,11 +35,37 @@ Disgust, Anger, Intimidate, Sad
             Destroy(gameObject);
         }
 
-        PersonCreator player = new PersonCreator("Player", "player", 0.5f, 1, AINum.player, 
+        PersonCreator player = new PersonCreator("Player", "player", 0.5f, 1, AINum.player,
             new List<string> { "Stop talking to yourself." });
         Body playerBody = (Body)FindObjectOfType(typeof(Body));
         //playerBody.AddAffecter(new Fire(playerBody, 40f));
         //playerBody.AddAffecter(new Fire(playerBody, 20f));
+        PersonCreator oldMan = new PersonCreator("Old_Man", "old man", 85.5f, 1, AINum.soldier,
+          new List<string> { "Why are you here ?",
+        "Can I help you ?",
+        "Gawd, why a forest ? This place constantly makes weird noises, and then there’s the oinkers…",
+        "Look pal, can you stop sneaking up on me like that ? You realize this thing’s loaded, right ?",
+        "No sudden movements please",
+        "You’re… a little persistent aren’t you",
+        "Bud, you’re creeping me out here",
+        "Please stay away",
+        "You know, I feel we could really look out for each other here",
+        "H..Hello ?" }
+            ) ;
+
+            PersonCreator mapMaker = new PersonCreator("Mapmaker", "map maker", 14.5f, 1, AINum.soldier,
+            new List<string> { "...Oh! Hello! I didn’t notice you there! Would you like to buy one of my maps?",
+    "What do you mean ‘map of where’? A map of here and everywhere!Middleberg’s in the center, naturally… and I’m in the center of that!" ,
+    "What do you mean I’m not in the middle? The map says so.",
+    "Where are you? You’re in Middleberg, halfway between Easton and Weston…  " +
+    "This quiet little town is pretty nice...but it doesn’t compare to the splendor of Easton!" +
+    "I would visit it if you can.Though I doubt the soldier will let you without a weapon. " +
+    "It’s a dangerous time, nowadays!Though it’s always been dangerous… so I guess it’s just a normal time, nowadays." ,
+    "What to do now? Well--whatever you want. But not really.We do have laws. " +
+    "Personally I was going to go check out if that old man forgot his ring was still in the well, " +
+    "but I still have maps to sell. No one is buying them for some reason…",
+    "Welcome to Middleberg!Located halfway between Weston and Easton.Buy a map."
+            });
         PersonCreator soldier = new PersonCreator("Soldier", "soldier", -6.5f, 1, AINum.soldier, 
             new List<string> { "You want me to open the gate? No.",
                 "This is Middleburg. Congrats on getting here.",
@@ -70,8 +96,8 @@ Disgust, Anger, Intimidate, Sad
                 "I wish you could do more in this game.",
                 "AHHH, A BEAR!" });
         GameObject soldierObject = soldier.CreatedPerson;
-        Sword newSword = new Sword(soldierObject.GetComponent<Body>(), 1);
-        soldierObject.GetComponent<Body>().Inventory.Add(newSword);
+        //Sword newSword = new Sword(soldierObject.GetComponent<Body>(), 1);
+        //soldierObject.GetComponent<Body>().Inventory.Add(newSword);
 
         List<Item> items = new List<Item> { };
 
@@ -84,6 +110,13 @@ Disgust, Anger, Intimidate, Sad
         }
         Armor mail = new Armor(pack, 1, "mail", 10f);
         pack.AddItem(mail);
+
+        GameObject ForestpackObj = Instantiate(Resources.Load("ItemPackage"), new Vector3(70.5f, -2.75f), Quaternion.identity) as GameObject;
+        ItemPackage Forestpack = ForestpackObj.transform.GetChild(0).GetComponent<ItemPackage>();
+        pack.CreateItemPackage(items, "Chest", -2.75f, 5);
+        Forestpack.AddItem(new Sword(Forestpack, 1));
+        Armor mail2 = new Armor(Forestpack, 1, "mail", 10f);
+        Forestpack.AddItem(mail2);
 
         //Sword sword2 = new Sword(innkeeperBody, 1);
 

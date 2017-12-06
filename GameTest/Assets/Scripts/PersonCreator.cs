@@ -91,9 +91,16 @@ public class PersonCreator { //This class exists just to spawn in a person. Not 
                 new MoodAssoc("Inspiration", "inspiration", CoreMood.InspireAxis, 0.10f, 0.10f, 1, new Dictionary<string, Interaction>() { }),
                 new MoodAssoc("Intimidation", "intimidation", CoreMood.InspireAxis, -0.70f, 0.70f, -1, new Dictionary<string, Interaction>() { }),
 
+                new ConceptAssoc("Weaponry", "weaponry", 0.60f, new Dictionary<string, Interaction>() { {"inspiration", new Interaction(1, 0.60f) } }),
+                new ConceptAssoc("Protection", "protection", 0.60f, new Dictionary<string, Interaction>() { {"inspiration", new Interaction(1, 0.60f) } }),
+
                 new VerbAssoc("foils", "foils", "foiling", -0.70f, 0.50f, new Dictionary<string, Interaction>() {
                     {"anger", new Interaction(1, .65f)}}),
-                new VerbAssoc("helps", "helps", "helping", 0.15f, 0.15f, new Dictionary<string, Interaction>() {
+                new VerbAssoc("performs favor for", "performs favor for", "performing a favor for", 0.15f, 0.15f, new Dictionary<string, Interaction>() {
+                    {"charm", new Interaction(1, 0.25f)},
+                    {"happiness", new Interaction(1, 0.20f)},
+                    {"inspiration", new Interaction(1, 0.10f)}}),
+                new VerbAssoc("heals", "heals", "healing", 0.15f, 0.15f, new Dictionary<string, Interaction>() {
                     {"charm", new Interaction(1, 0.25f)},
                     {"happiness", new Interaction(1, 0.20f)},
                     {"inspiration", new Interaction(1, 0.10f)}}),
@@ -106,12 +113,45 @@ public class PersonCreator { //This class exists just to spawn in a person. Not 
                 {"charm", new Interaction(1, 0.25f)},
                 {"amusement", new Interaction(1, 0.10f)},
                 {"anger", new Interaction(1, 0.80f)}}),
-                new VerbAssoc("gives", "gives", "giving", 0.35f, 0.75f, new Dictionary<string, Interaction>() {
+                new VerbAssoc("fights", "fights", "starting a fight", -0.70f, 0.90f, new Dictionary<string, Interaction>() {
+                {"charm", new Interaction(1, 0.25f)},
+                {"amusement", new Interaction(1, 0.10f)},
+                {"anger", new Interaction(1, 0.80f)}}),
+                new VerbAssoc("gifts", "gifts", "gifting", 0.35f, 0.75f, new Dictionary<string, Interaction>() {
                  {"charm", new Interaction(1, 0.25f)},
                  {"amusement", new Interaction(1, 0.50f)}}),
+                 new VerbAssoc("picks up", "picks up", "picking up", 0.35f, 0.75f, new Dictionary<string, Interaction>() {
+                 {"Intrigue", new Interaction(1, 0.25f)} }),
+                 new VerbAssoc("drops", "drops", "dropping", 0.35f, 0.75f, new Dictionary<string, Interaction>() {
+                 {"Intrigue", new Interaction(1, 0.25f)} }),
+                new VerbAssoc("ends fight", "ends fight", "ending fight", 0.20f, 0.65f, new Dictionary<string, Interaction>() {
+                    {"pity", new Interaction(1, 0.75f) }
+                }),
+                new VerbAssoc("scolds", "scolds", "scolding", -0.25f, 0.25f, new Dictionary<string, Interaction>() {
+                 {"intimidation", new Interaction(1, 0.60f)}}),
+                new VerbAssoc("is disgraced", "is disgraced", "being disgraced", 0.20f, 0.65f, new Dictionary<string, Interaction>() {
+                    {"pity", new Interaction(1, 0.75f) }
+                }),
+                new VerbAssoc("opens door", "opens door", "opening door", 0.30f, 0.70f, new Dictionary<string, Interaction>() { }),
+                new VerbAssoc("tells joke", "tells joke", "telling joke", 0.90f, 1, new Dictionary<string, Interaction>() {
+                    { "amusement", new Interaction(1, 1)}
+                }),
+                new VerbAssoc("announces", "announces", "announcing", -0.70f, 0.50f, new Dictionary<string, Interaction>() {
+                    {"anger", new Interaction(1, .65f)}}),
+                new VerbAssoc("is associated with", "is associated with", "being associated with", 0.80f, 0.80f, new Dictionary<string, Interaction>() {
+                    { "anger", new Interaction(1, 0.50f)}
+                }),
 
-                 new PersonAssoc("Player", "player", 0, 0.50f, new Dictionary<string, Interaction>() { }),
+                new ItemAssoc("Sword", "sword", 0.40f, true, new Dictionary<string, Interaction>() {
+                    { "weaponry", new Interaction(1, 1) }
+                }),
+                new ItemAssoc("Armor", "armor", 0.50f, true, new Dictionary<string, Interaction>() {
+                    { "protection", new Interaction(1, 1)}
+                }),
+
+                 new PersonAssoc("Player", "player", 0.20f, 0.60f, new Dictionary<string, Interaction>() { }),
                  new PersonAssoc("Soldier", "soldier", 0.80f, 0.70f, new Dictionary<string, Interaction>() { }),
+                 new PersonAssoc("Map Maker", "map maker", -0.50f, 0.40f, new Dictionary<string, Interaction> { }),
                  new PersonAssoc("Bear", "bear", -0.80f, 0.60f, new Dictionary<string, Interaction>() {
                      { "sadness", new Interaction(1, 0.70f)},
                      { "anger", new Interaction(1, 0.50f)}
@@ -121,7 +161,9 @@ public class PersonCreator { //This class exists just to spawn in a person. Not 
                 new Mood("charmed", "charm", "disgusted", "disgust", 0, CoreMood.CharmAxis),
                 new Mood("amused", "amusement", "angered", "anger", -.40f, CoreMood.AmuseAxis),
                 new Mood("happy", "happiness", "sad", "sadness", 0, CoreMood.HappyAxis),
-                new Mood("inspired", "inspiration", "frightened", "intimidation", 0, CoreMood.InspireAxis)});
+                new Mood("inspired", "inspiration", "frightened", "intimidation", 0, CoreMood.InspireAxis),
+                new Mood("intrigued", "intrigue", "bored", "boringness", -0.30f, CoreMood.IntrigueAxis),
+                new Mood("pitying", "pity", "envious", "envy", 0, CoreMood.PityAxis)});
 
             personBody.BodyConstructor(id, size, Direction.Left, new List<string> { "Hostile" }, new PersonAI(new Personality(personBody, associator, 
                 new Identity(id, false, "", "", personBodyObject), moodHandler, "Welcome to Middleburg. Don't break anything.", smallTalk), 

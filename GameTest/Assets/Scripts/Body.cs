@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum DialogueStage {Greeting, Enquiring, Revealing, Discussing, Nil}
+public enum DialogueStage {Greeting, Proposing, Enquiring, Revealing, Discussing, Nil}
 
 public class Body : MonoBehaviour {
 
@@ -171,7 +171,7 @@ public class Body : MonoBehaviour {
 
     public void DieIdiot() {
         DumpItems();
-        if (mind.GetType() == typeof(PlayerAI))
+        /*if (mind.GetType() == typeof(PlayerAI))
         {
             //transform.position = new Vector3(currPlace.Coordinate - currPlace.Size / 2, -3.5f, 0); //TODO FIX CurrPlace stuff
             transform.position = new Vector2(0.5f, -3.5f);
@@ -179,8 +179,8 @@ public class Body : MonoBehaviour {
             //Camera.main.transform.position = new Vector3(currPlace.Coordinate - currPlace.Size / 2,0,-10);
             harmQuant = 0;
         }
-        else
-            Destroy(gameObject);
+        else*/
+        Destroy(gameObject);
     }
 
     void DumpItems()
@@ -214,8 +214,11 @@ public class Body : MonoBehaviour {
             GameObject.Find("PlayerAll").GetComponent<InventoryInteraction>().UpdateUI();
             if(weapon.transform.childCount > 0)
                 Destroy(weapon.transform.GetChild(0).gameObject);
-            if (armor.transform.childCount > 0)
-                Destroy(armor.transform.GetChild(0).gameObject);
+            try {
+                if (armor.transform.childCount > 0)
+                    Destroy(armor.transform.GetChild(0).gameObject);
+            }
+            catch { }
         }
     }
 
@@ -245,17 +248,32 @@ public class Body : MonoBehaviour {
         DialogueBox = TalkBox.transform.GetChild(1).transform.GetChild(0).GetComponent<Text>();
         DialogueBox.text = interactee.GetBody.name + " is feeling " + interactee.moodHandler.GetDominantMood() + ". \n\n";
         DialogueBox.text += interactee.OpeningText + "\n\n";
-        DialogueBox.text += "[e]nquire, [r]eveal, [s]mall talk, [k] to leave ";
+        DialogueBox.text += "[e]nquire, [r]eveal, [p]ropose, [s]mall talk, [k] to leave ";
         interactee.ShuffleOpening();
         talking = true;
         diaStage = DialogueStage.Greeting;
     }
 
     public void Talk() {
-        DialogueBox.text = interactee.GetBody.name + " is feeling " + interactee.moodHandler.GetDominantMood() + ". \n\n";
+        DialogueBox.text = interactee.GetBody.name + " is feeling " + interactee.moodHandler.GetDominantMood() + ".\n\n";
         DialogueBox.text += interactee.OpeningText + "\n\n";
-        DialogueBox.text += "[e]nquire, [r]eveal, [s]mall talk, [k] to leave ";
+        DialogueBox.text += "[e]nquire, [r]eveal, [p]ropose, [s]mall talk, [k] to leave ";
         interactee.ShuffleOpening();
+        diaStage = DialogueStage.Greeting;
+    }
+
+    public void Propose() {
+        DialogueBox.text = "What do you ask for?\n\n";
+        DialogueBox.text += "1: Open Door";
+        diaStage = DialogueStage.Proposing;
+    }
+
+    public void ProposeDoor() {
+        if (interactee.GetObligation(Id) > 0f) {
+            DialogueBox.text = interactee.GetBody.name + " says they will do that for you.\n\n";
+            interactee.GetBody.ForceQuest(new OpenDoorQuest(interactee.GetBody, GameObject.Find("Door"), 10));
+        }
+        else { DialogueBox.text = interactee.GetBody.name + " says you can't tell them what to do, stinky.\n\n"; }
         diaStage = DialogueStage.Greeting;
     }
 
@@ -318,6 +336,7 @@ public class Body : MonoBehaviour {
 
     //ABILITY TO MOVE
     public void Move(Direction _dir) {
+        Debug.Log("I like to move it move it");
         if (forbiddenDirects.Contains(_dir)) {
             if (Dashing) {
                 Wound thump = new Wound(this, 0.01f);
@@ -334,8 +353,10 @@ public class Body : MonoBehaviour {
     }
 
     public void SetCurrMoveAct(Action _currMoveAct) {
-        if (currMoveAct.Overridable)
+        if (currMoveAct.Overridable) {
+            Debug.Log("being overriden " + currMoveAct);
             currMoveAct = _currMoveAct;
+        }
     }
 
     //GET/SET DIRECTION
@@ -433,6 +454,17 @@ public class Body : MonoBehaviour {
     public void SetNextQuest(Quest nextQuest) {
         Debug.Log(nextQuest);
         currQuest = nextQuest;
+    }
+
+    public void ForceQuest(Quest nextQuest) {
+        currQuest = nextQuest;
+        subQuestNum = 0;
+        currSubQuest = currQuest.SubQuests[subQuestNum];
+    }
+
+    public void SetSubQuest() {
+        subQuestNum = 0;
+        currSubQuest = currQuest.SubQuests[subQuestNum];
     }
 
     public bool SetNextSubQuest() {

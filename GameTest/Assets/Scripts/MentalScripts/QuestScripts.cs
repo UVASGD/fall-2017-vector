@@ -10,18 +10,15 @@ public class Quest {
     public Body Genitor { get { return genitor; } }
     protected int priority;
     public int Priority { get { return priority; } }
-    public List<Quest> SubQuests = new List<Quest>() { };
+    public List<Quest> SubQuests;
     protected bool done = false;
 
     public Quest(Body _genitor, int _priority = 1) {
         name = "quest";
         genitor = _genitor;
         priority = _priority;
-        priority += Random.Range(-2, 4);
-    }
+        SubQuests = new List<Quest>() { this };
 
-    protected virtual void Setup() {
-        SubQuests = new List<Quest>() { new Quest(genitor) };
     }
 
     public virtual Action GetAction() {
@@ -35,13 +32,10 @@ public class StayQuest : Quest {
 
     int duration;
 
-    public StayQuest(Body _genitor, int _duration = 10, int _priority = 2) : base(_genitor, _priority) {
+    public StayQuest(Body _genitor, int _duration = 5, int _priority = 5) : base(_genitor, _priority) {
         name = "stay";
         duration = _duration;
-    }
-
-    protected override void Setup() {
-        SubQuests = new List<Quest>() { new StayQuest(genitor, duration) };
+        SubQuests = new List<Quest>() { this };
     }
 
     public override Action GetAction() {
@@ -56,21 +50,18 @@ public class MoveToQuest : Quest {
     float target;
     GameObject targetObj;
 
-    public MoveToQuest(Body _genitor, float _target = float.MinValue, GameObject _targetObj = null, int _priority = 2) : base(_genitor, _priority) {
+    public MoveToQuest(Body _genitor, float _target = float.MinValue, GameObject _targetObj = null, int _priority = 1) : base(_genitor, _priority) {
         name = "move to";
-        target = (target == float.MinValue) ? _target : Statics.RandomLocIn(_genitor.Mind.Place);
+        target = (target < -9000) ? _target : Statics.RandomLocIn(_genitor.Mind.Place);
         targetObj = _targetObj;
-    }
-
-    protected override void Setup() {
-        SubQuests = new List<Quest> { new MoveToQuest(genitor, target, targetObj) };
+        SubQuests = new List<Quest> { this };
     }
 
     public override Action GetAction() {
         if (targetObj != null)
             target = targetObj.transform.position.x;
-        int direction = (int)(Mathf.Sign(genitor.transform.position.x - target));
-        if (direction == 0 || (targetObj != null && ((genitor.gameObject.transform.position.x - targetObj.transform.position.x) < 3)))
+        int direction = -(int)(Mathf.Sign(genitor.transform.position.x - target));
+        if (direction == 0 || (Mathf.Abs(genitor.gameObject.transform.position.x - target) < 3))
             return new Action("Open", 0, genitor);
         return new MoveAction("Move", genitor.GetMoveSpeed(), genitor, (Direction)direction, 0);
     }
@@ -85,14 +76,11 @@ public class FollowQuest : Quest {
         name = "pick up";
         targetPerson = _targetPerson;
         duration = _duration;
-    }
-
-    protected override void Setup() {
         SubQuests = new List<Quest>() { this };
     }
 
     public override Action GetAction() {
-        if ((genitor.gameObject.transform.position.x - targetPerson.gameObject.transform.position.x) < 3) {
+        if (Mathf.Abs(genitor.gameObject.transform.position.x - targetPerson.gameObject.transform.position.x) < 3) {
             if ((duration--) > 0) {
                 return new HaltAction("Halt", 100, genitor);
             }
@@ -118,14 +106,15 @@ public class TalkToQuest : Quest {
             targetPerson = genitor.GetPersonality().FindPerson(trait);
         else
             targetPerson = genitor.GetPersonality().FindPerson(high);
+
+        if (targetPerson != null)
+            SubQuests = new List<Quest> { new MoveToQuest(genitor, _targetObj: targetPerson), this };
     }
+
     public TalkToQuest(Body _genitor, GameObject _targetPerson, string line = null, int _priority = 2) : base(_genitor, _priority) {
         name = "talk to";
         genitor.GetPersonality().OpeningText = line ?? genitor.GetPersonality().OpeningText;
         targetPerson = _targetPerson;
-    }
-
-    protected override void Setup() {
         if (targetPerson != null)
             SubQuests = new List<Quest> { new MoveToQuest(genitor, _targetObj: targetPerson), this };
     }
@@ -133,7 +122,9 @@ public class TalkToQuest : Quest {
     public override Action GetAction() {
         if (!done) {
             done = true;
-            return new TalkAction("Talk", 0, genitor, targetPerson.GetComponent<Body>().GetPersonality());
+            if (targetPerson != null)
+                return new TalkAction("Talk", 0, genitor, targetPerson.GetComponent<Body>().GetPersonality());
+            return new Action("Open", 0, genitor);
         }
         else
             return new Action("Open", 0, genitor);
@@ -149,15 +140,18 @@ public class GiftQuest : Quest {
         name = "gift";
         gift = _gift ?? Statics.RandomElement(genitor.Inventory);
         targetPerson = _targetPerson ?? genitor.GetPersonality().FindPerson(true);
-    }
-
-    protected override void Setup() {
-        SubQuests = new List<Quest>() { new TalkToQuest(genitor, targetPerson), this };
+        if (targetPerson != null)
+            SubQuests = new List<Quest>() { new MoveToQuest(genitor, _targetObj:targetPerson), new TalkToQuest(genitor, targetPerson), this };
+        else SubQuests = new List<Quest>() { new Quest(genitor)};
     }
 
     public override Action GetAction() {
         //TODO GIVE GIFT TO PERSON
-        return new GiftAction("Gift", 0, genitor, targetPerson.GetComponent<Body>(), gift); //DELET THIS
+        if (!done) {
+            done = true;
+            return new GiftAction("Gift", 0, genitor, targetPerson.GetComponent<Body>(), gift);
+        }
+        return new Action("Open", 0, genitor );
     }
 }
 
@@ -173,17 +167,19 @@ public class PickUpQuest : Quest {
         targetItem = _targetItem;
         targetObj = _targetObj;
         targetHolder = _targetHolder;
-        newListener1 = new Listener(new string[] { "x", "gives", genitor.Id, "." + targetItem.Function }, genitor.GetPersonality());
+        newListener1 = new Listener(new string[] { "x", "gifts", genitor.Id, "." + targetItem.Function }, genitor.GetPersonality());
         genitor.Mind.QuestMind.Listeners.Add(newListener1);
-    }
-
-    protected override void Setup() {
         SubQuests = new List<Quest>() { new MoveToQuest(genitor, _targetObj: targetObj), this };
     }
 
     public override Action GetAction() {
-        //TODO IF TARGETHOLDER IS PACKAGE PICK UP TARGETITEM
-        //TODO IF TARGETHOLDER IS PERSON GET ITEM BY REQUEST OR DEMAND
+        if (!done) {
+            done = true;
+            if (targetHolder.GetType() == typeof(ItemPackage)) {
+                return new PickupAction("Pick Up", 0, genitor, (ItemPackage)targetHolder, targetItem);
+            }        }
+        //if (targetHolder.GetType() == typeof(Body))
+        //    return new PickupAction("Pick Up", 0, genitor, targetHolder, targetItem);
         return new Action("Open", 0, genitor); //DELET THIS
     }
 
@@ -198,14 +194,19 @@ public class EquipQuest : Quest {
     public EquipQuest(Body _genitor, Item _equip, int _priority = 2) : base(_genitor, _priority) {
         name = "equip";
         equip = _equip;
-    }
-
-    protected override void Setup() {
-        SubQuests = new List<Quest>() { new PickUpQuest(genitor, equip, equip.holder.gameObject, equip.holder), this };
+        if (equip != null && equip.holder != null && equip.holder.gameObject != null) {
+            SubQuests = new List<Quest>() { new MoveToQuest(genitor, _targetObj:equip.holder.gameObject),
+                new PickUpQuest(genitor, equip, equip.holder.gameObject, equip.holder), this };
+        }
+        else SubQuests = new List<Quest>() { new Quest(genitor) };
     }
 
     public override Action GetAction() {
-        //EQUIP ITEM
+        if (!done) {
+            done = true;
+            if (equip != null)
+                return new EquipAction("Equip", 0, genitor, equip);
+        }
         return new Action("Open", 0, genitor); //DELET THIS
     }
 }
@@ -216,10 +217,10 @@ public class ConsumeQuest : Quest {
     public ConsumeQuest(Body _genitor, Item _consumable, int _priority = 2) : base(_genitor, _priority) {
         name = "consume";
         consumable = _consumable;
-    }
-
-    protected override void Setup() {
-        SubQuests = new List<Quest>() { new PickUpQuest(genitor, consumable, consumable.holder.gameObject, consumable.holder), this };
+        if (consumable != null)
+            SubQuests = new List<Quest>() { new MoveToQuest(genitor, _targetObj: consumable.holder.gameObject),
+                new PickUpQuest(genitor, consumable, consumable.holder.gameObject, consumable.holder), this };
+        else SubQuests = new List<Quest>() { new Quest(genitor) };
     }
 
     public override Action GetAction() {
@@ -234,14 +235,15 @@ public class DropQuest : Quest {
     public DropQuest(Body _genitor, Item _drop, int _priority = 2) : base(_genitor, _priority) {
         name = "drop";
         drop = _drop;
-    }
-
-    protected override void Setup() {
         SubQuests = new List<Quest>() { this };
     }
 
     public override Action GetAction() {
-        //TODO DROP ITEM
+        if (!done) {
+            done = true;
+            if (drop != null)
+                return new DropAction("Drop", 0, genitor, drop);
+        }
         return new Action("Open", 0, genitor); //DELET THIS
     }
 }
@@ -253,14 +255,16 @@ public class PerformFavorQuest : Quest {
     public PerformFavorQuest(Body _genitor, GameObject _targetPerson, int _priority = 2) : base(_genitor, _priority) {
         name = "perform favor for";
         targetPerson = _targetPerson;
-    }
-
-    protected override void Setup() {
-        SubQuests = new List<Quest>() { new TalkToQuest(genitor, targetPerson), this };
+        SubQuests = new List<Quest>() { new MoveToQuest(genitor, _targetObj: targetPerson), new TalkToQuest(genitor, targetPerson), this };
     }
 
     public override Action GetAction() {
-        return new PerformFavorAction("Perform Favor", 0, genitor, targetPerson.GetComponent<Body>());
+        if (!done) {
+            done = true;
+            if (targetPerson != null)
+                return new PerformFavorAction("Perform Favor", 0, genitor, targetPerson.GetComponent<Body>());
+        }
+        return new Action("Open", 0, genitor);
     }
 }
 
@@ -275,41 +279,47 @@ public class GetHealedQuest : Quest {
         targetPerson = _targetPerson ?? genitor.GetPersonality().FindPerson("healer");
         newListener1 = new Listener(new string[] { "x", "heals", genitor.Id }, genitor.GetPersonality());
         newListener2 = new Listener(new string[] { "x", "gives", genitor.Id, ".healing" }, genitor.GetPersonality());
-    }
-
-    protected override void Setup() {
-        SubQuests = new List<Quest>() { new TalkToQuest(genitor, targetPerson), this };
+        SubQuests = new List<Quest>() { new MoveToQuest(genitor, _targetObj: targetPerson), new TalkToQuest(genitor, targetPerson), this };
     }
 
     public override Action GetAction() {
-        return new GetHealedAction("Get Healed", 0, genitor, targetPerson.GetComponent<Body>());
+        if (!done) {
+            done = true;
+            return new GetHealedAction("Get Healed", 0, genitor, targetPerson.GetComponent<Body>());
+        }
+        return new Action("Open", 0 , genitor);
     }
 }
 
 public class StartFightQuest : Quest {
     GameObject targetPerson = null;
 
-    public StartFightQuest(Body _genitor, GameObject _targetPerson = null, int _priority = 2) : base(_genitor, _priority) {
+    public StartFightQuest(Body _genitor, GameObject _targetPerson = null, int _priority = 5) : base(_genitor, _priority) {
         name = "start fight";
         targetPerson = _targetPerson ?? genitor.GetPersonality().FindPerson(false);
-    }
-
-    protected override void Setup() {
-        SubQuests = new List<Quest>() { new MoveToQuest(genitor, _targetObj: targetPerson), this };
+        if (targetPerson != null) {
+            SubQuests = new List<Quest>() { new MoveToQuest(genitor, _targetObj: targetPerson), this, new FightQuest(genitor, targetPerson) };
+        }
+        else SubQuests = new List<Quest>() { new Quest(genitor) };
     }
 
     public override Action GetAction() {
-        float obl = genitor.GetPersonality().GetObligation(targetPerson.GetComponent<Body>().Id);
-        if (obl < -0.70f) {
-            return new StartFightAction("Start Fight", 0, genitor, "fights", "lethal");
+        if (!done) {
+            done = true;
+            if (targetPerson == null)
+                return new Action("Open", 0, genitor);
+            float obl = genitor.GetPersonality().GetObligation(targetPerson.GetComponent<Body>().Id);
+            if (obl < -0.70f) {
+                return new StartFightAction("Start Fight", 0, genitor, "fights", "lethal");
+            }
+            else if (obl < -0.40f) {
+                return new StartFightAction("Start Fight", 0, genitor, "brawls", "non-lethal");
+            }
+            else if (obl < 0) {
+                return new StartFightAction("Start Fight", 0, genitor, "spars", "sparring");
+            }
         }
-        else if (obl < -0.40f) {
-            return new StartFightAction("Start Fight", 0, genitor, "brawls", "non-lethal");
-        }
-        else if (obl < 0) {
-            return new StartFightAction("Start Fight", 0, genitor, "spars", "sparring");
-        }
-        else return new Action("Open", 0, genitor);
+        return new Action("Open", 0, genitor);
     }
 }
 
@@ -319,6 +329,7 @@ public class FightQuest : Quest {
     public FightQuest(Body _genitor, GameObject _targetPerson, int _priority = 10) : base(_genitor, _priority) {
         name = "fight";
         targetPerson = _targetPerson;
+        SubQuests = new List<Quest>() { this };
     }
 
     public override Action GetAction() {
@@ -362,6 +373,7 @@ public class FleeQuest : Quest {
     public FleeQuest(Body _genitor, GameObject _taretObj, int _priority=10) : base(_genitor, _priority) {
         name = "flee";
         targetObj = _taretObj;
+        SubQuests = new List<Quest>() { this };
     }
 
     public override Action GetAction() {
@@ -385,6 +397,7 @@ public class AdvanceQuest : Quest {
     public AdvanceQuest(Body _genitor, GameObject _targetPerson, int _priority=8) : base(_genitor, _priority) {
         name = "advance";
         targetPerson = _targetPerson;
+        SubQuests = new List<Quest>() { this };
     }
 
     public override Action GetAction() {
@@ -399,9 +412,6 @@ public class PatrolQuest : Quest {
 
     public PatrolQuest(Body _genitor, int _priority = 2) : base(_genitor, _priority) {
         name = "patrol";
-    }
-
-    protected override void Setup() {
         SubQuests = new List<Quest>() { new MoveToQuest(genitor, genitor.Mind.Place.Coordinate-genitor.Mind.Place.Size/4),
                                         new StayQuest(genitor, 20),
                                         new MoveToQuest(genitor, genitor.Mind.Place.Coordinate+genitor.Mind.Place.Size/4),
@@ -421,14 +431,15 @@ public class ScoldQuest : Quest {
     public ScoldQuest(Body _genitor, GameObject _targetPerson = null, int _priority = 2) : base(_genitor, _priority) {
         name = "scold";
         targetPerson = _targetPerson ?? genitor.GetPersonality().FindPerson(false);
-    }
-
-    protected override void Setup() {
-        SubQuests = new List<Quest>() { new TalkToQuest(genitor, targetPerson), this };
+        SubQuests = new List<Quest>() { new MoveToQuest(genitor, _targetObj: targetPerson), new TalkToQuest(genitor, targetPerson), this };
     }
 
     public override Action GetAction() {
-        return new ScoldAction("Scold", 0, genitor, targetPerson.GetComponent<Body>());
+        if (!done) {
+            done = true;
+            return new ScoldAction("Scold", 0, genitor, targetPerson.GetComponent<Body>());
+        }
+        return new Action("Open", 0, genitor);
     }
 }
 
@@ -439,14 +450,15 @@ public class OpenDoorQuest : Quest {
     public OpenDoorQuest(Body _genitor, GameObject _targetDoor, int _priority = 2) : base(_genitor, _priority) {
         name = "scold";
         targetDoor = _targetDoor;
-    }
-
-    protected override void Setup() {
         SubQuests = new List<Quest>() { new MoveToQuest(genitor, _targetObj: targetDoor), this };
     }
 
     public override Action GetAction() {
-        return new OpenDoorAction("Open Door", 0, genitor, targetDoor.GetComponent<Impassable>());
+        if (!done) {
+            done = true;
+            return new OpenDoorAction("Open Door", 0, genitor, targetDoor.GetComponent<Impassable>());
+        }
+        return new Action("Open", 0, genitor);
     }
 }
 
@@ -457,9 +469,6 @@ public class GuardDoorQuest : Quest {
     public GuardDoorQuest(Body _genitor, GameObject _targetDoor, int _priority = 2) : base(_genitor, _priority) {
         name = "guard door";
         targetDoor = _targetDoor;
-    }
-
-    protected override void Setup() {
         SubQuests = new List<Quest>() { new MoveToQuest(genitor, _targetObj:targetDoor),
                                         new StayQuest(genitor, 30),
         };
@@ -479,14 +488,15 @@ public class TellJokeQuest : Quest {
     public TellJokeQuest(Body _genitor, int _priority = 2) : base(_genitor, _priority) {
         name = "tell joke";
         targetPerson = genitor.GetPersonality().FindPerson("Player");
-    }
-
-    protected override void Setup() {
-        SubQuests = new List<Quest>() { new TalkToQuest(genitor, targetPerson), this };
+        SubQuests = new List<Quest>() { new MoveToQuest(genitor, _targetObj: targetPerson), new TalkToQuest(genitor, targetPerson), this };
     }
 
     public override Action GetAction() {
-        return new TellJokeAction("Tell Joke", 0, genitor, targetPerson.GetComponent<Body>());
+        if (!done) {
+            done = true;
+            return new TellJokeAction("Tell Joke", 0, genitor, targetPerson.GetComponent<Body>());
+        }
+        return new Action("Open", 0, genitor);
     }
 }
 
@@ -496,13 +506,14 @@ public class AnnounceQuest : Quest {
 
     public AnnounceQuest(Body _genitor, int _priority = 2) : base(_genitor, _priority) {
         name = "tell joke";
-    }
-
-    protected override void Setup() {
         SubQuests = new List<Quest>() { this, new StayQuest(genitor), this, new StayQuest(genitor), this, new StayQuest(genitor) };
     }
 
     public override Action GetAction() {
-        return new AnnounceAction("Announce", 0, genitor);
+        if (!done) {
+            done = true;
+            return new AnnounceAction("Announce", 0, genitor);
+        }
+        return new Action("Open", 0, genitor);
     }
 }

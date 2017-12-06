@@ -412,8 +412,10 @@ public class Harming : Reactor {
             }
             //Debug.Log(string.Format("vitality: {0}", reactant.turnVitality));
         }
-        else if (reactant.GetType() == typeof(DamageReduce))
+        else if (reactant.GetType() == typeof(DamageReduce)) {
             AffectVitality(-reactant.turnVitality);
+            Debug.Log("armor vitality: "+reactant.turnVitality);
+        }
     }
 }
 

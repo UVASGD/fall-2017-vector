@@ -48,6 +48,16 @@ public class TextInput : MonoBehaviour {
                 output.text = "";
                 bodyReference.Talk();
             }
+            else if (args.Equals("p")) {
+                output.text = "";
+                bodyReference.Propose();
+            }
+        }
+        else if (bodyReference.DiaStage == DialogueStage.Proposing) {
+            if (args.Equals("1")) {
+                output.text = "";
+                bodyReference.ProposeDoor();
+            }
         }
         else if (bodyReference.DiaStage == DialogueStage.Enquiring) {
             int eventPicker = 0;
