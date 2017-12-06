@@ -24,6 +24,8 @@ public class Quest {
 
     public virtual Action GetAction() {
         return new Action("Open", 0, genitor); }
+
+    public virtual void End() { }
 }
 
 public class StayQuest : Quest {
@@ -176,8 +178,11 @@ public class PickUpQuest : Quest {
     public override Action GetAction() {
         //TODO IF TARGETHOLDER IS PACKAGE PICK UP TARGETITEM
         //TODO IF TARGETHOLDER IS PERSON GET ITEM BY REQUEST OR DEMAND
-        genitor.Mind.QuestMind.Listeners.Remove(newListener1);
         return new Action("Open", 0, genitor); //DELET THIS
+    }
+
+    public override void End() {
+        genitor.Mind.QuestMind.Listeners.Remove(newListener1);
     }
 }
 

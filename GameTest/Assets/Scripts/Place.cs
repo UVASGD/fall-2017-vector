@@ -4,10 +4,17 @@ using UnityEngine;
 
 public class Place : MonoBehaviour {
 
+    public string placeName;
     float size;
     public float Size { get { return size; } }
     float coordinate;
     public float Coordinate { get { return coordinate; } }
+
+    public MusicChoice music = MusicChoice.Null;
+
+    public Place(string _name) {
+        name = _name;
+    }
 
 	void Start () {
 		

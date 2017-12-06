@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 
-public enum MusicChoice { titleMusic, middleburg, BanditForest, Easton, Swamp, BeforeBog, Bog, Boss, Credits }
+public enum MusicChoice { titleMusic, middleburg, BanditForest, Easton, Swamp, BeforeBog, Bog, Boss, Credits, None, Null }
 
 public class PlayMusic : MonoBehaviour {
 
@@ -52,11 +52,12 @@ public class PlayMusic : MonoBehaviour {
 		//Play the assigned music clip in musicSource
 		musicSource.Play ();
 	}
-	
-	//Used if running the game in a single scene, takes an integer music source allowing you to choose a clip by number and play.
-	public void PlaySelectedMusic(int musicChoice)
-	{
-        MusicChoice theChoice = (MusicChoice) musicChoice;
+
+    //Used if running the game in a single scene, takes an integer music source allowing you to choose a clip by number and play.
+    // public void PlaySelectedMusic(int musicChoice)
+    public void PlaySelectedMusic(MusicChoice theChoice)
+    {
+        // MusicChoice theChoice = (MusicChoice) musicChoice;
 
 		//This switch looks at the integer parameter musicChoice to decide which music clip to play.
 		switch (theChoice) 
@@ -94,10 +95,6 @@ public class PlayMusic : MonoBehaviour {
 		//Play the selected clip
 		musicSource.Play ();
 	}
-
-    public void ChangePlace(MusicChoice m) {
-        PlaySelectedMusic((int)m);
-    }
 
 	//Call this function to very quickly fade up the volume of master mixer
 	public void FadeUp(float fadeTime)

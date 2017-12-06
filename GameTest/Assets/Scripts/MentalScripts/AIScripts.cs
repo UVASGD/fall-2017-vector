@@ -84,7 +84,7 @@ public class PlayerAI : AI {
 
         if (changedPlace) {   //  TODO: make this actually choose the right music based on the place
             MusicChoice new_music = MusicChoice.Credits;
-            music.ChangePlace(new_music);
+            music.PlaySelectedMusic(new_music);
             changedPlace = false;
         }
     }
@@ -199,7 +199,14 @@ public class PersonAI : AI {
 
     public PersonAI(Personality _personality, Body _body) : base(_personality, _body) { }
 
-    protected void Ding() { }
+    public void Ding() {
+        body.CurrQuest.End();
+        body.SetNextQuest(questMind.GetQuest());
+    }
+
+    public void CheckListener(Listener listener) {
+
+    }
 
     public override void Tick() {
         if (body.CurrAct.Name.Equals("Open")) {

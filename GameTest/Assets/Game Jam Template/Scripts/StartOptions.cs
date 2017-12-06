@@ -125,7 +125,8 @@ public class StartOptions : MonoBehaviour {
 	{
 		//Fade up music nearly instantly without a click 
 		playMusic.FadeUp (fastFadeIn);
-		//Play music clip assigned to mainMusic in PlayMusic script
-		playMusic.PlaySelectedMusic (1);
-	}
+        //Play music clip assigned to mainMusic in PlayMusic script
+        // playMusic.PlaySelectedMusic (1);
+        playMusic.PlaySelectedMusic(MusicChoice.middleburg);
+    }
 }
