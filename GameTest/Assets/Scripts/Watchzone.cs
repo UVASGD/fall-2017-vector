@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Watchzone : MonoBehaviour {
+public class WatchZone : MonoBehaviour {
 
     List<Body> others;
 

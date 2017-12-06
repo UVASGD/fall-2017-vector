@@ -40,7 +40,9 @@ public class QuestPicker {
 
 //SOLDIER
 public class Soldier_QuestPicker : QuestPicker { //needs listener for "x", "tells joke"
-    public Soldier_QuestPicker(Body _genitor) : base(_genitor) { }
+    public Soldier_QuestPicker(Body _genitor) : base(_genitor) {
+        Listeners.Add(new Listener(new string[] { "x", "tells joke" }, genitor.GetPersonality(), false));
+    }
 
     public override List<Quest> GetQuestContext() {
         if (genitor.GetPersonality().HasContext("Lethal"))
