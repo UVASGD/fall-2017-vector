@@ -209,7 +209,7 @@ public class PersonAI : AI {
     }
 
     public void CheckListener(Listener listener) {
-
+        questMind.CheckListener(listener);
     }
 
     public override void Tick() {
