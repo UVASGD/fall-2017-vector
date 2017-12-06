@@ -30,6 +30,7 @@ public class InventoryInteraction : UIInventoryAbstract{
 
     public override void addElement(GameObject g)
     {
+        Player.Inventory.Add(g.GetComponent<UIInteractable>().item);
         g.GetComponent<UIInteractable>().item.SwitchHolder(Player);
         base.addElement(g);
     }

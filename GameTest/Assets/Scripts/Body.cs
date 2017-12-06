@@ -163,7 +163,53 @@ public class Body : MonoBehaviour {
     }
 
     public void DieIdiot() {
-        Destroy(gameObject);
+        DumpItems();
+        if (mind.GetType() == typeof(PlayerAI))
+        {
+            //transform.position = new Vector3(currPlace.Coordinate - currPlace.Size / 2, -3.5f, 0); //TODO FIX CurrPlace stuff
+            transform.position = new Vector2(0.5f, -3.5f);
+            Camera.main.transform.position = new Vector3(0.5f, 0,-10);
+            //Camera.main.transform.position = new Vector3(currPlace.Coordinate - currPlace.Size / 2,0,-10);
+            harmQuant = 0;
+        }
+        else
+            Destroy(gameObject);
+    }
+
+    void DumpItems()
+    {
+        GameObject packageRes = Resources.Load<GameObject>("ItemPackage");
+        GameObject package = Object.Instantiate(packageRes, new Vector3(transform.position.x, -2.75f, 0), Quaternion.identity) as GameObject;
+        ItemPackage pack = package.transform.GetChild(0).GetComponent<ItemPackage>();
+        pack.CreateItemPackage(new List<Item>(), name + @"'s Corpse", transform.position.x);
+        package.name = name + @"'s Corpse";
+        foreach(Item i in Inventory)
+        {
+            pack.AddItem(i);
+            i.SwitchHolder(pack);
+        }
+        if(Weapon.GetType() != typeof(Fists))
+        {
+            pack.AddItem(Weapon);
+            weapon = new Fists(this, 1);
+        }
+        if (Armor.Name != "none")
+        {
+            pack.AddItem(Armor);
+            armor = new Armor(this, 1, "none");
+        }
+
+        inventory.Clear();
+        if (mind.GetType() == typeof(PlayerAI))
+        {
+            GameObject weapon = GameObject.Find("WeaponEquip");
+            GameObject armor = GameObject.Find("ArmorEquip");
+            GameObject.Find("PlayerAll").GetComponent<InventoryInteraction>().UpdateUI();
+            if(weapon.transform.childCount > 0)
+                Destroy(weapon.transform.GetChild(0).gameObject);
+            if (armor.transform.childCount > 0)
+                Destroy(armor.transform.GetChild(0).gameObject);
+        }
     }
 
     //ABILITY TO GET HURT AND TO BE TARGETED

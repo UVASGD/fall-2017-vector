@@ -62,11 +62,12 @@ public class Item {
 
     protected List<Affecter> ThrowList;
 
-    public Item(Body _holder, int _size, bool _natural=false) {
+    public Item(Body _holder, int _size, Color _color, bool _natural=false) {
         holder = _holder;
         size = _size;
         speed = 5;
         natural = _natural;
+        color = _color;
         identity = new Identity(id, generic);
 
         dot = Resources.Load("Bead", typeof(GameObject)) as GameObject;

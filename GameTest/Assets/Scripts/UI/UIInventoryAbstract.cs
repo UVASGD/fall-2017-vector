@@ -32,8 +32,8 @@ public class UIInventoryAbstract : MonoBehaviour{
         {
             Debug.Log(i.Name);
             GameObject insert = Instantiate(insertable, transform);
-            insert.GetComponent<Image>().color = Random.ColorHSV() + new Color(0.5f,0.5f,0.5f,1);
             insert.GetComponent<UIInteractable>().item = i;
+            insert.GetComponent<Image>().color = i.itemColor;
             inventoryUISide.Add(insert);
         }
     }
