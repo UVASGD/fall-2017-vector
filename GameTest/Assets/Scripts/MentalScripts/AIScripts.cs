@@ -22,6 +22,7 @@ public class AI {
 
     protected int personalityChecker = 0;
 
+
     public AI(Personality _personality, Body _body) {
         questMind = new QuestPicker(_body);
         personality = _personality;
@@ -43,6 +44,8 @@ public class AI {
             Debug.Log("zone: " + zone.ToString());
         }
     }
+
+
 }
 
 public class PlayerAI : AI {

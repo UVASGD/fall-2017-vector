@@ -4,13 +4,19 @@ using UnityEngine;
 
 public class Impassable : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    public Direction direct;
+
+    void OnTriggerEnter2D(Collider2D other) {
+        Body otherBody = other.GetComponent<Body>();
+        if (otherBody != null) {
+            otherBody.Mind.AddForbiddenDirect(direct);
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D other) {
+        Body otherBody = other.GetComponent<Body>();
+        if (otherBody != null) {
+            otherBody.Mind.RemoveForbiddenDirect(direct);
+        }
+    }
 }
