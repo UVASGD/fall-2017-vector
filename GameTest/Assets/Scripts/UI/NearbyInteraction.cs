@@ -25,7 +25,7 @@ public class NearbyInteraction : UIInventoryAbstract{
         {
             Debug.Log(i.Name);
             GameObject insert = Instantiate(insertable, transform.GetChild(0));
-            insert.GetComponent<Image>().color = Random.ColorHSV() + new Color(0.1f, 0.1f, 0.1f, 1);
+            insert.GetComponent<Image>().color = i.itemColor;
             insert.GetComponent<UIInteractable>().item = i;
             inventoryUISide.Add(insert);
         }
