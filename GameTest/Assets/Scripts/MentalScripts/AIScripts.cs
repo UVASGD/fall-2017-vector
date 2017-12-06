@@ -83,8 +83,12 @@ public class PlayerAI : AI {
             }
         }
 
-        if (changedPlace) {   //  TODO: make this actually choose the right music based on the place
-            MusicChoice new_music = MusicChoice.Credits;
+        if (changedPlace && music != null) {   //  TODO: make this actually choose the right music based on the place
+            MusicChoice new_music;
+            if (place != null)
+                new_music = place.music;
+            else
+                new_music = MusicChoice.None;
             music.PlaySelectedMusic(new_music);
             changedPlace = false;
         }

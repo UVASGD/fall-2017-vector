@@ -57,6 +57,13 @@ public class PlayMusic : MonoBehaviour {
     // public void PlaySelectedMusic(int musicChoice)
     public void PlaySelectedMusic(MusicChoice theChoice)
     {
+        
+        if (theChoice == MusicChoice.None) {
+            musicSource.Stop();
+            return;
+        }
+
+        
         // MusicChoice theChoice = (MusicChoice) musicChoice;
 
 		//This switch looks at the integer parameter musicChoice to decide which music clip to play.
