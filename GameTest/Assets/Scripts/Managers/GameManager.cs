@@ -82,6 +82,8 @@ Disgust, Anger, Intimidate, Sad
         for(int i = 0; i < 5; i++) {
             pack.AddItem(new Sword(pack, 1));
         }
+        Armor mail = new Armor(pack, 1, "mail", 10f);
+        pack.AddItem(mail);
 
         //Sword sword2 = new Sword(innkeeperBody, 1);
 
