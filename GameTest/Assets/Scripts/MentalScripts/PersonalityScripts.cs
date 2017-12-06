@@ -219,6 +219,7 @@ public class Personality {
         div = 1;
         Dictionary<string[], EventInfo> eventsList;
         eventsList = (seen) ? seenEvents : unseenEvents;
+        List<Association> infoAssocs = new List<Association>() { };
 
         Association subj = null;
         VerbAssoc vb = null;
@@ -241,7 +242,11 @@ public class Personality {
         if (subj == null || vb == null || (info.Length > 2 && obj == null) || (info.Length > 3 && sup == null))
             return;
 
-        //TODO CHECK WITH LISTENERS HERE
+        foreach (Listener listener in body.Mind.QuestMind.Listeners) {
+            if (listener.CheckMatch(infoAssocs)) {
+                ((PersonAI)body.Mind).CheckListener(listener);
+            }
+        }
         string infoSentence = string.Join(" ", info); //convert info so it can be compared to info
         infoSentence = infoSentence.ToLower(); //convert info so it can be compared to info
 
