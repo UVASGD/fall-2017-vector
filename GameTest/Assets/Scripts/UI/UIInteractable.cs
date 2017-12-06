@@ -64,8 +64,11 @@ public class UIInteractable : MonoBehaviour, IBeginDragHandler, IEndDragHandler,
         hoverhud.transform.GetChild(0).gameObject.SetActive(true);
         hoverhud.transform.GetChild(1).gameObject.SetActive(false);
         hoverhud.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = item.Name;
+
         // hoverhud.SetActive(true);
-        hoverhud.transform.position = (transform.position + (Vector3)offset);
+        Vector3 newPos = (transform.position + (Vector3)offset);
+        newPos = new Vector3(Mathf.Clamp(newPos.x, 0, Screen.width - (hoverhud.GetComponent<RectTransform>().sizeDelta.x)), newPos.y, newPos.z);
+        hoverhud.transform.position = newPos;
     }
 
     public void OnPointerExit(PointerEventData eventData)
@@ -94,7 +97,7 @@ public class UIInteractable : MonoBehaviour, IBeginDragHandler, IEndDragHandler,
             hoverhud.transform.GetChild(1).gameObject.SetActive(true);
             hoverhud.transform.GetChild(0).gameObject.SetActive(false);
             hoverhud.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = item.Name;
-            hoverhud.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = "waluigi";
+            hoverhud.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = item.Descriptor;
         }
     }
 

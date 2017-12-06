@@ -6,6 +6,10 @@ using UnityEngine.EventSystems;
 public class EquipmentDroptest : MonoBehaviour, IDropHandler {
 
     public static Body playerBody;
+    public int type;
+    //0 = Weapon
+    //1 = Armor
+    //2 = Other
 
     void Start()
     {
@@ -25,18 +29,44 @@ public class EquipmentDroptest : MonoBehaviour, IDropHandler {
         var to = gameObject;
 
         Debug.Log("Equipping: " + moved.GetComponent<UIInteractable>().item.Name);
-        from.removeElement(moved);
-
-        if (playerBody.Weapon.GetType() != typeof(Fists)) //Needs to check for proper default. Not null. 
+        Item checkedItem;
+        switch (type)
         {
-            playerBody.addItem(playerBody.Weapon);
-        }
-        Item i = moved.GetComponent<UIInteractable>().item;
-        // playerBody.Weapon = i;
-        i.EquipTo(playerBody);
-        Debug.Log("Is the item in moved null? " + moved.GetComponent<UIInteractable>().item.ToString());
+            case 0:
+                checkedItem = moved.GetComponent<UIInteractable>().item;
+                if(checkedItem.Function == "Weapon")
+                {
+                    if (playerBody.Weapon.GetType() != typeof(Fists)) //Needs to check for proper default. Not null. 
+                    {
+                        playerBody.addItem(playerBody.Weapon);
+                    }
+                    from.removeElement(moved);
+                    checkedItem.EquipTo(playerBody);
+                    Debug.Log("Is the item in moved null? " + moved.GetComponent<UIInteractable>().item.ToString());
 
-        UIInteractable.origin = transform.gameObject;
+                    UIInteractable.origin = transform.gameObject;
+                }
+                break;
+            case 1:
+                checkedItem = moved.GetComponent<UIInteractable>().item;
+                if (checkedItem.Function == "Armor")
+                {
+                    if (playerBody.Armor.Name != "none") //Needs to check for proper default. Not null. 
+                    {
+                        playerBody.addItem(playerBody.Weapon);
+                    }
+                    from.removeElement(moved);
+                    checkedItem.EquipTo(playerBody);
+                    Debug.Log("Is the item in moved null? " + moved.GetComponent<UIInteractable>().item.ToString());
+
+                    UIInteractable.origin = transform.gameObject;
+                }
+                break;
+            case 2:
+                Debug.Log("The memes, Jack");
+                break;
+
+        }
     }
 
 }

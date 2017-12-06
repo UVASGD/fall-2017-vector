@@ -30,6 +30,7 @@ public class Sword : Item, ICloseMelee {
         blockPower = new Resistance(_holder, 1f);
 
         name = "Sword";
+        function = "Weapon";
         // dot = Resources.Load("Bead", typeof(GameObject)) as GameObject; <-  transfered up to ItemScripts
     }
 

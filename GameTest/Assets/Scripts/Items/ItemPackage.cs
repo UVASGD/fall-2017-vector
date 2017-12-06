@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ItemPackage : Body, Interactable {
+public class ItemPackage : Body {
 
     public new List<Item> Inventory { get { return inventory; } }
     public int inventorySize = 0;
@@ -89,29 +89,6 @@ public class ItemPackage : Body, Interactable {
         return interacting;
     }
 
-    public void OnMouseOver() {
-        // outline.OnEnable();
-        /*
-        if (interacting) {
-            rend.material.shader = highlighted;
-        }
-        else
-            rend.material.shader = normal;
-        */
-    }
-
-    public void OnMouseExit() {
-        // outline.OnDisable();
-    }
-
-    public void OnMouseDown() {
-        //Debug.Log("CLICK==========");
-        if (interactor != null) {
-            //Debug.Log("Interactor is not null");
-            interactor.TakeItemPackage(this);
-        }
-        nearbyUI.UpdateUI();
-    }
 
 
     public void AddItem(Item i)
