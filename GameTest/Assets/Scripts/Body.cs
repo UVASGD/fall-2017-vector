@@ -109,6 +109,8 @@ public class Body : MonoBehaviour {
         currMoveAct = new HaltAction("Halt", 100, this);
         currAct = new Action("Open", 0, this);
         AddAffecter(new ResistanceAggregate(this, 0f));
+
+        armor = new Armor(this, 1, "none");
     }
 
     void Update() {
